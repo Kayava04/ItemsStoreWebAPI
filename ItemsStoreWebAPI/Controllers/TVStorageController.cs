@@ -1,0 +1,63 @@
+﻿using ItemsStoreWebAPI.Models;
+using ItemsStoreWebAPI.Services;
+using ItemsStoreWebAPI.Validators;
+using Microsoft.AspNetCore.Mvc;
+
+
+namespace ItemsStoreWebAPI.Controllers
+{
+    [ApiController]
+    [Route("v1/stock/electronic/tv")]
+    public class TVStorageController : ControllerBase
+    {
+        private readonly ITVService _tvService;
+        private readonly TVRequestValidator _tvRequestValidator;
+
+        public TVStorageController(ITVService tvService, TVRequestValidator tvRequestValidator)
+        {
+            _tvService = tvService;
+            _tvRequestValidator = tvRequestValidator;
+        }
+
+        [HttpPost]
+        public IActionResult AddTV([FromBody] TV newTV)
+        {
+            if (!_tvRequestValidator.IsValid(newTV, out string errorMessage))
+                return BadRequest(errorMessage);
+
+            _tvService.AddTV(newTV);
+            return StatusCode(201, newTV);
+        }
+
+        [HttpGet("{id:int}")]
+        public IActionResult GetTVById(int id)
+        {
+            var tv = _tvService.GetTVById(id);
+            return Ok(tv);
+        }
+
+        [HttpGet]
+        public IActionResult GetAllTVs()
+        {
+            var tvs = _tvService.GetAllTVs();
+            return Ok(tvs);
+        }
+
+        [HttpPut]
+        public IActionResult UpdateTV(int id, [FromBody] TV updatedTV)
+        {
+            if (!_tvRequestValidator.IsValid(updatedTV, out string errorMessage))
+                return BadRequest(errorMessage);
+
+            var tv = _tvService.UpdateTV(id, updatedTV);
+            return Ok(tv);
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteTV(int id)
+        {
+            _tvService.DeleteTV(id);
+            return NoContent();
+        }
+    }
+}

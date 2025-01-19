@@ -1,0 +1,7 @@
+/.vs
+
+/ItemsStoreWebAPI/bin
+/ItemsStoreWebAPI/obj
+
+/ItemsStoreWebAPITests/bin
+/ItemsStoreWebAPITests/obj
