@@ -9,9 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ITVStorage, TVStorage>();
 builder.Services.AddScoped<ITVService, TVService>();
-
-//TODO: CHECK IF IT THE CORRECT METHOD
-builder.Services.AddScoped<TVRequestValidator>();
+builder.Services.AddScoped<ITVRequestValidator, TVRequestValidator>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

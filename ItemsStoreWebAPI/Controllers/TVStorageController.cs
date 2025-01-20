@@ -11,9 +11,9 @@ namespace ItemsStoreWebAPI.Controllers
     public class TVStorageController : ControllerBase
     {
         private readonly ITVService _tvService;
-        private readonly TVRequestValidator _tvRequestValidator;
+        private readonly ITVRequestValidator _tvRequestValidator;
 
-        public TVStorageController(ITVService tvService, TVRequestValidator tvRequestValidator)
+        public TVStorageController(ITVService tvService, ITVRequestValidator tvRequestValidator)
         {
             _tvService = tvService;
             _tvRequestValidator = tvRequestValidator;

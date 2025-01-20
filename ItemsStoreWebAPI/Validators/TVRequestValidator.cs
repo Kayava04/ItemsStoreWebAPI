@@ -3,7 +3,7 @@
 
 namespace ItemsStoreWebAPI.Validators
 {
-    public class TVRequestValidator
+    public class TVRequestValidator : ITVRequestValidator
     {
         public bool IsValid(TV tv, out string errorMessage)
         {
