@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 
-namespace ItemsStoreWebAPITests
+namespace ItemsStoreWebAPITests.Tests
 {
     public class TVStorageControllerTests
     {
@@ -27,7 +27,7 @@ namespace ItemsStoreWebAPITests
             // Arrange
             var invalidTV = new TV();
             string errorMessage = string.Empty;
-            
+
             _mockTVRequestValidator.Setup(v => v.IsValid(invalidTV, out errorMessage)).Returns(false);
 
             // Act

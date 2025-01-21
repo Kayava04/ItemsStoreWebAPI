@@ -13,13 +13,13 @@ namespace ItemsStoreWebAPI.Services
             _tvStorage = tVStorage;
         }
 
-        //TODO: Hide certain fields from user
-        public void AddTV(TV tv)
+        public TV AddTV(TV tv)
         {
             tv.AddedAt = DateTime.UtcNow;
             //tv.ModifiedAt = DateTime.UtcNow;
 
             _tvStorage.AddTV(tv);
+            return tv;
         }
 
         public TV? GetTVById(int id)

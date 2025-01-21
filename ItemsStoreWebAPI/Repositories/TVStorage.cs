@@ -13,13 +13,14 @@ namespace ItemsStoreWebAPI.Repositories
             _tvStorage = new List<TV>();
         }
 
-        public void AddTV(TV tv)
+        public TV AddTV(TV tv)
         {
             tv.ID = ++_countOfElements;
             tv.AddedAt = DateTime.UtcNow;
             //tv.ModifiedAt = DateTime.UtcNow;
 
             _tvStorage.Add(tv);
+            return tv;
         }
 
         public TV? GetTVById(int id)
