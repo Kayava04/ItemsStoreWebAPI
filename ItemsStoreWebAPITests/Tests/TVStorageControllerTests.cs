@@ -2,6 +2,7 @@
 using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Services;
 using ItemsStoreWebAPI.Validators;
+using ItemsStoreWebAPITests.Factories;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -13,12 +14,16 @@ namespace ItemsStoreWebAPITests.Tests
         private readonly Mock<ITVService> _mockTVService;
         private readonly Mock<ITVRequestValidator> _mockTVRequestValidator;
         private readonly TVStorageController _tvStorageController;
+        private readonly ITVFactory _tvFactory;
+        private readonly TV _defaultTV;
 
         public TVStorageControllerTests()
         {
             _mockTVService = new Mock<ITVService>();
             _mockTVRequestValidator = new Mock<ITVRequestValidator>();
             _tvStorageController = new TVStorageController(_mockTVService.Object, _mockTVRequestValidator.Object);
+            _tvFactory = new TVFactory();
+            _defaultTV = _tvFactory.CreateDefaultTV();
         }
 
         [Fact]
@@ -42,79 +47,51 @@ namespace ItemsStoreWebAPITests.Tests
         public void AddTV_ShouldReturnCreated()
         {
             // Arrange
-            var validTV = new TV
-            {
-                Name = "LG",
-                Size = 55,
-                Resolution = "3840x2160",
-                Frequency = 60,
-                ReleasedYear = 2021,
-                Price = 1200,
-                InStock = 5
-            };
-
             string errorMessage = string.Empty;
 
-            _mockTVRequestValidator.Setup(v => v.IsValid(validTV, out errorMessage)).Returns(true);
+            _mockTVRequestValidator.Setup(v => v.IsValid(_defaultTV, out errorMessage)).Returns(true);
 
             // Act
-            var result = _tvStorageController.AddTV(validTV);
+            var result = _tvStorageController.AddTV(_defaultTV);
 
             // Assert
             var createdResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(201, createdResult.StatusCode);
-            Assert.Equal(validTV, createdResult.Value);
+            Assert.Equal(_defaultTV, createdResult.Value);
         }
 
         [Fact]
         public void GetTVById_ShouldReturnOk()
         {
             // Arrange
-            var tv = new TV
-            {
-                ID = 1,
-                Name = "Samsung",
-                Size = 50
-            };
-
-            _mockTVService.Setup(s => s.GetTVById(1)).Returns(tv);
+            _mockTVService.Setup(service => service.GetTVById(1)).Returns(_defaultTV);
 
             // Act
             var result = _tvStorageController.GetTVById(1);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(tv, okResult.Value);
+            Assert.Equal(_defaultTV, okResult.Value);
         }
 
         [Fact]
         public void GetAllTVs_ShouldReturnOk()
         {
             // Arrange
-            var tvList = new List<TV>
+            var tvs = new List<TV>
             {
-                new TV
-                {
-                    ID = 1,
-                    Name = "Samsung",
-                    Size = 50
-                },
-                new TV
-                {
-                    ID = 2,
-                    Name = "LG",
-                    Size = 75
-                }
+                _defaultTV,
+                _tvFactory.CreateTV("Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 45000, 5)
             };
 
-            _mockTVService.Setup(s => s.GetAllTVs()).Returns(tvList);
+            _mockTVService.Setup(service => service.GetAllTVs()).Returns(tvs);
 
             // Act
             var result = _tvStorageController.GetAllTVs();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(tvList, okResult.Value);
+            Assert.Equal(tvs, okResult.Value);
         }
 
         [Fact]
@@ -138,17 +115,11 @@ namespace ItemsStoreWebAPITests.Tests
         public void UpdateTV_ShouldReturnOk()
         {
             // Arrange
-            var updatedTV = new TV
-            {
-                ID = 1,
-                Name = "Sony",
-                Size = 65
-            };
-
+            var updatedTV = _tvFactory.CreateTV("LG", "Bravia", 65, "7680x4320", 120, 2019, 32000, 2);
             string errorMessage = string.Empty;
 
             _mockTVRequestValidator.Setup(v => v.IsValid(updatedTV, out errorMessage)).Returns(true);
-            _mockTVService.Setup(s => s.UpdateTV(1, updatedTV)).Returns(updatedTV);
+            _mockTVService.Setup(service => service.UpdateTV(1, updatedTV)).Returns(updatedTV);
 
             // Act
             var result = _tvStorageController.UpdateTV(1, updatedTV);

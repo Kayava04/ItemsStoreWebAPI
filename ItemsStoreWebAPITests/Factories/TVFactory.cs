@@ -5,21 +5,24 @@ namespace ItemsStoreWebAPITests.Factories
 {
     public class TVFactory : ITVFactory
     {
-        public TV CreateTV()
+        public TV CreateTV(string name, string description, float size, string resolution, float frequency, int releasedYear, decimal price, int inStock)
         {
             return new TV
             {
-                ID = 1,
-                Name = "LG",
-                Description = "OLED TV",
-                Size = 55,
-                Resolution = "1920x1080",
-                Frequency = 100.5f,
-                ReleasedYear = 2020,
-                Price = 25500,
-                AddedAt = DateTime.UtcNow,
-                InStock = 2
+                Name = name,
+                Description = description,
+                Size = size,
+                Resolution = resolution,
+                Frequency = frequency,
+                ReleasedYear = releasedYear,
+                Price = price,
+                InStock = inStock
             };
+        }
+
+        public TV CreateDefaultTV()
+        {
+            return CreateTV("LG", "OLED TV", 55, "1920x1080", 100.5f, 2020, 25500, 2);
         }
     }
 }

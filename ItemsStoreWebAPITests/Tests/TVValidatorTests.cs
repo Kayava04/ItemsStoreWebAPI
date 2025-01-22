@@ -1,4 +1,5 @@
-﻿using ItemsStoreWebAPI.Validators;
+﻿using ItemsStoreWebAPI.Models;
+using ItemsStoreWebAPI.Validators;
 using ItemsStoreWebAPITests.Common;
 using ItemsStoreWebAPITests.Factories;
 
@@ -9,23 +10,22 @@ namespace ItemsStoreWebAPITests.Tests
     {
         private readonly ITVRequestValidator _tvRequestValidator;
         private readonly ITVFactory _tvFactory;
+        private readonly TV _defaultTV;
 
         public TVValidatorTests()
         {
             _tvRequestValidator = new TVRequestValidator();
             _tvFactory = new TVFactory();
+            _defaultTV = _tvFactory.CreateDefaultTV();
         }
 
         [Fact]
         public void IsValidTV_ShouldReturnTrue()
         {
             // Arrange
-            var tv = _tvFactory.CreateTV();
-
-            string errorMessage = string.Empty;
 
             // Act
-            var result = _tvRequestValidator.IsValid(tv, out errorMessage);
+            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
 
             // Assert
             Assert.True(result);
@@ -36,11 +36,10 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidName_ShouldReturnFalse()
         {
             // Arrange
-            var tv = _tvFactory.CreateTV();
-            tv.Name = string.Empty;
+            _defaultTV.Name = string.Empty;
 
             // Act
-            var result = _tvRequestValidator.IsValid(tv, out string errorMessage);
+            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -51,11 +50,10 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidSize_ShouldReturnFalse()
         {
             // Arrange
-            var tv = _tvFactory.CreateTV();
-            tv.Size = 0;
+            _defaultTV.Size = 0;
 
             // Act
-            var result = _tvRequestValidator.IsValid(tv, out string errorMessage);
+            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -66,11 +64,10 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidResolution_ShouldReturnFalse()
         {
             // Arrange
-            var tv = _tvFactory.CreateTV();
-            tv.Resolution = string.Empty;
+            _defaultTV.Resolution = string.Empty;
 
             // Act
-            var result = _tvRequestValidator.IsValid(tv, out string errorMessage);
+            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -81,11 +78,10 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidFrequency_ShouldReturnFalse()
         {
             // Arrange
-            var tv = _tvFactory.CreateTV();
-            tv.Frequency = 0;
+            _defaultTV.Frequency = 0;
 
             // Act
-            var result = _tvRequestValidator.IsValid(tv, out string errorMessage);
+            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -96,11 +92,10 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidReleasedYear_ShouldReturnFalse()
         {
             // Arrange
-            var tv = _tvFactory.CreateTV();
-            tv.ReleasedYear = 1899;
+            _defaultTV.ReleasedYear = 1899;
 
             // Act
-            var result = _tvRequestValidator.IsValid(tv, out string errorMessage);
+            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -111,11 +106,10 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidPrice_ShouldReturnFalse()
         {
             // Arrange
-            var tv = _tvFactory.CreateTV();
-            tv.Price = -19500;
+            _defaultTV.Price = -19299;
 
             // Act
-            var result = _tvRequestValidator.IsValid(tv, out string errorMessage);
+            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -126,11 +120,10 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidInStock_ShouldReturnFalse()
         {
             // Arrange
-            var tv = _tvFactory.CreateTV();
-            tv.InStock = -2;
+            _defaultTV.InStock = -5;
 
             // Act
-            var result = _tvRequestValidator.IsValid(tv, out string errorMessage);
+            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
