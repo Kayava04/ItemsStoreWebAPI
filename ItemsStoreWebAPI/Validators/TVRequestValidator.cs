@@ -9,45 +9,51 @@ namespace ItemsStoreWebAPI.Validators
         {
             errorMessage = string.Empty;
 
+            if (tv == null)
+            {
+                errorMessage = ValidationMessages.TVObjectCannotBeNull;
+                return false;
+            }
+
             if (string.IsNullOrEmpty(tv.Name))
             {
-                errorMessage = "Name is required!";
+                errorMessage = ValidationMessages.NameIsRequired;
                 return false;
             }
 
             if (tv.Size <= 0)
             {
-                errorMessage = "Size can not be zero or negative!";
+                errorMessage = ValidationMessages.SizeCannotBeZeroOrNegative;
                 return false;
             }
 
             if (string.IsNullOrEmpty(tv.Resolution))
             {
-                errorMessage = "Resolution is required!";
+                errorMessage = ValidationMessages.ResolutionIsRequired;
                 return false;
             }
 
             if (tv.Frequency <= 0)
             {
-                errorMessage = "Frequency can not be zero or negative!";
+                errorMessage = ValidationMessages.FrequencyCannotBeZeroOrNegative;
                 return false;
             }
 
             if (tv.ReleasedYear < 1900 || tv.ReleasedYear > DateTime.UtcNow.Year)
             {
-                errorMessage = "ReleasedYear must be a correct!";
+                errorMessage = ValidationMessages.ReleasedYearMustBeCorrect;
                 return false;
             }
 
             if (tv.Price < 0)
             {
-                errorMessage = "Price can not be negative!";
+                errorMessage = ValidationMessages.PriceCannotBeNegative;
                 return false;
             }
 
             if (tv.InStock < 0)
             {
-                errorMessage = "InStock can not be negative!";
+                errorMessage = ValidationMessages.InStockCannotBeNegative;
                 return false;
             }
 

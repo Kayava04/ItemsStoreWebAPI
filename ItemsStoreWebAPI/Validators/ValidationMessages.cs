@@ -1,7 +1,8 @@
-﻿namespace ItemsStoreWebAPITests.Common
+﻿namespace ItemsStoreWebAPI.Validators
 {
     public static class ValidationMessages
     {
+        public const string TVObjectCannotBeNull = "TV object can not be null!";
         public const string NameIsRequired = "Name is required!";
         public const string SizeCannotBeZeroOrNegative = "Size can not be zero or negative!";
         public const string ResolutionIsRequired = "Resolution is required!";

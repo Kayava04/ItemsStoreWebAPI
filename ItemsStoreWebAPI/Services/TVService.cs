@@ -40,7 +40,10 @@ namespace ItemsStoreWebAPI.Services
 
         public void DeleteTV(int id)
         {
-            _tvStorage.DeleteTV(id);
+            //var tv = GetTVById(id);
+
+            //if (tv != null)
+                _tvStorage.DeleteTV(id);
         }
     }
 }

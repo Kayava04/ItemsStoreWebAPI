@@ -5,10 +5,11 @@ namespace ItemsStoreWebAPITests.Factories
 {
     public class TVFactory : ITVFactory
     {
-        public TV CreateTV(string name, string description, float size, string resolution, float frequency, int releasedYear, decimal price, int inStock)
+        public TV CreateTV(int id, string name, string description, float size, string resolution, float frequency, int releasedYear, decimal price, int inStock)
         {
             return new TV
             {
+                ID = id,
                 Name = name,
                 Description = description,
                 Size = size,
@@ -22,7 +23,7 @@ namespace ItemsStoreWebAPITests.Factories
 
         public TV CreateDefaultTV()
         {
-            return CreateTV("LG", "OLED TV", 55, "1920x1080", 100.5f, 2020, 25500, 2);
+            return CreateTV(1, "LG", "OLED TV", 55, "1920x1080", 100.5f, 2020, 25500, 2);
         }
     }
 }
