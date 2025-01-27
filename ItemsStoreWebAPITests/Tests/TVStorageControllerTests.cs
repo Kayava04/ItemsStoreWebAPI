@@ -11,25 +11,25 @@ namespace ItemsStoreWebAPITests.Tests
 {
     public class TVStorageControllerTests
     {
-        private readonly Mock<ITVService> _mockTVService;
-        private readonly Mock<ITVRequestValidator> _mockTVRequestValidator;
-        private readonly TVStorageController _tvStorageController;
-        private readonly ITVFactory _tvFactory;
-        private readonly TV _defaultTV;
+        private Mock<ITVService> _mockTVService;
+        private Mock<ITVRequestValidator> _mockTVRequestValidator;
+        private TVStorageController _tvStorageController;
+        private TVFactory _tvFactory;
+        private TV _defaultTV;
 
         public TVStorageControllerTests()
         {
-            _mockTVService = new Mock<ITVService>();
-            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
-            _tvStorageController = new TVStorageController(_mockTVService.Object, _mockTVRequestValidator.Object);
             _tvFactory = new TVFactory();
-            _defaultTV = _tvFactory.CreateDefaultTV();
         }
 
         [Fact]
         public void AddInvalidTV_ShouldReturnBadRequest()
         {
             // Arrange
+            _mockTVService = new Mock<ITVService>();
+            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            _tvStorageController = new TVStorageController(_mockTVService.Object, _mockTVRequestValidator.Object);
+
             var invalidTV = new TV();
             string errorMessage = string.Empty;
 
@@ -47,6 +47,11 @@ namespace ItemsStoreWebAPITests.Tests
         public void AddTV_ShouldReturnCreated()
         {
             // Arrange
+            _mockTVService = new Mock<ITVService>();
+            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            _tvStorageController = new TVStorageController(_mockTVService.Object, _mockTVRequestValidator.Object);
+            _defaultTV = _tvFactory.CreateDefaultTV();
+
             string errorMessage = string.Empty;
 
             _mockTVRequestValidator.Setup(v => v.IsValid(_defaultTV, out errorMessage)).Returns(true);
@@ -64,6 +69,11 @@ namespace ItemsStoreWebAPITests.Tests
         public void GetTVById_ShouldReturnOk()
         {
             // Arrange
+            _mockTVService = new Mock<ITVService>();
+            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            _tvStorageController = new TVStorageController(_mockTVService.Object, _mockTVRequestValidator.Object);
+            _defaultTV = _tvFactory.CreateDefaultTV();
+
             _mockTVService.Setup(service => service.GetTVById(1)).Returns(_defaultTV);
 
             // Act
@@ -78,6 +88,11 @@ namespace ItemsStoreWebAPITests.Tests
         public void GetAllTVs_ShouldReturnOk()
         {
             // Arrange
+            _mockTVService = new Mock<ITVService>();
+            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            _tvStorageController = new TVStorageController(_mockTVService.Object, _mockTVRequestValidator.Object);
+            _defaultTV = _tvFactory.CreateDefaultTV();
+
             var tvs = new List<TV>
             {
                 _defaultTV,
@@ -98,6 +113,10 @@ namespace ItemsStoreWebAPITests.Tests
         public void UpdateInvalidTV_ShouldReturnBadRequest()
         {
             // Arrange
+            _mockTVService = new Mock<ITVService>();
+            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            _tvStorageController = new TVStorageController(_mockTVService.Object, _mockTVRequestValidator.Object);
+
             var invalidTV = new TV();
             invalidTV.ID = 1;
             string errorMessage = string.Empty;
@@ -116,6 +135,10 @@ namespace ItemsStoreWebAPITests.Tests
         public void UpdateTV_ShouldReturnOk()
         {
             // Arrange
+            _mockTVService = new Mock<ITVService>();
+            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            _tvStorageController = new TVStorageController(_mockTVService.Object, _mockTVRequestValidator.Object);
+
             var updatedTV = _tvFactory.CreateTV(1, "LG", "Bravia", 65, "7680x4320", 120, 2019, 32000, 2);
             string errorMessage = string.Empty;
 
@@ -134,12 +157,17 @@ namespace ItemsStoreWebAPITests.Tests
         public void DeleteTV_ShouldReturnNoContent()
         {
             // Arrange
+            _mockTVService = new Mock<ITVService>();
+            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            _tvStorageController = new TVStorageController(_mockTVService.Object, _mockTVRequestValidator.Object);
+
             _mockTVService.Setup(service => service.DeleteTV(1));
 
             // Act
             var result = _tvStorageController.DeleteTV(1);
 
             // Assert
+            _mockTVService.Verify(service => service.DeleteTV(1), Times.Once);
             Assert.IsType<NoContentResult>(result);
         }
     }

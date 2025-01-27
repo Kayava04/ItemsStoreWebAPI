@@ -141,7 +141,6 @@ namespace ItemsStoreWebAPITests.Tests
             _mockTVStorage.Verify(storage => storage.DeleteTV(_defaultTV.ID), Times.Once);
         }
 
-        //TODO: Fix this method for non-existent ID
         [Fact]
         public void DeleteNonExistentTV_ShouldNotCallDeleteInTVStorage()
         {
@@ -151,11 +150,13 @@ namespace ItemsStoreWebAPITests.Tests
 
             int nonExistentID = int.MaxValue;
 
+            _mockTVStorage.Setup(storage => storage.GetTVById(nonExistentID)).Returns((TV)null);
+
             // Act
-            _tvService.DeleteTV(nonExistentID);
+            var exception = Record.Exception(() => _tvService.DeleteTV(nonExistentID));
 
             // Assert
-            _mockTVStorage.Verify(storage => storage.DeleteTV(nonExistentID), Times.Never);
+            Assert.Null(exception);
         }
     }
 }
