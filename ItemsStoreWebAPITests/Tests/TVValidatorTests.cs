@@ -8,20 +8,14 @@ namespace ItemsStoreWebAPITests.Tests
     public class TVValidatorTests
     {
         private TVRequestValidator _tvRequestValidator;
-        private TVFactory _tvFactory;
         private TV _defaultTV;
-
-        public TVValidatorTests()
-        {
-            _tvFactory = new TVFactory();
-        }
 
         [Fact]
         public void IsValidTV_ShouldReturnTrue()
         {
             // Arrange
             _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = _tvFactory.CreateDefaultTV();
+            _defaultTV = TVFactory.CreateDefaultTV();
 
             // Act
             var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
@@ -36,7 +30,7 @@ namespace ItemsStoreWebAPITests.Tests
         {
             // Arrange
             _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = _tvFactory.CreateDefaultTV();
+            _defaultTV = TVFactory.CreateDefaultTV();
 
             _defaultTV.Name = string.Empty;
 
@@ -53,7 +47,7 @@ namespace ItemsStoreWebAPITests.Tests
         {
             // Arrange
             _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = _tvFactory.CreateDefaultTV();
+            _defaultTV = TVFactory.CreateDefaultTV();
 
             _defaultTV.Size = 0;
 
@@ -70,7 +64,7 @@ namespace ItemsStoreWebAPITests.Tests
         {
             // Arrange
             _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = _tvFactory.CreateDefaultTV();
+            _defaultTV = TVFactory.CreateDefaultTV();
 
             _defaultTV.Resolution = string.Empty;
 
@@ -87,7 +81,7 @@ namespace ItemsStoreWebAPITests.Tests
         {
             // Arrange
             _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = _tvFactory.CreateDefaultTV();
+            _defaultTV = TVFactory.CreateDefaultTV();
 
             _defaultTV.Frequency = 0;
 
@@ -104,7 +98,7 @@ namespace ItemsStoreWebAPITests.Tests
         {
             // Arrange
             _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = _tvFactory.CreateDefaultTV();
+            _defaultTV = TVFactory.CreateDefaultTV();
 
             _defaultTV.ReleasedYear = 1899;
 
@@ -121,7 +115,7 @@ namespace ItemsStoreWebAPITests.Tests
         {
             // Arrange
             _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = _tvFactory.CreateDefaultTV();
+            _defaultTV = TVFactory.CreateDefaultTV();
 
             _defaultTV.Price = -19299;
 
@@ -138,7 +132,7 @@ namespace ItemsStoreWebAPITests.Tests
         {
             // Arrange
             _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = _tvFactory.CreateDefaultTV();
+            _defaultTV = TVFactory.CreateDefaultTV();
 
             _defaultTV.InStock = -5;
 

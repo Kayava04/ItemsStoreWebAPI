@@ -8,12 +8,12 @@ namespace ItemsStoreWebAPI.Controllers
 {
     [ApiController]
     [Route("v1/stock/electronic/tv")]
-    public class TVStorageController : ControllerBase
+    public class TVController : ControllerBase
     {
         private readonly ITVService _tvService;
         private readonly ITVRequestValidator _tvRequestValidator;
 
-        public TVStorageController(ITVService tvService, ITVRequestValidator tvRequestValidator)
+        public TVController(ITVService tvService, ITVRequestValidator tvRequestValidator)
         {
             _tvService = tvService;
             _tvRequestValidator = tvRequestValidator;
@@ -44,12 +44,12 @@ namespace ItemsStoreWebAPI.Controllers
         }
 
         [HttpPut]
-        public IActionResult UpdateTV(int id, [FromBody] TV updatedTV)
+        public IActionResult UpdateTV([FromBody] TV updatedTV)
         {
             if (!_tvRequestValidator.IsValid(updatedTV, out string errorMessage))
                 return BadRequest(errorMessage);
 
-            var tv = _tvService.UpdateTV(id, updatedTV);
+            var tv = _tvService.UpdateTV(updatedTV.ID, updatedTV);
             return Ok(tv);
         }
 
