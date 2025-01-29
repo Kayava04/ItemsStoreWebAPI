@@ -5,12 +5,12 @@ namespace ItemsStoreWebAPI.Repositories
 {
     public class TVStorage : ITVStorage
     {
-        private readonly List<TV> _tvStorage;
+        private readonly List<TV> _tvCollection;
         private int _countOfElements;
 
         public TVStorage()
         {
-            _tvStorage = new List<TV>();
+            _tvCollection = new List<TV>();
         }
 
         public TV AddTV(TV tv)
@@ -19,18 +19,18 @@ namespace ItemsStoreWebAPI.Repositories
             tv.AddedAt = DateTime.UtcNow;
             //tv.ModifiedAt = DateTime.UtcNow;
 
-            _tvStorage.Add(tv);
-            return tv;
+            _tvCollection.Add(tv);
+            return _tvCollection.First(x => x.ID == tv.ID);
         }
 
         public TV? GetTVById(int id)
         {
-            return _tvStorage.FirstOrDefault(x => x.ID == id);
+            return _tvCollection.FirstOrDefault(x => x.ID == id);
         }
 
         public IEnumerable<TV> GetAllTVs()
         {
-            return _tvStorage;
+            return _tvCollection;
         }
 
         public TV? UpdateTV(int id, TV updatedTV)
@@ -58,7 +58,7 @@ namespace ItemsStoreWebAPI.Repositories
             var tv = GetTVById(id);
 
             if (tv != null)
-                _tvStorage.Remove(tv);
+                _tvCollection.Remove(tv);
         }
     }
 }

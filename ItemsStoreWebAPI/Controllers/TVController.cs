@@ -18,6 +18,9 @@ namespace ItemsStoreWebAPI.Controllers
             _tvService = tvService;
             _tvRequestValidator = tvRequestValidator;
         }
+        
+        //TODO: Add logs on level's controller & storage
+        //      Create another TV storage for Dictionary
 
         [HttpPost]
         public IActionResult AddTV([FromBody] TV newTV)

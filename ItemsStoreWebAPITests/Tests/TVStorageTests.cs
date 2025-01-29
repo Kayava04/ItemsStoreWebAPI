@@ -7,22 +7,26 @@ namespace ItemsStoreWebAPITests.Tests
 {
     public class TVStorageTests
     {
-        private TVStorage _tvStorage;
         private TV _defaultTV;
 
         [Fact]
         public void AddTV_ShouldAddTVWithUniqueID()
         {
             // Arrange
-            _tvStorage = new TVStorage();
-            _defaultTV = TVFactory.CreateDefaultTV();
-
+            int expectedID = 1;
+            var _tvStorage = new TVStorage();
+            
+            //TODO: Write asserts for other parameters
+            //      Do the same thing in every method
+            
+            _defaultTV = TVFactory.CreateTV(0, "LG", "OLED TV", 55, "1920x1080", 100.5f, 2020, 25500, 2);
+            
             // Act
             var result = _tvStorage.AddTV(_defaultTV);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(_defaultTV.ID, result.ID);
+            Assert.Equal(expectedID, result.ID);
             Assert.Equal(_defaultTV.Name, result.Name);
         }
 
@@ -30,7 +34,7 @@ namespace ItemsStoreWebAPITests.Tests
         public void GetTVById_ShouldReturnCorrectTV()
         {
             // Arrange
-            _tvStorage = new TVStorage();
+            var _tvStorage = new TVStorage();
             _defaultTV = TVFactory.CreateDefaultTV();
 
             _tvStorage.AddTV(_defaultTV);
@@ -48,7 +52,7 @@ namespace ItemsStoreWebAPITests.Tests
         public void GetAllTVs_ShouldReturnAllAddedTVs()
         {
             // Arrange
-            _tvStorage = new TVStorage();
+            var _tvStorage = new TVStorage();
             _defaultTV = TVFactory.CreateDefaultTV();
             var newTV = TVFactory.CreateTV(2, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 45000, 5);
 
@@ -67,7 +71,7 @@ namespace ItemsStoreWebAPITests.Tests
         public void UpdateTV_ShouldModifyExistingTV()
         {
             // Arrange
-            _tvStorage = new TVStorage();
+            var _tvStorage = new TVStorage();
             _defaultTV = TVFactory.CreateDefaultTV();
             var updatedTV = TVFactory.CreateTV(1, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 45000, 5);
 
@@ -88,7 +92,7 @@ namespace ItemsStoreWebAPITests.Tests
         public void DeleteTV_ShouldRemoveTVFromStorage()
         {
             // Arrange
-            _tvStorage = new TVStorage();
+            var _tvStorage = new TVStorage();
             _defaultTV = TVFactory.CreateDefaultTV();
 
             // Act
@@ -98,5 +102,7 @@ namespace ItemsStoreWebAPITests.Tests
             // Assert
             Assert.Null(result);
         }
+        
+        //TODO: Implement methods(update & delete) for non-existent ID
     }
 }
