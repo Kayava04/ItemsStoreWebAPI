@@ -9,146 +9,129 @@ namespace ItemsStoreWebAPITests.Tests
 {
     public class TVServiceTests
     {
-        private Mock<ITVStorage> _mockTVStorage;
-        private TVService _tvService;
-        private TV _defaultTV;
-
         [Fact]
         public void AddTV_ShouldAddTVToStorage()
         {
             // Arrange
-            _mockTVStorage = new Mock<ITVStorage>();
-            _tvService = new TVService(_mockTVStorage.Object);
-            _defaultTV = TVFactory.CreateDefaultTV();
+            var expectedTV = TVFactory.CreateDefaultTV();
+            
+            var mockTVStorage = new Mock<ITVStorage>();
+            var tvService = new TVService(mockTVStorage.Object);
 
-            _mockTVStorage.Setup(storage => storage.AddTV(It.IsAny<TV>())).Returns(_defaultTV);
+            mockTVStorage.Setup(storage => storage.AddTV(It.IsAny<TV>())).Returns(expectedTV);
 
             // Act
-            var result = _tvService.AddTV(_defaultTV);
+            var result = tvService.AddTV(expectedTV);
 
             // Assert
-            _mockTVStorage.Verify(storage => storage.AddTV(_defaultTV), Times.Once);
+            mockTVStorage.Verify(storage => storage.AddTV(expectedTV), Times.Once);
             Assert.NotNull(result);
-            Assert.Equal(_defaultTV.ID, result.ID);
+            Assert.Equal(expectedTV.ID, result.ID);
+            Assert.Equal(expectedTV.Name, result.Name);
+            Assert.Equal(expectedTV.Description, result.Description);
+            Assert.Equal(expectedTV.Size, result.Size);
+            Assert.Equal(expectedTV.Resolution, result.Resolution);
+            Assert.Equal(expectedTV.Frequency, result.Frequency);
+            Assert.Equal(expectedTV.ReleasedYear, result.ReleasedYear);
+            Assert.Equal(expectedTV.Price, result.Price);
+            Assert.Equal(expectedTV.InStock, result.InStock);
         }
 
         [Fact]
         public void GetTVById_ShouldReturnCorrectTV()
         {
             // Arrange
-            _mockTVStorage = new Mock<ITVStorage>();
-            _tvService = new TVService(_mockTVStorage.Object);
-            _defaultTV = TVFactory.CreateDefaultTV();
+            var expectedTV = TVFactory.CreateDefaultTV();
+            
+            var mockTVStorage = new Mock<ITVStorage>();
+            var tvService = new TVService(mockTVStorage.Object);
 
-            _mockTVStorage.Setup(storage => storage.GetTVById(_defaultTV.ID)).Returns(_defaultTV);
+            mockTVStorage.Setup(storage => storage.GetTVById(expectedTV.ID)).Returns(expectedTV);
 
             // Act
-            var result = _tvService.GetTVById(_defaultTV.ID);
+            var result = tvService.GetTVById(expectedTV.ID);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(_defaultTV.ID, result.ID);
-            Assert.Equal(_defaultTV.Name, result.Name);
+            Assert.Equal(expectedTV.ID, result.ID);
+            Assert.Equal(expectedTV.Name, result.Name);
+            Assert.Equal(expectedTV.Description, result.Description);
+            Assert.Equal(expectedTV.Size, result.Size);
+            Assert.Equal(expectedTV.Resolution, result.Resolution);
+            Assert.Equal(expectedTV.Frequency, result.Frequency);
+            Assert.Equal(expectedTV.ReleasedYear, result.ReleasedYear);
+            Assert.Equal(expectedTV.Price, result.Price);
+            Assert.Equal(expectedTV.InStock, result.InStock);
         }
 
         [Fact]
         public void GetAllTVs_ShoudReturnListOfTVs()
         {
             // Arrange
-            _mockTVStorage = new Mock<ITVStorage>();
-            _tvService = new TVService(_mockTVStorage.Object);
-            _defaultTV = TVFactory.CreateDefaultTV();
-            
+            var defaultTV = TVFactory.CreateDefaultTV();
             var tvs = new List<TV>
             {
-                _defaultTV,
+                defaultTV,
                 TVFactory.CreateTV(2, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 45000, 5)
             };
+            
+            var mockTVStorage = new Mock<ITVStorage>();
+            var tvService = new TVService(mockTVStorage.Object);
 
-            _mockTVStorage.Setup(storage => storage.GetAllTVs()).Returns(tvs);
+            mockTVStorage.Setup(storage => storage.GetAllTVs()).Returns(tvs);
 
             // Act
-            var result = _tvService.GetAllTVs();
+            var result = tvService.GetAllTVs();
 
             // Assert
             Assert.Equal(2, result.Count());
-            Assert.Contains(result, tv => tv.Name == "LG");
-            Assert.Contains(result, tv => tv.Name == "Samsung");
+            Assert.Contains(result, tv => tv.ID == defaultTV.ID);
+            Assert.Contains(result, tv => tv.ID == tvs[1].ID);
         }
 
         [Fact]
         public void UpdateTV_ShouldUpdateTVById()
         {
             // Arrange
-            _mockTVStorage = new Mock<ITVStorage>();
-            _tvService = new TVService(_mockTVStorage.Object);
-            _defaultTV = TVFactory.CreateDefaultTV();
-
+            var existingTV = TVFactory.CreateDefaultTV();
             var updatedTV = TVFactory.CreateTV(1, "LG", "Bravia", 65, "7680x4320", 120, 2019, 32000, 2);
+            
+            var mockTVStorage = new Mock<ITVStorage>();
+            var tvService = new TVService(mockTVStorage.Object);
 
-            _mockTVStorage.Setup(storage => storage.UpdateTV(_defaultTV.ID, updatedTV)).Returns(updatedTV);
+            mockTVStorage.Setup(storage => storage.UpdateTV(existingTV.ID, updatedTV)).Returns(updatedTV);
 
             // Act
-            var result = _tvService.UpdateTV(_defaultTV.ID, updatedTV);
+            var result = tvService.UpdateTV(updatedTV.ID, updatedTV);
 
             // Assert
-            _mockTVStorage.Verify(storage => storage.UpdateTV(_defaultTV.ID, updatedTV), Times.Once);
+            mockTVStorage.Verify(storage => storage.UpdateTV(existingTV.ID, updatedTV), Times.Once);
             Assert.NotNull(result);
+            Assert.Equal(existingTV.ID, result.ID);
             Assert.Equal(updatedTV.Name, result.Name);
+            Assert.Equal(updatedTV.Description, result.Description);
             Assert.Equal(updatedTV.Size, result.Size);
             Assert.Equal(updatedTV.Resolution, result.Resolution);
+            Assert.Equal(updatedTV.Frequency, result.Frequency);
+            Assert.Equal(updatedTV.ReleasedYear, result.ReleasedYear);
             Assert.Equal(updatedTV.Price, result.Price);
+            Assert.Equal(updatedTV.InStock, result.InStock);
         }
-
-        //[Fact]
-        //public void UpdateNonExistentTVById_ShouldReturnNull()
-        //{
-        //    // Arrange
-        //    _mockTVStorage = new Mock<ITVStorage>();
-        //    _tvService = new TVService(_mockTVStorage.Object);
-
-        //    int nonExistentID = int.MaxValue;
-        //    var updatedTV = TVFactory.CreateTV(nonExistentID, "LG", "Bravia", 65, "7680x4320", 120, 2019, 32000, 2);
-
-        //    _mockTVStorage.Setup(storage => storage.UpdateTV(nonExistentID, updatedTV)).Returns((TV?)null);
-
-        //    // Act
-        //    var result = _tvService.UpdateTV(nonExistentID, updatedTV);
-
-        //    // Assert
-        //    _mockTVStorage.Verify(storage => storage.UpdateTV(nonExistentID, updatedTV), Times.Once);
-        //    Assert.Null(result);
-        //}
-
+        
         [Fact]
         public void DeleteTV_ShouldRemoveTVFromStorage()
         {
             // Arrange
-            _mockTVStorage = new Mock<ITVStorage>();
-            _tvService = new TVService(_mockTVStorage.Object);
-            _defaultTV = TVFactory.CreateDefaultTV();
+            var existingTV = TVFactory.CreateDefaultTV();
+            
+            var mockTVStorage = new Mock<ITVStorage>();
+            var tvService = new TVService(mockTVStorage.Object);
 
             // Act
-            _tvService.DeleteTV(_defaultTV.ID);
+            tvService.DeleteTV(existingTV.ID);
 
             // Assert
-            _mockTVStorage.Verify(storage => storage.DeleteTV(_defaultTV.ID), Times.Once);
+            mockTVStorage.Verify(storage => storage.DeleteTV(existingTV.ID), Times.Once);
         }
-
-        //[Fact]
-        //public void DeleteNonExistentTV_ShouldNotCallException()
-        //{
-        //    // Arrange
-        //    _mockTVStorage = new Mock<ITVStorage>();
-        //    _tvService = new TVService(_mockTVStorage.Object);
-
-        //    int nonExistentID = int.MaxValue;
-
-        //    // Act
-        //    _tvService.DeleteTV(nonExistentID);
-
-        //    // Assert
-        //    _mockTVStorage.Verify(storage => storage.DeleteTV(nonExistentID), Times.Once);
-        //}
     }
 }

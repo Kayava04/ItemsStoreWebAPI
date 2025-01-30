@@ -7,10 +7,12 @@ namespace ItemsStoreWebAPI.Repositories
     {
         private readonly List<TV> _tvCollection;
         private int _countOfElements;
+        private readonly ILogger<TVStorage> _logger;
 
-        public TVStorage()
+        public TVStorage(ILogger<TVStorage> logger)
         {
             _tvCollection = new List<TV>();
+            _logger = logger;
         }
 
         public TV AddTV(TV tv)
@@ -20,21 +22,34 @@ namespace ItemsStoreWebAPI.Repositories
             //tv.ModifiedAt = DateTime.UtcNow;
 
             _tvCollection.Add(tv);
+            _logger.LogInformation($"Added TV with ID: {tv.ID}. {tv}");
+            
             return _tvCollection.First(x => x.ID == tv.ID);
         }
 
         public TV? GetTVById(int id)
         {
-            return _tvCollection.FirstOrDefault(x => x.ID == id);
+            var tv = _tvCollection.FirstOrDefault(x => x.ID == id);
+            
+            if (tv != null)
+                _logger.LogInformation($"Found TV with ID: {tv.ID}. {tv}");
+            else
+                _logger.LogError($"TV with ID: {id} not found");
+            
+            return tv;
         }
 
         public IEnumerable<TV> GetAllTVs()
         {
+            _logger.LogInformation($"Retrieving all TVs. Count: {_tvCollection.Count}");
+            
             return _tvCollection;
         }
 
         public TV? UpdateTV(int id, TV updatedTV)
         {
+            _logger.LogInformation($"Updating TV with ID: {id}");
+            
             var tv = GetTVById(id);
 
             if (tv != null)
@@ -48,7 +63,11 @@ namespace ItemsStoreWebAPI.Repositories
                 tv.Price = updatedTV.Price;
                 tv.ModifiedAt = DateTime.UtcNow;
                 tv.InStock = updatedTV.InStock;
+                
+                _logger.LogInformation($"TV with ID: {id}, successfully updated. {tv}");
             }
+            else
+                _logger.LogError($"Attempt to update TV with ID: {id}, failed. NOT FOUND");
 
             return tv;
         }
@@ -58,7 +77,12 @@ namespace ItemsStoreWebAPI.Repositories
             var tv = GetTVById(id);
 
             if (tv != null)
+            {
                 _tvCollection.Remove(tv);
+                _logger.LogInformation($"TV with ID: {id}, successfully deleted");
+            }
+            else
+                _logger.LogError($"Attempt to delete TV with ID: {id}, failed. NOT FOUND");
         }
     }
 }

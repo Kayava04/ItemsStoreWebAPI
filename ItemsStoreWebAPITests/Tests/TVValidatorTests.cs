@@ -7,35 +7,31 @@ namespace ItemsStoreWebAPITests.Tests
 {
     public class TVValidatorTests
     {
-        private TVRequestValidator _tvRequestValidator;
-        private TV _defaultTV;
-
         [Fact]
-        public void IsValidTV_ShouldReturnTrue()
+        public void IsValidTV_ShouldReturnFalse_WhenTVIsNull()
         {
             // Arrange
-            _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = TVFactory.CreateDefaultTV();
+            var tvRequestValidator = new TVRequestValidator();
 
             // Act
-            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
+            var result = tvRequestValidator.IsValid(null, out string errorMessage);
 
             // Assert
-            Assert.True(result);
-            Assert.Equal(string.Empty, errorMessage);
+            Assert.False(result);
+            Assert.Equal(ValidationMessages.TVObjectCannotBeNull, errorMessage);
         }
 
         [Fact]
         public void IsValidName_ShouldReturnFalse()
         {
             // Arrange
-            _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = TVFactory.CreateDefaultTV();
-
-            _defaultTV.Name = string.Empty;
+            var expectedTV = TVFactory.CreateDefaultTV();
+            expectedTV.Name = string.Empty;
+            
+            var tvRequestValidator = new TVRequestValidator();
 
             // Act
-            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
+            var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -46,13 +42,13 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidSize_ShouldReturnFalse()
         {
             // Arrange
-            _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = TVFactory.CreateDefaultTV();
-
-            _defaultTV.Size = 0;
+            var expectedTV = TVFactory.CreateDefaultTV();
+            expectedTV.Size = 0;
+            
+            var tvRequestValidator = new TVRequestValidator();
 
             // Act
-            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
+            var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -63,13 +59,13 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidResolution_ShouldReturnFalse()
         {
             // Arrange
-            _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = TVFactory.CreateDefaultTV();
-
-            _defaultTV.Resolution = string.Empty;
+            var expectedTV = TVFactory.CreateDefaultTV();
+            expectedTV.Resolution = string.Empty;
+            
+            var tvRequestValidator = new TVRequestValidator();
 
             // Act
-            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
+            var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -80,13 +76,13 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidFrequency_ShouldReturnFalse()
         {
             // Arrange
-            _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = TVFactory.CreateDefaultTV();
-
-            _defaultTV.Frequency = 0;
-
+            var expectedTV = TVFactory.CreateDefaultTV();
+            expectedTV.Frequency = 0;
+            
+            var tvRequestValidator = new TVRequestValidator();
+            
             // Act
-            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
+            var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -97,13 +93,13 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidReleasedYear_ShouldReturnFalse()
         {
             // Arrange
-            _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = TVFactory.CreateDefaultTV();
-
-            _defaultTV.ReleasedYear = 1899;
+            var expectedTV = TVFactory.CreateDefaultTV();
+            expectedTV.ReleasedYear = 1899;
+            
+            var tvRequestValidator = new TVRequestValidator();
 
             // Act
-            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
+            var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -114,13 +110,13 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidPrice_ShouldReturnFalse()
         {
             // Arrange
-            _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = TVFactory.CreateDefaultTV();
-
-            _defaultTV.Price = -19299;
+            var expectedTV = TVFactory.CreateDefaultTV();
+            expectedTV.Price = -19299;
+            
+            var tvRequestValidator = new TVRequestValidator();
 
             // Act
-            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
+            var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
@@ -131,13 +127,13 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidInStock_ShouldReturnFalse()
         {
             // Arrange
-            _tvRequestValidator = new TVRequestValidator();
-            _defaultTV = TVFactory.CreateDefaultTV();
-
-            _defaultTV.InStock = -5;
+            var expectedTV = TVFactory.CreateDefaultTV();
+            expectedTV.InStock = -5;
+            
+            var tvRequestValidator = new TVRequestValidator();
 
             // Act
-            var result = _tvRequestValidator.IsValid(_defaultTV, out string errorMessage);
+            var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
 
             // Assert
             Assert.False(result);
