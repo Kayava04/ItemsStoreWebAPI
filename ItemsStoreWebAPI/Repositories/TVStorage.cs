@@ -34,7 +34,7 @@ namespace ItemsStoreWebAPI.Repositories
             if (tv != null)
                 _logger.LogInformation($"Found TV with ID: {tv.ID}. {tv}");
             else
-                _logger.LogError($"TV with ID: {id} not found");
+                _logger.LogWarning($"TV with ID: {id} not found");
             
             return tv;
         }
@@ -67,7 +67,7 @@ namespace ItemsStoreWebAPI.Repositories
                 _logger.LogInformation($"TV with ID: {id}, successfully updated. {tv}");
             }
             else
-                _logger.LogError($"Attempt to update TV with ID: {id}, failed. NOT FOUND");
+                _logger.LogWarning($"Attempt to update TV with ID: {id}, failed. NOT FOUND");
 
             return tv;
         }
@@ -82,7 +82,7 @@ namespace ItemsStoreWebAPI.Repositories
                 _logger.LogInformation($"TV with ID: {id}, successfully deleted");
             }
             else
-                _logger.LogError($"Attempt to delete TV with ID: {id}, failed. NOT FOUND");
+                _logger.LogWarning($"Attempt to delete TV with ID: {id}, failed. NOT FOUND");
         }
     }
 }

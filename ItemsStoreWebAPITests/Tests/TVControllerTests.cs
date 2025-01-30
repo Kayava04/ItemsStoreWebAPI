@@ -12,12 +12,6 @@ namespace ItemsStoreWebAPITests.Tests
 {
     public class TVControllerTests
     {
-        private Mock<ITVService> _mockTVService;
-        private Mock<ITVRequestValidator> _mockTVRequestValidator;
-        private Mock<ILogger<TVController>> _mockLogger;
-        private TVController _tvController;
-        private TV _defaultTV;
-
         [Fact]
         public void AddInvalidTV_ShouldReturnBadRequest()
         {
@@ -25,15 +19,15 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = new TV();
             var errorMessage = string.Empty;
             
-            _mockTVService = new Mock<ITVService>();
-            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
-            _mockLogger = new Mock<ILogger<TVController>>();
-            _tvController = new TVController(_mockTVService.Object, _mockTVRequestValidator.Object, _mockLogger.Object);
+            var mockTVService = new Mock<ITVService>();
+            var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockLogger = new Mock<ILogger<TVController>>();
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockLogger.Object);
 
-            _mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out errorMessage)).Returns(false);
+            mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out errorMessage)).Returns(false);
 
             // Act
-            var result = _tvController.AddTV(expectedTV);
+            var result = tvController.AddTV(expectedTV);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -44,66 +38,66 @@ namespace ItemsStoreWebAPITests.Tests
         public void AddTV_ShouldReturnCreated()
         {
             // Arrange
-            _defaultTV = TVFactory.CreateDefaultTV();
+            var expectedTV = TVFactory.CreateDefaultTV();
             var errorMessage = string.Empty;
             
-            _mockTVService = new Mock<ITVService>();
-            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
-            _mockLogger = new Mock<ILogger<TVController>>();
-            _tvController = new TVController(_mockTVService.Object, _mockTVRequestValidator.Object, _mockLogger.Object);
+            var mockTVService = new Mock<ITVService>();
+            var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockLogger = new Mock<ILogger<TVController>>();
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockLogger.Object);
 
-            _mockTVRequestValidator.Setup(v => v.IsValid(_defaultTV, out errorMessage)).Returns(true);
+            mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out errorMessage)).Returns(true);
 
             // Act
-            var result = _tvController.AddTV(_defaultTV);
+            var result = tvController.AddTV(expectedTV);
 
             // Assert
             var createdResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(201, createdResult.StatusCode);
-            Assert.Equal(_defaultTV, createdResult.Value);
+            Assert.Equal(expectedTV, createdResult.Value);
         }
 
         [Fact]
         public void GetTVById_ShouldReturnOk()
         {
             // Arrange
-            _defaultTV = TVFactory.CreateDefaultTV();
+            var expectedTV = TVFactory.CreateDefaultTV();
             
-            _mockTVService = new Mock<ITVService>();
-            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
-            _mockLogger = new Mock<ILogger<TVController>>();
-            _tvController = new TVController(_mockTVService.Object, _mockTVRequestValidator.Object, _mockLogger.Object);
+            var mockTVService = new Mock<ITVService>();
+            var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockLogger = new Mock<ILogger<TVController>>();
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockLogger.Object);
 
-            _mockTVService.Setup(service => service.GetTVById(_defaultTV.ID)).Returns(_defaultTV);
+            mockTVService.Setup(service => service.GetTVById(expectedTV.ID)).Returns(expectedTV);
 
             // Act
-            var result = _tvController.GetTVById(_defaultTV.ID);
+            var result = tvController.GetTVById(expectedTV.ID);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(_defaultTV, okResult.Value);
+            Assert.Equal(expectedTV, okResult.Value);
         }
 
         [Fact]
         public void GetAllTVs_ShouldReturnOk()
         {
             // Arrange
-            _defaultTV = TVFactory.CreateDefaultTV();
+            var defaultTV = TVFactory.CreateDefaultTV();
             var tvs = new List<TV>
             {
-                _defaultTV,
+                defaultTV,
                 TVFactory.CreateTV(2, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 45000, 5)
             };
             
-            _mockTVService = new Mock<ITVService>();
-            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
-            _mockLogger = new Mock<ILogger<TVController>>();
-            _tvController = new TVController(_mockTVService.Object, _mockTVRequestValidator.Object, _mockLogger.Object);
+            var mockTVService = new Mock<ITVService>();
+            var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockLogger = new Mock<ILogger<TVController>>();
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockLogger.Object);
 
-            _mockTVService.Setup(service => service.GetAllTVs()).Returns(tvs);
+            mockTVService.Setup(service => service.GetAllTVs()).Returns(tvs);
 
             // Act
-            var result = _tvController.GetAllTVs();
+            var result = tvController.GetAllTVs();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -118,15 +112,15 @@ namespace ItemsStoreWebAPITests.Tests
             expectedTV.ID = 1;
             var errorMessage = string.Empty;
             
-            _mockTVService = new Mock<ITVService>();
-            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
-            _mockLogger = new Mock<ILogger<TVController>>();
-            _tvController = new TVController(_mockTVService.Object, _mockTVRequestValidator.Object, _mockLogger.Object);
+            var mockTVService = new Mock<ITVService>();
+            var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockLogger = new Mock<ILogger<TVController>>();
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockLogger.Object);
 
-            _mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out errorMessage)).Returns(false);
+            mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out errorMessage)).Returns(false);
 
             // Act
-            var result = _tvController.UpdateTV(expectedTV);
+            var result = tvController.UpdateTV(expectedTV);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -140,16 +134,16 @@ namespace ItemsStoreWebAPITests.Tests
             var updatedTV = TVFactory.CreateTV(1, "LG", "Bravia", 65, "7680x4320", 120, 2019, 32000, 2);
             var errorMessage = string.Empty;
             
-            _mockTVService = new Mock<ITVService>();
-            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
-            _mockLogger = new Mock<ILogger<TVController>>();
-            _tvController = new TVController(_mockTVService.Object, _mockTVRequestValidator.Object, _mockLogger.Object);
+            var mockTVService = new Mock<ITVService>();
+            var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockLogger = new Mock<ILogger<TVController>>();
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockLogger.Object);
 
-            _mockTVRequestValidator.Setup(v => v.IsValid(updatedTV, out errorMessage)).Returns(true);
-            _mockTVService.Setup(service => service.UpdateTV(updatedTV.ID, updatedTV)).Returns(updatedTV);
+            mockTVRequestValidator.Setup(v => v.IsValid(updatedTV, out errorMessage)).Returns(true);
+            mockTVService.Setup(service => service.UpdateTV(updatedTV.ID, updatedTV)).Returns(updatedTV);
 
             // Act
-            var result = _tvController.UpdateTV(updatedTV);
+            var result = tvController.UpdateTV(updatedTV);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -160,20 +154,20 @@ namespace ItemsStoreWebAPITests.Tests
         public void DeleteTV_ShouldReturnNoContent()
         {
             // Arrange
-            _defaultTV = TVFactory.CreateDefaultTV();
+            var existingTV = TVFactory.CreateDefaultTV();
             
-            _mockTVService = new Mock<ITVService>();
-            _mockTVRequestValidator = new Mock<ITVRequestValidator>();
-            _mockLogger = new Mock<ILogger<TVController>>();
-            _tvController = new TVController(_mockTVService.Object, _mockTVRequestValidator.Object, _mockLogger.Object);
+            var mockTVService = new Mock<ITVService>();
+            var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockLogger = new Mock<ILogger<TVController>>();
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockLogger.Object);
 
-            _mockTVService.Setup(service => service.DeleteTV(_defaultTV.ID));
+            mockTVService.Setup(service => service.DeleteTV(existingTV.ID));
 
             // Act
-            var result = _tvController.DeleteTV(_defaultTV.ID);
+            var result = tvController.DeleteTV(existingTV.ID);
 
             // Assert
-            _mockTVService.Verify(service => service.DeleteTV(1), Times.Once);
+            mockTVService.Verify(service => service.DeleteTV(1), Times.Once);
             Assert.IsType<NoContentResult>(result);
         }
     }

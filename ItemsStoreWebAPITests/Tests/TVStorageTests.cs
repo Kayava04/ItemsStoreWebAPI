@@ -32,9 +32,6 @@ namespace ItemsStoreWebAPITests.Tests
             Assert.Equal(expectedTV.ReleasedYear, result.ReleasedYear);
             Assert.Equal(expectedTV.Price, result.Price);
             Assert.Equal(expectedTV.InStock, result.InStock);
-            
-            //TODO: Check how to realize mockLogger
-            // mockLogger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.Once());
         }
 
         [Fact]
@@ -62,8 +59,6 @@ namespace ItemsStoreWebAPITests.Tests
             Assert.Equal(expectedTV.ReleasedYear, result.ReleasedYear);
             Assert.Equal(expectedTV.Price, result.Price);
             Assert.Equal(expectedTV.InStock, result.InStock);
-            
-            // mockLogger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.AtLeastOnce());
         }
 
         [Fact]
@@ -87,8 +82,6 @@ namespace ItemsStoreWebAPITests.Tests
             Assert.Equal(2, result.Count());
             Assert.Contains(result, tv => tv.ID == defaultTV.ID);
             Assert.Contains(result, tv => tv.ID == newTV.ID);
-            
-            // mockLogger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.AtLeastOnce());
         }
 
         [Fact]
@@ -117,8 +110,6 @@ namespace ItemsStoreWebAPITests.Tests
             Assert.Equal(updatedTV.ReleasedYear, result.ReleasedYear);
             Assert.Equal(updatedTV.Price, result.Price);
             Assert.Equal(updatedTV.InStock, result.InStock);
-            
-            // mockLogger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.AtLeastOnce());
         }
 
         [Fact]
@@ -136,8 +127,6 @@ namespace ItemsStoreWebAPITests.Tests
             
             // Assert
             Assert.Null(result);
-            
-            // mockLogger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.AtLeastOnce());
         }
         
         [Fact]
@@ -155,8 +144,6 @@ namespace ItemsStoreWebAPITests.Tests
 
             // Assert
             Assert.Null(result);
-            
-            // mockLogger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.AtLeastOnce());
         }
 
         [Fact]
@@ -173,8 +160,6 @@ namespace ItemsStoreWebAPITests.Tests
             
             // Assert
             Assert.Null(exception);
-            
-            // mockLogger.Verify(x => x.LogError(It.IsAny<string>()), Times.Once());
         }
     }
 }
