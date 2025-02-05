@@ -6,3 +6,6 @@
 
 /ItemsStoreWebAPITests/bin
 /ItemsStoreWebAPITests/obj
+
+/BenchmarkItemsStore/bin
+/BenchmarkItemsStore/obj
