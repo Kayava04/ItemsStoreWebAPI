@@ -28,14 +28,13 @@ namespace ItemsStoreWebAPI.Controllers
         {
             if (!_tvRequestValidator.IsValid(newTV, out var errorMessage))
             {
-                _logger.LogWarning($"Invalid TV data received: {errorMessage}");
-                
+                _logger.LogWarning($"Received invalid TV data: {errorMessage}");
                 return BadRequest(errorMessage);
             }
 
             _tvService.AddTV(newTV);
-            _logger.LogInformation($"TV with ID: {newTV.ID}, added successfully");
             
+            _logger.LogInformation($"TV with ID: {newTV.ID}, added successfully");
             return StatusCode(201, newTV);
         }
 
@@ -44,14 +43,13 @@ namespace ItemsStoreWebAPI.Controllers
         {
             var tv = _tvService.GetTVById(id);
 
-            if (tv == null)
+            if (!_tvRequestValidator.IsValid(tv, out var errorMessage))
             {
-                _logger.LogWarning($"TV with ID: {id} not found");
-                return NotFound();
+                _logger.LogWarning($"Received invalid TV data: {errorMessage}");
+                return BadRequest(errorMessage);
             }
             
-            _logger.LogInformation($"Retrieved TV with ID: {id}");
-            
+            _logger.LogInformation($"Received TV with ID: {id}");
             return Ok(tv);
         }
 
@@ -59,8 +57,8 @@ namespace ItemsStoreWebAPI.Controllers
         public IActionResult GetAllTVs()
         {
             var tvs = _tvService.GetAllTVs();
-            _logger.LogInformation($"Retrieving all TVs. Count: {tvs.Count()}");
             
+            _logger.LogInformation($"Received all TVs. Total count: {tvs.Count()}");
             return Ok(tvs);
         }
 
@@ -69,23 +67,22 @@ namespace ItemsStoreWebAPI.Controllers
         {
             if (!_tvRequestValidator.IsValid(updatedTV, out var errorMessage))
             {
-                _logger.LogWarning($"Invalid TV update data: {errorMessage}");
-                
+                _logger.LogWarning($"Received invalid update TV data: {errorMessage}");
                 return BadRequest(errorMessage);
             }
 
             var tv = _tvService.UpdateTV(updatedTV.ID, updatedTV);
-            _logger.LogInformation($"TV with ID: {tv.ID}, updated successfully");
             
+            _logger.LogInformation($"TV with ID: {tv.ID}, updated successfully");
             return Ok(tv);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id:int}")]
         public IActionResult DeleteTV(int id)
         {
             _tvService.DeleteTV(id);
-            _logger.LogInformation($"TV with ID: {id}, successfully deleted");
             
+            _logger.LogInformation($"TV with ID: {id}, deleted successfully");
             return NoContent();
         }
     }

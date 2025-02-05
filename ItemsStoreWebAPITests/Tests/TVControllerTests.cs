@@ -69,6 +69,7 @@ namespace ItemsStoreWebAPITests.Tests
             var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockLogger.Object);
 
             mockTVService.Setup(service => service.GetTVById(expectedTV.ID)).Returns(expectedTV);
+            mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out It.Ref<string>.IsAny)).Returns(true);
 
             // Act
             var result = tvController.GetTVById(expectedTV.ID);

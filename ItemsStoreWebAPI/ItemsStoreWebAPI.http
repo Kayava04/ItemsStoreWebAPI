@@ -1,6 +1,6 @@
 @ItemsStoreWebAPI_HostAddress = http://localhost:5117
 
-GET {{ItemsStoreWebAPI_HostAddress}}/weatherforecast/
+#GET {{ItemsStoreWebAPI_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

@@ -17,13 +17,19 @@ namespace ItemsStoreWebAPI.Repositories
 
         public TV AddTV(TV tv)
         {
+            if (tv == null)
+            {
+                _logger.LogError("Attempted to add a null TV object");
+                return null;
+            }
+            
             tv.ID = ++_countOfElements;
             tv.AddedAt = DateTime.UtcNow;
             //tv.ModifiedAt = DateTime.UtcNow;
 
             _tvCollection.Add(tv);
-            _logger.LogInformation($"Added TV with ID: {tv.ID}. {tv}");
             
+            _logger.LogInformation($"Added TV with ID: {tv.ID}. {tv}");
             return _tvCollection.First(x => x.ID == tv.ID);
         }
 
@@ -41,14 +47,17 @@ namespace ItemsStoreWebAPI.Repositories
 
         public IEnumerable<TV> GetAllTVs()
         {
-            _logger.LogInformation($"Retrieving all TVs. Count: {_tvCollection.Count}");
-            
+            _logger.LogInformation($"Receiving all TVs. Total count: {_tvCollection.Count}");
             return _tvCollection;
         }
 
         public TV? UpdateTV(int id, TV updatedTV)
         {
-            _logger.LogInformation($"Updating TV with ID: {id}");
+            if (updatedTV == null)
+            {
+                _logger.LogError("Attempted to update TV with null data");
+                return null;
+            }
             
             var tv = GetTVById(id);
 
@@ -64,10 +73,10 @@ namespace ItemsStoreWebAPI.Repositories
                 tv.ModifiedAt = DateTime.UtcNow;
                 tv.InStock = updatedTV.InStock;
                 
-                _logger.LogInformation($"TV with ID: {id}, successfully updated. {tv}");
+                _logger.LogInformation($"TV with ID: {id}, updated successfully. {tv}");
             }
             else
-                _logger.LogWarning($"Attempt to update TV with ID: {id}, failed. NOT FOUND");
+                _logger.LogWarning($"Attempted to update non-existent TV with ID: {id}");
 
             return tv;
         }
@@ -79,10 +88,10 @@ namespace ItemsStoreWebAPI.Repositories
             if (tv != null)
             {
                 _tvCollection.Remove(tv);
-                _logger.LogInformation($"TV with ID: {id}, successfully deleted");
+                _logger.LogInformation($"TV with ID: {id}, deleted successfully");
             }
             else
-                _logger.LogWarning($"Attempt to delete TV with ID: {id}, failed. NOT FOUND");
+                _logger.LogWarning($"Attempted to delete non-existent TV with ID: {id}");
         }
     }
 }
