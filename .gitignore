@@ -1,6 +1,8 @@
 /.vs
 /.idea
 
+.ItemsStoreWebAPI.sln.DotSettings.user
+
 /ItemsStoreWebAPI/bin
 /ItemsStoreWebAPI/obj
 
