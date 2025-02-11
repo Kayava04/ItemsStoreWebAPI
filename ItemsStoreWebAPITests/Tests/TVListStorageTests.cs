@@ -6,7 +6,7 @@ using Moq;
 
 namespace ItemsStoreWebAPITests.Tests
 {
-    public class TVStorageTests
+    public class TVListStorageTests
     {
         [Fact]
         public void AddTV_ShouldAddTVWithUniqueID()
@@ -15,8 +15,8 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedID = 1;
             var expectedTV = TVFactory.CreateTV(0, "LG", "OLED TV", 55, "1920x1080", 100.5f, 2020, 25500, 2);
             
-            var mockLogger = new Mock<ILogger<TVStorage>>();
-            var tvStorage = new TVStorage(mockLogger.Object);
+            var mockLogger = new Mock<ILogger<TVListStorage>>();
+            var tvStorage = new TVListStorage(mockLogger.Object);
             
             // Act
             var result = tvStorage.AddTV(expectedTV);
@@ -40,8 +40,8 @@ namespace ItemsStoreWebAPITests.Tests
             // Arrange
             var expectedTV = TVFactory.CreateDefaultTV();
             
-            var mockLogger = new Mock<ILogger<TVStorage>>();
-            var tvStorage = new TVStorage(mockLogger.Object);
+            var mockLogger = new Mock<ILogger<TVListStorage>>();
+            var tvStorage = new TVListStorage(mockLogger.Object);
 
             tvStorage.AddTV(expectedTV);
 
@@ -68,8 +68,8 @@ namespace ItemsStoreWebAPITests.Tests
             var defaultTV = TVFactory.CreateDefaultTV();
             var newTV = TVFactory.CreateTV(2, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 45000, 5);
             
-            var mockLogger = new Mock<ILogger<TVStorage>>();
-            var tvStorage = new TVStorage(mockLogger.Object);
+            var mockLogger = new Mock<ILogger<TVListStorage>>();
+            var tvStorage = new TVListStorage(mockLogger.Object);
 
             tvStorage.AddTV(defaultTV);
             tvStorage.AddTV(newTV);
@@ -91,8 +91,8 @@ namespace ItemsStoreWebAPITests.Tests
             var existingTV = TVFactory.CreateDefaultTV();
             var updatedTV = TVFactory.CreateTV(1, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 45000, 5);
             
-            var mockLogger = new Mock<ILogger<TVStorage>>();
-            var tvStorage = new TVStorage(mockLogger.Object);
+            var mockLogger = new Mock<ILogger<TVListStorage>>();
+            var tvStorage = new TVListStorage(mockLogger.Object);
 
             tvStorage.AddTV(existingTV);
 
@@ -119,8 +119,8 @@ namespace ItemsStoreWebAPITests.Tests
             var nonExistingID = int.MaxValue;
             var updatedTV = TVFactory.CreateTV(nonExistingID, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 45000, 5);
             
-            var mockLogger = new Mock<ILogger<TVStorage>>();
-            var tvStorage = new TVStorage(mockLogger.Object);
+            var mockLogger = new Mock<ILogger<TVListStorage>>();
+            var tvStorage = new TVListStorage(mockLogger.Object);
             
             // Act
             var result = tvStorage.UpdateTV(updatedTV.ID, updatedTV);
@@ -135,8 +135,8 @@ namespace ItemsStoreWebAPITests.Tests
             // Arrange
             var existingTV = TVFactory.CreateDefaultTV();
             
-            var mockLogger = new Mock<ILogger<TVStorage>>();
-            var tvStorage = new TVStorage(mockLogger.Object);
+            var mockLogger = new Mock<ILogger<TVListStorage>>();
+            var tvStorage = new TVListStorage(mockLogger.Object);
 
             // Act
             tvStorage.DeleteTV(existingTV.ID);
@@ -152,8 +152,8 @@ namespace ItemsStoreWebAPITests.Tests
             // Arrange
             var nonExistingID = int.MaxValue;
             
-            var mockLogger = new Mock<ILogger<TVStorage>>();
-            var tvStorage = new TVStorage(mockLogger.Object);
+            var mockLogger = new Mock<ILogger<TVListStorage>>();
+            var tvStorage = new TVListStorage(mockLogger.Object);
             
             // Act
             var exception = Record.Exception(() => tvStorage.DeleteTV(nonExistingID));

@@ -1,4 +1,5 @@
-﻿using ItemsStoreWebAPI.Models;
+﻿using ItemsStoreWebAPI.Factories;
+using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Repositories;
 
 
@@ -8,9 +9,10 @@ namespace ItemsStoreWebAPI.Services
     {
         private readonly ITVStorage _tvStorage;
 
-        public TVService(ITVStorage tVStorage)
+        public TVService(ITVStorageFactory tvStorageFactory, IConfiguration configuration)
         {
-            _tvStorage = tVStorage;
+            var storageType = configuration.GetValue<string>("StorageSettings:DefaultStorageType");
+            _tvStorage = tvStorageFactory.CreateStorage(storageType);
         }
 
         public TV AddTV(TV tv)

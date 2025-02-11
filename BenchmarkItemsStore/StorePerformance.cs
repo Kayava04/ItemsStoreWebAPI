@@ -24,14 +24,19 @@ namespace BenchmarkItemsStore
         {
             _logger.LogInformation($"Loading store performance...");
 
-            var AddItemsTimer = await AddItemsAsync(tvCount);
+            // var AddItemsTimer = await AddItemsAsync(tvCount);
             // var GetItemsByIdTimer = await GetItemsByIdAsync(id);
             // var GetAllItemsTimer = await GetAllItemsAsync();
             // var UpdateItemsTimer = await UpdateItemsAsync();
             // var DeleteItemsTimer = await DeleteItemsAsync(id);
             
-            _logger.LogInformation($"Store performance completed. Total time: {AddItemsTimer} ms");
+            // _logger.LogInformation($"Store performance completed. Total time: {AddItemsTimer} ms");
         }
+        
+        //TODO: Change log in every method
+        //      Identify why first try took more time than others
+        //      Look up for consuming
+        //      Check how to descrease time to sending all http requests
 
         public async Task<long> AddItemsAsync(int count)
         {

@@ -1,20 +1,20 @@
-﻿using ItemsStoreWebAPI.Models;
+using ItemsStoreWebAPI.Models;
 
 
 namespace ItemsStoreWebAPI.Repositories
 {
-    public class TVStorage : ITVStorage
+    public class TVDictionaryStorage : ITVStorage
     {
-        private readonly List<TV> _tvCollection;
+        private readonly Dictionary<int, TV> _tvCollection;
         private int _countOfElements;
-        private readonly ILogger<TVStorage> _logger;
+        private readonly ILogger<TVDictionaryStorage> _logger;
 
-        public TVStorage(ILogger<TVStorage> logger)
+        public TVDictionaryStorage(ILogger<TVDictionaryStorage> logger)
         {
-            _tvCollection = new List<TV>();
+            _tvCollection = new Dictionary<int, TV>();
             _logger = logger;
         }
-
+        
         public TV AddTV(TV tv)
         {
             if (tv == null)
@@ -27,28 +27,28 @@ namespace ItemsStoreWebAPI.Repositories
             tv.AddedAt = DateTime.UtcNow;
             //tv.ModifiedAt = DateTime.UtcNow;
 
-            _tvCollection.Add(tv);
+            _tvCollection.Add(tv.ID, tv);
             
             _logger.LogInformation($"Added TV with ID: {tv.ID}. {tv}");
-            return _tvCollection.First(x => x.ID == tv.ID);
+            return _tvCollection.First(x => x.Key == tv.ID).Value;
         }
 
         public TV? GetTVById(int id)
         {
-            var tv = _tvCollection.FirstOrDefault(x => x.ID == id);
-            
-            if (tv != null)
-                _logger.LogInformation($"Found TV with ID: {tv.ID}. {tv}");
+            var tv = _tvCollection.FirstOrDefault(x => x.Key == id);
+
+            if (tv.Value != null)
+                _logger.LogInformation($"Found TV with ID: {id}. {tv.Value}");
             else
                 _logger.LogWarning($"TV with ID: {id} not found");
-            
-            return tv;
+
+            return tv.Value;
         }
 
         public IEnumerable<TV> GetAllTVs()
         {
             _logger.LogInformation($"Receiving all TVs. Total count: {_tvCollection.Count}");
-            return _tvCollection;
+            return _tvCollection.Values;
         }
 
         public TV? UpdateTV(int id, TV updatedTV)
@@ -84,10 +84,10 @@ namespace ItemsStoreWebAPI.Repositories
         public void DeleteTV(int id)
         {
             var tv = GetTVById(id);
-
+            
             if (tv != null)
             {
-                _tvCollection.Remove(tv);
+                _tvCollection.Remove(id);
                 _logger.LogInformation($"TV with ID: {id}, deleted successfully");
             }
             else

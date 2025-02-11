@@ -17,5 +17,12 @@ namespace BenchmarkItemsStore
             var loadTestItems = new StorePerformance(logger);
             await loadTestItems.RunAsync();
         }
+        
+        //TODO: Write new functional
+        //      Change console for something else, for good debugging logs
+        //      Change configurations parameters without code change
+        //      Run any method without code change
+        //      Change logging for ability to use search
+        //      Add import API method
     }
 }
