@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using BenchmarkItemsStore.Core;
+using Microsoft.Extensions.Logging;
 
 
 namespace BenchmarkItemsStore
@@ -7,6 +8,8 @@ namespace BenchmarkItemsStore
     {
         static async Task Main(string[] args)
         {
+            DbLoader.InitializeDatabase();
+            
             using var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
@@ -15,7 +18,7 @@ namespace BenchmarkItemsStore
             var logger = loggerFactory.CreateLogger<StorePerformance>();
             
             var loadTestItems = new StorePerformance(logger);
-            await loadTestItems.RunAsync();
+            await loadTestItems.RunAsync(tvCount: 100);
         }
         
         //TODO: Write new functional

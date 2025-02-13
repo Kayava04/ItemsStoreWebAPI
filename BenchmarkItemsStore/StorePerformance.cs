@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
+using BenchmarkItemsStore.Core;
+using BenchmarkItemsStore.Entities;
 using ItemsStoreWebAPI.Models;
 using Microsoft.Extensions.Logging;
 
@@ -13,18 +15,22 @@ namespace BenchmarkItemsStore
             BaseAddress = new Uri("http://localhost:5117/v1/stock/electronic/tv/")
         };
         
+        private const string STATUS_SUCCESS = "Success";
+        private const string STATUS_FAILURE = "Failure";
+        
         private readonly ILogger<StorePerformance> _logger;
+        private readonly LoggingDbContext _loggingDbContext;
 
         public StorePerformance(ILogger<StorePerformance> logger)
         {
             _logger = logger;
         }
-
+        
         public async Task RunAsync(int tvCount = 0, int id = 0)
         {
             _logger.LogInformation($"Loading store performance...");
 
-            // var AddItemsTimer = await AddItemsAsync(tvCount);
+            await AddItemsAsync(tvCount);
             // var GetItemsByIdTimer = await GetItemsByIdAsync(id);
             // var GetAllItemsTimer = await GetAllItemsAsync();
             // var UpdateItemsTimer = await UpdateItemsAsync();
@@ -38,10 +44,22 @@ namespace BenchmarkItemsStore
         //      Look up for consuming
         //      Check how to descrease time to sending all http requests
 
-        public async Task<long> AddItemsAsync(int count)
+        private async Task LogToDatabase(long timeStamp, string method, string status, string message)
         {
-            var time = Stopwatch.StartNew();
-
+            var log = new LogEntity
+            {
+                Timestamp = timeStamp,
+                Method = method,
+                Status = status,
+                Message = message
+            };
+            
+            _loggingDbContext.Logs.Add(log);
+            await _loggingDbContext.SaveChangesAsync();
+        }
+        
+        public async Task AddItemsAsync(int count)
+        {
             for (int i = 1; i <= count; i++)
             {
                 var tv = new TV
@@ -56,16 +74,25 @@ namespace BenchmarkItemsStore
                     InStock = 7
                 };
 
+                var time = Stopwatch.StartNew();
+                
                 var response = await _httpClient.PostAsJsonAsync(String.Empty, tv);
 
-                if (response.IsSuccessStatusCode)
-                    _logger.LogInformation($"Successfully added TV {i}");
-                else
-                    _logger.LogError($"Failed to add TV {i}. Status Code: {response.StatusCode}");
-            }
+                time.Stop();
 
-            time.Stop();
-            return time.ElapsedMilliseconds;
+                if (response.IsSuccessStatusCode)
+                {
+                    var message = $"Successfully added TV {i}";
+                    _logger.LogInformation(message);
+                    await LogToDatabase(time.ElapsedMilliseconds, nameof(AddItemsAsync), STATUS_SUCCESS, message);
+                }
+                else
+                {
+                    var message = $"Failed to add TV {i}. Status Code: {response.StatusCode}";
+                    _logger.LogError(message);
+                    await LogToDatabase(time.ElapsedMilliseconds, nameof(AddItemsAsync), STATUS_FAILURE, message);
+                }
+            }
         }
         
         public async Task<long> GetItemsByIdAsync(int id)
