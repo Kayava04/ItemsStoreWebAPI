@@ -5,6 +5,6 @@ namespace ItemsStoreWebAPI.Factories
 {
     public interface ITVStorageFactory
     {
-        ITVStorage CreateStorage(string type);
+        ITVStorage CreateStorage(string? type = null);
     }
 }

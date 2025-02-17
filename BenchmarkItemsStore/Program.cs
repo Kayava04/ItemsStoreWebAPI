@@ -1,5 +1,4 @@
-﻿using BenchmarkItemsStore.Core;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 
 namespace BenchmarkItemsStore
@@ -8,8 +7,6 @@ namespace BenchmarkItemsStore
     {
         static async Task Main(string[] args)
         {
-            DbLoader.InitializeDatabase();
-            
             using var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();

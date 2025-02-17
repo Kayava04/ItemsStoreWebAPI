@@ -3,7 +3,6 @@ using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Repositories;
 using ItemsStoreWebAPI.Services;
 using ItemsStoreWebAPITests.Factories;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 
@@ -11,22 +10,17 @@ namespace ItemsStoreWebAPITests.Tests
 {
     public class TVServiceTests
     {
-        private const string _storageType = "ListStorage";
-        
         [Fact]
         public void AddTV_ShouldAddTVToStorage()
         {
             // Arrange
             var expectedTV = TVFactory.CreateDefaultTV();
-            
             var mockTVStorage = new Mock<ITVStorage>();
             var mockTVStorageFactory = new Mock<ITVStorageFactory>();
-            var mockConfiguration = new Mock<IConfiguration>();
             
-            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string>())).Returns(mockTVStorage.Object);
-            mockConfiguration.Setup(config => config.GetValue<string>("StorageSettings:DefaultStorageType")).Returns(_storageType);
+            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            var tvService = new TVService(mockTVStorageFactory.Object, mockConfiguration.Object);
+            var tvService = new TVService(mockTVStorageFactory.Object);
 
             mockTVStorage.Setup(storage => storage.AddTV(It.IsAny<TV>())).Returns(expectedTV);
 
@@ -55,12 +49,10 @@ namespace ItemsStoreWebAPITests.Tests
             
             var mockTVStorage = new Mock<ITVStorage>();
             var mockTVStorageFactory = new Mock<ITVStorageFactory>();
-            var mockConfiguration = new Mock<IConfiguration>();
             
-            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string>())).Returns(mockTVStorage.Object);
-            mockConfiguration.Setup(config => config.GetValue<string>("StorageSettings:DefaultStorageType")).Returns(_storageType);
+            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            var tvService = new TVService(mockTVStorageFactory.Object, mockConfiguration.Object);
+            var tvService = new TVService(mockTVStorageFactory.Object);
 
             mockTVStorage.Setup(storage => storage.GetTVById(expectedTV.ID)).Returns(expectedTV);
 
@@ -93,12 +85,10 @@ namespace ItemsStoreWebAPITests.Tests
             
             var mockTVStorage = new Mock<ITVStorage>();
             var mockTVStorageFactory = new Mock<ITVStorageFactory>();
-            var mockConfiguration = new Mock<IConfiguration>();
             
-            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string>())).Returns(mockTVStorage.Object);
-            mockConfiguration.Setup(config => config.GetValue<string>("StorageSettings:DefaultStorageType")).Returns(_storageType);
+            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            var tvService = new TVService(mockTVStorageFactory.Object, mockConfiguration.Object);
+            var tvService = new TVService(mockTVStorageFactory.Object);
 
             mockTVStorage.Setup(storage => storage.GetAllTVs()).Returns(tvs);
 
@@ -120,12 +110,10 @@ namespace ItemsStoreWebAPITests.Tests
             
             var mockTVStorage = new Mock<ITVStorage>();
             var mockTVStorageFactory = new Mock<ITVStorageFactory>();
-            var mockConfiguration = new Mock<IConfiguration>();
+
+            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string>())).Returns(mockTVStorage.Object);
-            mockConfiguration.Setup(config => config.GetValue<string>("StorageSettings:DefaultStorageType")).Returns(_storageType);
-            
-            var tvService = new TVService(mockTVStorageFactory.Object, mockConfiguration.Object);
+            var tvService = new TVService(mockTVStorageFactory.Object);
 
             mockTVStorage.Setup(storage => storage.UpdateTV(existingTV.ID, updatedTV)).Returns(updatedTV);
 
@@ -154,12 +142,10 @@ namespace ItemsStoreWebAPITests.Tests
             
             var mockTVStorage = new Mock<ITVStorage>();
             var mockTVStorageFactory = new Mock<ITVStorageFactory>();
-            var mockConfiguration = new Mock<IConfiguration>();
             
-            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string>())).Returns(mockTVStorage.Object);
-            mockConfiguration.Setup(config => config.GetValue<string>("StorageSettings:DefaultStorageType")).Returns(_storageType);
+            mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            var tvService = new TVService(mockTVStorageFactory.Object, mockConfiguration.Object);
+            var tvService = new TVService(mockTVStorageFactory.Object);
 
             // Act
             tvService.DeleteTV(existingTV.ID);

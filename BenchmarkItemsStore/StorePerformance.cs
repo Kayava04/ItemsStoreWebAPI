@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
-using BenchmarkItemsStore.Core;
-using BenchmarkItemsStore.Entities;
 using ItemsStoreWebAPI.Models;
 using Microsoft.Extensions.Logging;
 
@@ -15,11 +13,7 @@ namespace BenchmarkItemsStore
             BaseAddress = new Uri("http://localhost:5117/v1/stock/electronic/tv/")
         };
         
-        private const string STATUS_SUCCESS = "Success";
-        private const string STATUS_FAILURE = "Failure";
-        
         private readonly ILogger<StorePerformance> _logger;
-        private readonly LoggingDbContext _loggingDbContext;
 
         public StorePerformance(ILogger<StorePerformance> logger)
         {
@@ -30,36 +24,25 @@ namespace BenchmarkItemsStore
         {
             _logger.LogInformation($"Loading store performance...");
 
-            await AddItemsAsync(tvCount);
-            // var GetItemsByIdTimer = await GetItemsByIdAsync(id);
-            // var GetAllItemsTimer = await GetAllItemsAsync();
-            // var UpdateItemsTimer = await UpdateItemsAsync();
-            // var DeleteItemsTimer = await DeleteItemsAsync(id);
+            // var addItemsTimer = await AddItemsAsync(tvCount);
+            // var getItemsByIdTimer = await GetItemsByIdAsync(id);
+            var getAllItemsTimer = await GetAllItemsAsync();
+            // var updateItemsTimer = await UpdateItemsAsync();
+            // var deleteItemsTimer = await DeleteItemsAsync(id);
             
-            // _logger.LogInformation($"Store performance completed. Total time: {AddItemsTimer} ms");
+            _logger.LogInformation($"Store performance completed. Total time: {getAllItemsTimer} ms");
         }
         
-        //TODO: Change log in every method
+        //TODO: Use Log4Net
+        //      Change log in every method
         //      Identify why first try took more time than others
         //      Look up for consuming
-        //      Check how to descrease time to sending all http requests
-
-        private async Task LogToDatabase(long timeStamp, string method, string status, string message)
-        {
-            var log = new LogEntity
-            {
-                Timestamp = timeStamp,
-                Method = method,
-                Status = status,
-                Message = message
-            };
-            
-            _loggingDbContext.Logs.Add(log);
-            await _loggingDbContext.SaveChangesAsync();
-        }
+        //      Check how to decrease time to sending all http requests
         
-        public async Task AddItemsAsync(int count)
+        private async Task<long> AddItemsAsync(int count)
         {
+            var time = Stopwatch.StartNew();
+            
             for (int i = 1; i <= count; i++)
             {
                 var tv = new TV
@@ -73,26 +56,18 @@ namespace BenchmarkItemsStore
                     Price = 23700,
                     InStock = 7
                 };
-
-                var time = Stopwatch.StartNew();
                 
                 var response = await _httpClient.PostAsJsonAsync(String.Empty, tv);
-
-                time.Stop();
+                var createdTV = await response.Content.ReadFromJsonAsync<TV>();
 
                 if (response.IsSuccessStatusCode)
-                {
-                    var message = $"Successfully added TV {i}";
-                    _logger.LogInformation(message);
-                    await LogToDatabase(time.ElapsedMilliseconds, nameof(AddItemsAsync), STATUS_SUCCESS, message);
-                }
+                    _logger.LogInformation($"Successfully added TV with ID: {createdTV.ID}");
                 else
-                {
-                    var message = $"Failed to add TV {i}. Status Code: {response.StatusCode}";
-                    _logger.LogError(message);
-                    await LogToDatabase(time.ElapsedMilliseconds, nameof(AddItemsAsync), STATUS_FAILURE, message);
-                }
+                    _logger.LogError($"Failed to add TV. Status Code: {response.StatusCode}");
             }
+            
+            time.Stop();
+            return time.ElapsedMilliseconds;
         }
         
         public async Task<long> GetItemsByIdAsync(int id)

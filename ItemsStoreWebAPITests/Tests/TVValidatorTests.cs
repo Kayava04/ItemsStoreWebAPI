@@ -1,5 +1,4 @@
-﻿using ItemsStoreWebAPI.Models;
-using ItemsStoreWebAPI.Validators;
+﻿using ItemsStoreWebAPI.Validators;
 using ItemsStoreWebAPITests.Factories;
 
 

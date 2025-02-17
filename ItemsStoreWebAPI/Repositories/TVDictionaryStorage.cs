@@ -17,12 +17,6 @@ namespace ItemsStoreWebAPI.Repositories
         
         public TV AddTV(TV tv)
         {
-            if (tv == null)
-            {
-                _logger.LogError("Attempted to add a null TV object");
-                return null;
-            }
-            
             tv.ID = ++_countOfElements;
             tv.AddedAt = DateTime.UtcNow;
             //tv.ModifiedAt = DateTime.UtcNow;
@@ -53,12 +47,6 @@ namespace ItemsStoreWebAPI.Repositories
 
         public TV? UpdateTV(int id, TV updatedTV)
         {
-            if (updatedTV == null)
-            {
-                _logger.LogError("Attempted to update TV with null data");
-                return null;
-            }
-            
             var tv = GetTVById(id);
 
             if (tv != null)
