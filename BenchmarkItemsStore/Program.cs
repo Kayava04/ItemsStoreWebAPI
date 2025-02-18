@@ -1,28 +1,42 @@
-﻿using Microsoft.Extensions.Logging;
-
-
-namespace BenchmarkItemsStore
+﻿namespace BenchmarkItemsStore
 {
-    class Program
+    public class Program
     {
+        private static string PATH = Directory.GetCurrentDirectory()[..^16] + @"\Logs\logs.txt";
+        
         static async Task Main(string[] args)
         {
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddConsole();
-            });
+            var storePerformance = new StorePerformance();
+            // await storePerformance.RunAsync(nameof(storePerformance.AddItemsAsync), tvCount: 10);
             
-            var logger = loggerFactory.CreateLogger<StorePerformance>();
-            
-            var loadTestItems = new StorePerformance(logger);
-            await loadTestItems.RunAsync(tvCount: 100);
+            await SearchLogs("id");
         }
         
-        //TODO: Write new functional
-        //      Change console for something else, for good debugging logs
-        //      Change configurations parameters without code change
-        //      Run any method without code change
-        //      Change logging for ability to use search
-        //      Add import API method
+        private static async Task SearchLogs(string keyWord)
+        {
+            if (!File.Exists(PATH))
+            {
+                Console.WriteLine("Log file not found.");
+                return;
+            }
+
+            try
+            {
+                await using var stream = new FileStream(PATH, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var reader = new StreamReader(stream);
+                var content = await reader.ReadToEndAsync();
+                var lines = content.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                var results = lines.Where(line => line.Contains(keyWord, StringComparison.OrdinalIgnoreCase));
+        
+                Console.WriteLine("Search results:");
+                
+                foreach (var result in results)
+                    Console.WriteLine(result);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error reading file: {ex.Message}");
+            }
+        }
     }
 }

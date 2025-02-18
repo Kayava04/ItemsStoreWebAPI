@@ -1,7 +1,9 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
+using System.Reflection;
 using ItemsStoreWebAPI.Models;
-using Microsoft.Extensions.Logging;
+using log4net;
+using log4net.Config;
 
 
 namespace BenchmarkItemsStore
@@ -12,37 +14,48 @@ namespace BenchmarkItemsStore
         {
             BaseAddress = new Uri("http://localhost:5117/v1/stock/electronic/tv/")
         };
-        
-        private readonly ILogger<StorePerformance> _logger;
 
-        public StorePerformance(ILogger<StorePerformance> logger)
+        private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        public StorePerformance()
         {
-            _logger = logger;
+            var loggerRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            XmlConfigurator.Configure(loggerRepository, new FileInfo("log4net.config.xml"));
+        }
+
+        public async Task RunAsync(string method = null, int tvCount = 0, int id = 0)
+        {
+            _logger.Info("Loading store performance tests...");
+            var timer = Stopwatch.StartNew();
+            
+            switch (method)
+            {
+                case nameof(AddItemsAsync):
+                    await AddItemsAsync(tvCount);
+                    break;
+                case nameof(GetItemsByIdAsync):
+                    await GetItemsByIdAsync(id);
+                    break;
+                case nameof(GetAllItemsAsync):
+                    await GetAllItemsAsync();
+                    break;
+                case nameof(UpdateItemsAsync):
+                    await UpdateItemsAsync();
+                    break;
+                case nameof(DeleteItemsAsync):
+                    await DeleteItemsAsync(id);
+                    break;
+                default:
+                    _logger.Warn($"Method {method} is not supported.");
+                    break;
+            }
+
+            timer.Stop();
+            _logger.Info($"{method} completed. Total time: {timer.ElapsedMilliseconds} ms.");
         }
         
-        public async Task RunAsync(int tvCount = 0, int id = 0)
+        public async Task AddItemsAsync(int count)
         {
-            _logger.LogInformation($"Loading store performance...");
-
-            // var addItemsTimer = await AddItemsAsync(tvCount);
-            // var getItemsByIdTimer = await GetItemsByIdAsync(id);
-            var getAllItemsTimer = await GetAllItemsAsync();
-            // var updateItemsTimer = await UpdateItemsAsync();
-            // var deleteItemsTimer = await DeleteItemsAsync(id);
-            
-            _logger.LogInformation($"Store performance completed. Total time: {getAllItemsTimer} ms");
-        }
-        
-        //TODO: Use Log4Net
-        //      Change log in every method
-        //      Identify why first try took more time than others
-        //      Look up for consuming
-        //      Check how to decrease time to sending all http requests
-        
-        private async Task<long> AddItemsAsync(int count)
-        {
-            var time = Stopwatch.StartNew();
-            
             for (int i = 1; i <= count; i++)
             {
                 var tv = new TV
@@ -56,56 +69,40 @@ namespace BenchmarkItemsStore
                     Price = 23700,
                     InStock = 7
                 };
-                
+
                 var response = await _httpClient.PostAsJsonAsync(String.Empty, tv);
-                var createdTV = await response.Content.ReadFromJsonAsync<TV>();
 
                 if (response.IsSuccessStatusCode)
-                    _logger.LogInformation($"Successfully added TV with ID: {createdTV.ID}");
+                    _logger.Info($"Successfully added TV with ID: {i}");
                 else
-                    _logger.LogError($"Failed to add TV. Status Code: {response.StatusCode}");
+                    _logger.Error($"Failed to add TV with ID {i}. Status Code: {response.StatusCode}");
             }
-            
-            time.Stop();
-            return time.ElapsedMilliseconds;
         }
-        
-        public async Task<long> GetItemsByIdAsync(int id)
-        {
-            var time = Stopwatch.StartNew();
 
+        public async Task GetItemsByIdAsync(int id)
+        {
             var response = await _httpClient.GetAsync(id.ToString());
             var tv = await response.Content.ReadFromJsonAsync<TV>();
             
             if (response.IsSuccessStatusCode)
-                _logger.LogInformation($"Successfully received TV with ID: {tv.ID}");
+                _logger.Info($"Successfully received TV with ID: {tv.ID}");
             else
-                _logger.LogError($"Failed to get TV. Status Code: {response.StatusCode}");
-                
-            time.Stop();
-            return time.ElapsedMilliseconds;
+                _logger.Error($"Failed to get TV. Status Code: {response.StatusCode}");
         }
         
-        public async Task<long> GetAllItemsAsync()
+        public async Task GetAllItemsAsync()
         {
-            var time = Stopwatch.StartNew();
-            
             var response = await _httpClient.GetAsync(String.Empty);
             var tvs = await response.Content.ReadFromJsonAsync<List<TV>>();
             
             if (response.IsSuccessStatusCode)
-                _logger.LogInformation($"Successfully received all TVs. Total count: {tvs.Count}");
+                _logger.Info($"Successfully received all TVs. Total count: {tvs.Count}");
             else
-                _logger.LogError($"Failed to get all TVs. Status Code: {response.StatusCode}");
-            
-            time.Stop();
-            return time.ElapsedMilliseconds;
+                _logger.Error($"Failed to get all TVs. Status Code: {response.StatusCode}");
         }
 
-        public async Task<long> UpdateItemsAsync()
+        public async Task UpdateItemsAsync()
         {
-            var time = Stopwatch.StartNew();
-            
             var updatedTV = new TV
             {
                 ID = 1,
@@ -122,27 +119,19 @@ namespace BenchmarkItemsStore
             var response = await _httpClient.PutAsJsonAsync(String.Empty, updatedTV);
             
             if (response.IsSuccessStatusCode)
-                _logger.LogInformation($"Successfully updated TV with ID: {updatedTV.ID}");
+                _logger.Info($"Successfully updated TV with ID: {updatedTV.ID}");
             else
-                _logger.LogError($"Failed to update TV. Status Code: {response.StatusCode}");
-            
-            time.Stop();
-            return time.ElapsedMilliseconds;
+                _logger.Error($"Failed to update TV. Status Code: {response.StatusCode}");
         }
 
-        public async Task<long> DeleteItemsAsync(int id)
+        public async Task DeleteItemsAsync(int id)
         {
-            var time = Stopwatch.StartNew();
-            
             var response = await _httpClient.DeleteAsync(id.ToString());
             
             if (response.IsSuccessStatusCode)
-                _logger.LogInformation($"Successfully deleted TV with ID: {id}");
+                _logger.Info($"Successfully deleted TV with ID: {id}");
             else
-                _logger.LogError($"Failed to delete TV. Status Code: {response.StatusCode}");
-            
-            time.Stop();
-            return time.ElapsedMilliseconds;
+                _logger.Error($"Failed to delete TV. Status Code: {response.StatusCode}");
         }
     }
 }

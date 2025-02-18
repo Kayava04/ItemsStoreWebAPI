@@ -11,4 +11,14 @@
     <ProjectReference Include="..\ItemsStoreWebAPI\ItemsStoreWebAPI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="3.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="log4net.config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
