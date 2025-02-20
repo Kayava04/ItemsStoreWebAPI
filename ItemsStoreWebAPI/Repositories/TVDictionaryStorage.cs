@@ -17,7 +17,9 @@ namespace ItemsStoreWebAPI.Repositories
         
         public TV AddTV(TV tv)
         {
-            tv.ID = ++_countOfElements;
+            if (tv.ID == 0)
+                tv.ID = ++_countOfElements;
+            
             tv.AddedAt = DateTime.UtcNow;
             //tv.ModifiedAt = DateTime.UtcNow;
 

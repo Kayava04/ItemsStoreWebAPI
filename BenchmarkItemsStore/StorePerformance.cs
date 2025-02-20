@@ -24,12 +24,10 @@ namespace BenchmarkItemsStore
         }
 
         // Preload test
-        public async Task RunPreloadTestAsync(int count)
+        public async Task RunPreloadTestAsync()
         {
             _logger.Info("Starting preload tests...");
-            await AddItemsAsync(count);
-            await PreloadTestAsync(count);
-            await DeleteItemsAsync(count);
+            await GetAllItemsAsync();
             _logger.Info("Preload tests finished.");
         }
         
@@ -67,25 +65,19 @@ namespace BenchmarkItemsStore
             await DeleteItemsAsync(count);
             deleteItemsTimer.Stop();
             _logger.Info($"{nameof(DeleteItemsAsync)} finished. Total time: {deleteItemsTimer.ElapsedMilliseconds} ms.");
+
+            await GetAllItemsAsync();
             
             _logger.Info("Store performance tests completed.");
-        }
-
-        private async Task PreloadTestAsync(int count)
-        {
-            for (int i = 1; i <= count; i++)
-            {
-                await GetAllItemsAsync();
-                await GetItemsByIdAsync(i);
-            }
         }
         
         private static async Task AddItemsAsync(int count)
         {
             for (int i = 1; i <= count; i++)
             {
-                var tv = new TV
+                var newTV = new TV
                 {
+                    ID = i,
                     Name = $"LG {i}",
                     Description = $"OLED {i}",
                     Size = 55,
@@ -96,24 +88,28 @@ namespace BenchmarkItemsStore
                     InStock = 7
                 };
 
-                var response = await _httpClient.PostAsJsonAsync(String.Empty, tv);
+                var response = await _httpClient.PostAsJsonAsync(String.Empty, newTV);
+                var tv = await response.Content.ReadFromJsonAsync<TV>();
 
                 if (response.IsSuccessStatusCode)
-                    _logger.Info($"Successfully added TV with ID: {i}");
+                    _logger.Info($"Successfully added TV with ID: {tv.ID}");
                 else
-                    _logger.Error($"Failed to add TV with ID {i}. Status Code: {response.StatusCode}");
+                    _logger.Error($"Failed to add TV with ID {tv.ID}. Status Code: {response.StatusCode}");
             }
         }
 
-        private static async Task GetItemsByIdAsync(int id)
+        private static async Task GetItemsByIdAsync(int count)
         {
-            var response = await _httpClient.GetAsync(id.ToString());
-            var tv = await response.Content.ReadFromJsonAsync<TV>();
+            for (int i = 1; i <= count; i++)
+            {
+                var response = await _httpClient.GetAsync(i.ToString());
+                var tv = await response.Content.ReadFromJsonAsync<TV>();
             
-            if (response.IsSuccessStatusCode)
-                _logger.Info($"Successfully received TV with ID: {tv.ID}");
-            else
-                _logger.Error($"Failed to get TV. Status Code: {response.StatusCode}");
+                if (response.IsSuccessStatusCode)
+                    _logger.Info($"Successfully received TV with ID: {tv.ID}");
+                else
+                    _logger.Error($"Failed to get TV. Status Code: {response.StatusCode}");
+            }
         }
         
         private static async Task GetAllItemsAsync()
