@@ -6,19 +6,20 @@ namespace ItemsStoreWebAPI.Repositories
     public class TVListStorage : ITVStorage
     {
         private readonly List<TV> _tvCollection;
-        private int _countOfElements;
+        private int _nextId;
         private readonly ILogger<TVListStorage> _logger;
 
         public TVListStorage(ILogger<TVListStorage> logger)
         {
             _tvCollection = new List<TV>();
+            _nextId = 1;
             _logger = logger;
         }
 
         public TV AddTV(TV tv)
         {
             if (tv.ID == 0)
-                tv.ID = ++_countOfElements;
+                tv.ID = _nextId++;
             
             tv.AddedAt = DateTime.UtcNow;
             //tv.ModifiedAt = DateTime.UtcNow;

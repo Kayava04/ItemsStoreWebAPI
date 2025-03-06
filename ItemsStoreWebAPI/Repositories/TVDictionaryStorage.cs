@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using ItemsStoreWebAPI.Models;
 
 
@@ -5,27 +6,28 @@ namespace ItemsStoreWebAPI.Repositories
 {
     public class TVDictionaryStorage : ITVStorage
     {
-        private readonly Dictionary<int, TV> _tvCollection;
-        private int _countOfElements;
+        private readonly ConcurrentDictionary<int, TV> _tvCollection;
+        private int _nextId;
         private readonly ILogger<TVDictionaryStorage> _logger;
 
         public TVDictionaryStorage(ILogger<TVDictionaryStorage> logger)
         {
-            _tvCollection = new Dictionary<int, TV>();
+            _tvCollection = new ConcurrentDictionary<int, TV>();
+            _nextId = 0;
             _logger = logger;
         }
         
         public TV AddTV(TV tv)
         {
-            if (tv.ID == 0)
-                tv.ID = ++_countOfElements;
-            
+            _nextId = Interlocked.Increment(ref _nextId);
+            tv.ID = _nextId;
             tv.AddedAt = DateTime.UtcNow;
-            //tv.ModifiedAt = DateTime.UtcNow;
 
-            _tvCollection.Add(tv.ID, tv);
+            if (_tvCollection.TryAdd(tv.ID, tv))
+                _logger.LogInformation("Added TV with ID: {tv.ID}. {tv}", tv.ID, tv);
+            else
+                _logger.LogWarning("Failed to add TV with ID: {tv.ID}", tv.ID);
             
-            _logger.LogInformation($"Added TV with ID: {tv.ID}. {tv}");
             return _tvCollection.First(x => x.Key == tv.ID).Value;
         }
 
@@ -34,16 +36,16 @@ namespace ItemsStoreWebAPI.Repositories
             var tv = _tvCollection.FirstOrDefault(x => x.Key == id);
 
             if (tv.Value != null)
-                _logger.LogInformation($"Found TV with ID: {id}. {tv.Value}");
+                _logger.LogInformation("Found TV with ID: {id}. {tv.Value}", id, tv.Value);
             else
-                _logger.LogWarning($"TV with ID: {id} not found");
+                _logger.LogWarning("TV with ID: {id} not found", id);
 
             return tv.Value;
         }
 
         public IEnumerable<TV> GetAllTVs()
         {
-            _logger.LogInformation($"Receiving all TVs. Total count: {_tvCollection.Count}");
+            _logger.LogInformation("Receiving all TVs. Total count: {_tvCollection.Count}", _tvCollection.Count);
             return _tvCollection.Values;
         }
 
@@ -63,10 +65,10 @@ namespace ItemsStoreWebAPI.Repositories
                 tv.ModifiedAt = DateTime.UtcNow;
                 tv.InStock = updatedTV.InStock;
                 
-                _logger.LogInformation($"TV with ID: {id}, updated successfully. {tv}");
+                _logger.LogInformation("TV with ID: {id}, updated successfully. {tv}", id, tv);
             }
             else
-                _logger.LogWarning($"Attempted to update non-existent TV with ID: {id}");
+                _logger.LogWarning("Attempted to update non-existent TV with ID: {id}", id);
 
             return tv;
         }
@@ -77,11 +79,11 @@ namespace ItemsStoreWebAPI.Repositories
             
             if (tv != null)
             {
-                _tvCollection.Remove(id);
-                _logger.LogInformation($"TV with ID: {id}, deleted successfully");
+                _tvCollection.TryRemove(id, out _);
+                _logger.LogInformation("TV with ID: {id}, deleted successfully", id);
             }
             else
-                _logger.LogWarning($"Attempted to delete non-existent TV with ID: {id}");
+                _logger.LogWarning("Attempted to delete non-existent TV with ID: {id}", id);
         }
     }
 }
