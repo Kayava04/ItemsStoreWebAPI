@@ -16,11 +16,7 @@ namespace ItemsStoreWebAPI.Services
 
         public TV AddTV(TV tv)
         {
-            tv.AddedAt = DateTime.UtcNow;
-            //tv.ModifiedAt = DateTime.UtcNow;
-
-            _tvStorage.AddTV(tv);
-            return tv;
+            return _tvStorage.AddTV(tv);
         }
 
         public TV? GetTVById(int id)
@@ -35,7 +31,6 @@ namespace ItemsStoreWebAPI.Services
 
         public TV? UpdateTV(int id, TV updatedTV)
         {
-            updatedTV.ModifiedAt = DateTime.UtcNow;
             return _tvStorage.UpdateTV(id, updatedTV);
         }
 

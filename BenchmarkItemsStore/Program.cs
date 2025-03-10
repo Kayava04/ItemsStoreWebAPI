@@ -11,7 +11,7 @@ namespace BenchmarkItemsStore
             
             var totalPerformanceTimer = Stopwatch.StartNew();
             await storePerformance.RunPreloadTestAsync();
-            await storePerformance.RunAsync(count: 100);
+            await storePerformance.RunAsync(count: 100000);
             totalPerformanceTimer.Stop();
 
             Console.WriteLine($"Entire running time: {totalPerformanceTimer.ElapsedMilliseconds} ms.");

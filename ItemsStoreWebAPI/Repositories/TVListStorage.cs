@@ -16,7 +16,7 @@ namespace ItemsStoreWebAPI.Repositories
             _logger = logger;
         }
 
-        public TV AddTV(TV tv)
+        public TV? AddTV(TV tv)
         {
             if (tv.ID == 0)
                 tv.ID = _nextId++;
