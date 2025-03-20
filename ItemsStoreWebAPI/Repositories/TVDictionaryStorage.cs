@@ -51,12 +51,28 @@ namespace ItemsStoreWebAPI.Repositories
             return _tvCollection.Values;
         }
 
+        public IEnumerable<TV> GetTVsByPriceFilter(decimal minPrice, decimal maxPrice)
+        {
+            if (minPrice < 0 || maxPrice < 0)
+            {
+                _logger.LogWarning("Minimum or Maximum price can't be less than 0");
+                return new List<TV>();
+            }
+
+            if (minPrice <= maxPrice)
+                return _tvCollection.Values.Where(tv => tv.Price >= minPrice && tv.Price <= maxPrice);
+            
+            _logger.LogWarning("Minimum price can't be greater than the maximum price");
+            return new List<TV>();
+        }
+
         public TV? UpdateTV(int id, TV updatedTV)
         {
             if (_tvCollection.TryGetValue(id, out var tv))
             {
                 var newTV = new TV
                 {
+                    ID = updatedTV.ID,
                     Name = updatedTV.Name,
                     Description = updatedTV.Description,
                     Size = updatedTV.Size,
@@ -64,8 +80,8 @@ namespace ItemsStoreWebAPI.Repositories
                     Frequency = updatedTV.Frequency,
                     ReleasedYear = updatedTV.ReleasedYear,
                     Price = updatedTV.Price,
-                    InStock = updatedTV.InStock,
-                    ModifiedAt = DateTime.UtcNow
+                    ModifiedAt = DateTime.UtcNow,
+                    InStock = updatedTV.InStock
                 };
             
                 if (_tvCollection.TryUpdate(id, newTV, tv))

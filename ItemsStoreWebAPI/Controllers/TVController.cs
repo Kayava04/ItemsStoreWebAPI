@@ -60,6 +60,15 @@ namespace ItemsStoreWebAPI.Controllers
             return Ok(tvs);
         }
 
+        [HttpGet("filter/price")]
+        public IActionResult GetTVsByPriceFilter([FromQuery] decimal minPrice, [FromQuery] decimal maxPrice)
+        {
+            var tvs = _tvService.GetTVsByPriceFilter(minPrice, maxPrice);
+            
+            _logger.LogInformation($"Filtered TVs by price range: minPrice={minPrice}, maxPrice={maxPrice}. Total Count: {tvs.Count()}");
+            return Ok(tvs);
+        }
+
         [HttpPut]
         public IActionResult UpdateTV([FromBody] TV updatedTV)
         {

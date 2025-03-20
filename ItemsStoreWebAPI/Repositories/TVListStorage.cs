@@ -48,12 +48,28 @@ namespace ItemsStoreWebAPI.Repositories
             return _tvCollection;
         }
 
+        public IEnumerable<TV> GetTVsByPriceFilter(decimal minPrice, decimal maxPrice)
+        {
+            if (minPrice < 0 || maxPrice < 0)
+            {
+                _logger.LogWarning("Minimum or Maximum price can't be less than 0");
+                return new List<TV>();
+            }
+
+            if (minPrice <= maxPrice)
+                return _tvCollection.Where(tv => tv.Price >= minPrice && tv.Price <= maxPrice);
+            
+            _logger.LogWarning("Minimum price can't be greater than the maximum price");
+            return new List<TV>();
+        }
+
         public TV? UpdateTV(int id, TV updatedTV)
         {
             var tv = GetTVById(id);
 
             if (tv != null)
             {
+                tv.ID = updatedTV.ID;
                 tv.Name = updatedTV.Name;
                 tv.Description = updatedTV.Description;
                 tv.Size = updatedTV.Size;

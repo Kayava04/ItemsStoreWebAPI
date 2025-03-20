@@ -104,6 +104,36 @@ namespace ItemsStoreWebAPITests.Tests
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(tvs, okResult.Value);
         }
+        
+        [Fact]
+        public void GetTVsByPriceFilter_ShouldReturnOk()
+        {
+            // Arrange
+            var expectedMinPrice = 10500;
+            var expectedMaxPrice = 51299;
+            
+            var defaultTV = TVFactory.CreateDefaultTV();
+            var tvs = new List<TV>
+            {
+                defaultTV,
+                TVFactory.CreateTV(2, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 19200, 5),
+                TVFactory.CreateTV(3, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 31399, 7)
+            };
+            
+            var mockTVService = new Mock<ITVService>();
+            var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockLogger = new Mock<ILogger<TVController>>();
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockLogger.Object);
+
+            mockTVService.Setup(service => service.GetTVsByPriceFilter(expectedMinPrice, expectedMaxPrice)).Returns(tvs);
+
+            // Act
+            var result = tvController.GetTVsByPriceFilter(expectedMinPrice, expectedMaxPrice);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.Equal(tvs, okResult.Value);
+        }
 
         [Fact]
         public void UpdateInvalidTV_ShouldReturnBadRequest()

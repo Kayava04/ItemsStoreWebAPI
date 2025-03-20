@@ -29,6 +29,11 @@ namespace ItemsStoreWebAPI.Services
             return _tvStorage.GetAllTVs();
         }
 
+        public IEnumerable<TV> GetTVsByPriceFilter(decimal minPrice, decimal maxPrice)
+        {
+            return _tvStorage.GetTVsByPriceFilter(minPrice, maxPrice);
+        }
+
         public TV? UpdateTV(int id, TV updatedTV)
         {
             return _tvStorage.UpdateTV(id, updatedTV);
