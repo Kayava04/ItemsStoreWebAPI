@@ -17,6 +17,9 @@ namespace ItemsStoreWebAPI.Repositories
             _logger = logger;
         }
         
+        //TODO: Make dynamic Filter method
+        //      Look up Best Practice for this
+        
         public TV? AddTV(TV tv)
         {
             var id = Interlocked.Increment(ref _nextId);
@@ -51,19 +54,9 @@ namespace ItemsStoreWebAPI.Repositories
             return _tvCollection.Values;
         }
 
-        public IEnumerable<TV> GetTVsByPriceFilter(decimal minPrice, decimal maxPrice)
+        public IEnumerable<TV> GetFilteredTVs()
         {
-            if (minPrice < 0 || maxPrice < 0)
-            {
-                _logger.LogWarning("Minimum or Maximum price can't be less than 0");
-                return new List<TV>();
-            }
-
-            if (minPrice <= maxPrice)
-                return _tvCollection.Values.Where(tv => tv.Price >= minPrice && tv.Price <= maxPrice);
-            
-            _logger.LogWarning("Minimum price can't be greater than the maximum price");
-            return new List<TV>();
+            return _tvCollection.Values.AsEnumerable();
         }
 
         public TV? UpdateTV(int id, TV updatedTV)

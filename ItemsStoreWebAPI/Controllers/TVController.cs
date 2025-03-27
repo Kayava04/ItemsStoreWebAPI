@@ -11,12 +11,14 @@ namespace ItemsStoreWebAPI.Controllers
     public class TVController : ControllerBase
     {
         private readonly ITVService _tvService;
+        private readonly ICsvService<TV> _csvService;
         private readonly ITVRequestValidator _tvRequestValidator;
         private readonly ILogger<TVController> _logger;
 
-        public TVController(ITVService tvService, ITVRequestValidator tvRequestValidator, ILogger<TVController> logger)
+        public TVController(ITVService tvService, ICsvService<TV> csvService, ITVRequestValidator tvRequestValidator, ILogger<TVController> logger)
         {
             _tvService = tvService;
+            _csvService = csvService;
             _tvRequestValidator = tvRequestValidator;
             _logger = logger;
         }
@@ -60,12 +62,12 @@ namespace ItemsStoreWebAPI.Controllers
             return Ok(tvs);
         }
 
-        [HttpGet("filter/price")]
-        public IActionResult GetTVsByPriceFilter([FromQuery] decimal minPrice, [FromQuery] decimal maxPrice)
+        [HttpGet("filter")]
+        public IActionResult GetFilteredTVs()
         {
-            var tvs = _tvService.GetTVsByPriceFilter(minPrice, maxPrice);
+            var tvs = _tvService.GetFilteredTVs();
             
-            _logger.LogInformation($"Filtered TVs by price range: minPrice={minPrice}, maxPrice={maxPrice}. Total Count: {tvs.Count()}");
+            _logger.LogInformation($"Filtered TVs");
             return Ok(tvs);
         }
 
@@ -91,6 +93,38 @@ namespace ItemsStoreWebAPI.Controllers
             
             _logger.LogInformation($"TV with ID: {id}, deleted successfully");
             return NoContent();
+        }
+
+        [HttpPost("import-csv")]
+        public async Task<IActionResult> ImportFromCsv(IFormFile file)
+        {
+            if (file.Length == 0)
+            {
+                _logger.LogError("File is empty");
+                return BadRequest();
+            }
+            
+            await using var stream = file.OpenReadStream();
+            var importedData = await _csvService.ImportFromCsvAsync(stream);
+
+            foreach (var tv in importedData)
+            {
+                if (_tvRequestValidator.IsValid(tv, out _))
+                    _tvService.AddTV(tv);
+            }
+            
+            _logger.LogInformation("TV data imported successfully from CSV file");
+            return Ok(importedData);
+        }
+
+        [HttpPost("export-csv")]
+        public async Task<IActionResult> ExportToCsv()
+        {
+            var allTVs = _tvService.GetAllTVs();
+            var csvData = await _csvService.ExportToCsvAsync(allTVs);
+            
+            _logger.LogInformation("TV data exported successfully to CSV file");
+            return File(csvData, "text/csv", $"TVs-{DateTime.UtcNow:yyyyMMdd}.csv");
         }
     }
 }

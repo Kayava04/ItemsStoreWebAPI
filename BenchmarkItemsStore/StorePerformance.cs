@@ -52,10 +52,10 @@ namespace BenchmarkItemsStore
             _logger.Info($"{nameof(GetAllItemsAsync)} finished. Total time: {getAllItemsTimer.ElapsedMilliseconds} ms.");
             
             // Get items by price filter
-            var filterByPriceTimer = Stopwatch.StartNew();
-            await GetTVsByPriceFilterAsync(count, minPrice, maxPrice);
-            filterByPriceTimer.Stop();
-            _logger.Info($"{nameof(GetTVsByPriceFilterAsync)} finished. Total time: {filterByPriceTimer.ElapsedMilliseconds} ms.");
+            var filteredTVsTimer = Stopwatch.StartNew();
+            await GetFilteredTVsAsync(count, minPrice, maxPrice);
+            filteredTVsTimer.Stop();
+            _logger.Info($"{nameof(GetFilteredTVsAsync)} finished. Total time: {filteredTVsTimer.ElapsedMilliseconds} ms.");
             
             // Update items timer
             var updateItemsTimer = Stopwatch.StartNew();
@@ -135,7 +135,7 @@ namespace BenchmarkItemsStore
                 _logger.Error($"Failed to get all TVs. Status Code: {response.StatusCode}");
         }
 
-        public static async Task GetTVsByPriceFilterAsync(int count, decimal minPrice, decimal maxPrice)
+        public static async Task GetFilteredTVsAsync(int count, decimal minPrice, decimal maxPrice)
         {
             var response = await _httpClient.GetAsync($"filter/price?minPrice={minPrice}&maxPrice={maxPrice}");
             var tvs = await response.Content.ReadFromJsonAsync<List<TV>>();

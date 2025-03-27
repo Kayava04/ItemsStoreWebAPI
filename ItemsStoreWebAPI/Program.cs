@@ -1,4 +1,5 @@
 using ItemsStoreWebAPI.Factories;
+using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Repositories;
 using ItemsStoreWebAPI.Services;
 using ItemsStoreWebAPI.Validators;
@@ -7,13 +8,13 @@ using ItemsStoreWebAPI.Validators;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.Configure<StorageSettings>(builder.Configuration.GetSection("StorageSettings"));
 
 builder.Services.AddSingleton<ITVStorageFactory, TVStorageFactory>();
 builder.Services.AddSingleton<TVListStorage>();
 builder.Services.AddSingleton<TVDictionaryStorage>();
 builder.Services.AddScoped<ITVService, TVService>();
+builder.Services.AddScoped<ICsvService<TV>, CsvTVService>();
 builder.Services.AddScoped<ITVRequestValidator, TVRequestValidator>();
 
 builder.Services.AddControllers();

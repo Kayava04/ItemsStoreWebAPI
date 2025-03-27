@@ -8,7 +8,7 @@ namespace ItemsStoreWebAPI.Services
         TV AddTV(TV tv);
         TV? GetTVById(int id);
         IEnumerable<TV> GetAllTVs();
-        IEnumerable<TV> GetTVsByPriceFilter(decimal minPrice, decimal maxPrice);
+        IEnumerable<TV> GetFilteredTVs();
         TV? UpdateTV(int id, TV updatedTV);
         void DeleteTV(int id);
     }

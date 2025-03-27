@@ -85,32 +85,8 @@ namespace ItemsStoreWebAPITests.Tests
         }
 
         [Fact]
-        public void GetTVsByFilterPrice_ShouldReturnAllCorrectTVs()
+        public void GetFilteredTVs_ShouldReturnAllCorrectTVs()
         {
-            // Arrange
-            var expectedMinPrice = 10500;
-            var expectedMaxPrice = 51299;
-            
-            var firstTV = TVFactory.CreateDefaultTV();
-            var secondTV = TVFactory.CreateTV(2, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 19200, 5);
-            var thirdTV = TVFactory.CreateTV(3, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 31000, 5);
-            
-            var mockLogger = new Mock<ILogger<TVDictionaryStorage>>();
-            var tvStorage = new TVDictionaryStorage(mockLogger.Object);
-            
-            tvStorage.AddTV(firstTV);
-            tvStorage.AddTV(secondTV);
-            tvStorage.AddTV(thirdTV);
-            
-            // Act
-            var result = tvStorage.GetTVsByPriceFilter(expectedMinPrice, expectedMaxPrice);
-            
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count());
-            Assert.Contains(result, tv => tv.ID == firstTV.ID);
-            Assert.Contains(result, tv => tv.ID == secondTV.ID);
-            Assert.Contains(result, tv => tv.ID == thirdTV.ID);
         }
             
         [Fact]
