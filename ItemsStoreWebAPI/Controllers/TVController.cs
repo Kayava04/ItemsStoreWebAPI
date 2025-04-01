@@ -1,4 +1,5 @@
-﻿using ItemsStoreWebAPI.Models;
+﻿using FileToolKit.Factories;
+using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Services;
 using ItemsStoreWebAPI.Validators;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,17 @@ namespace ItemsStoreWebAPI.Controllers
     public class TVController : ControllerBase
     {
         private readonly ITVService _tvService;
-        private readonly ICsvService<TV> _csvService;
+        // private readonly ICsvService<TV> _csvService;
         private readonly ITVRequestValidator _tvRequestValidator;
         private readonly ILogger<TVController> _logger;
+        
+        private readonly IFileServiceFactory<TV> _fileServiceFactory;
 
-        public TVController(ITVService tvService, ICsvService<TV> csvService, ITVRequestValidator tvRequestValidator, ILogger<TVController> logger)
+        public TVController(ITVService tvService, IFileServiceFactory<TV> fileServiceFactory, ITVRequestValidator tvRequestValidator, ILogger<TVController> logger)
         {
             _tvService = tvService;
-            _csvService = csvService;
+            // _csvService = csvService;
+            _fileServiceFactory = fileServiceFactory;
             _tvRequestValidator = tvRequestValidator;
             _logger = logger;
         }
@@ -95,8 +99,8 @@ namespace ItemsStoreWebAPI.Controllers
             return NoContent();
         }
 
-        [HttpPost("import-csv")]
-        public async Task<IActionResult> ImportFromCsv(IFormFile file)
+        [HttpPost("import-file")]
+        public async Task<IActionResult> ImportDataFromFile(IFormFile file, [FromQuery] string fileType)
         {
             if (file.Length == 0)
             {
@@ -104,8 +108,9 @@ namespace ItemsStoreWebAPI.Controllers
                 return BadRequest();
             }
             
+            var handler = _fileServiceFactory.GetService(fileType);
             await using var stream = file.OpenReadStream();
-            var importedData = await _csvService.ImportFromCsvAsync(stream);
+            var importedData = await handler.ReadDataAsync(stream);
 
             foreach (var tv in importedData)
             {
@@ -113,18 +118,28 @@ namespace ItemsStoreWebAPI.Controllers
                     _tvService.AddTV(tv);
             }
             
-            _logger.LogInformation("TV data imported successfully from CSV file");
+            _logger.LogInformation($"TV data imported successfully from {fileType.ToUpper()} file");
             return Ok(importedData);
         }
 
-        [HttpPost("export-csv")]
-        public async Task<IActionResult> ExportToCsv()
+        [HttpPost("export-file")]
+        public async Task<IActionResult> ExportDataToFile([FromQuery] string fileType)
         {
+            var handler = _fileServiceFactory.GetService(fileType);
             var allTVs = _tvService.GetAllTVs();
-            var csvData = await _csvService.ExportToCsvAsync(allTVs);
-            
-            _logger.LogInformation("TV data exported successfully to CSV file");
-            return File(csvData, "text/csv", $"TVs-{DateTime.UtcNow:yyyyMMdd}.csv");
+            var fileData = await handler.WriteDataAsync(allTVs);
+
+            var (contentType, fileExtension) = fileType.ToLower() switch
+            {
+                "csv" => ("text/csv", "csv"),
+                "excel" => ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"),
+                "json" => ("application/json", "json"),
+                _ => ("application/octet-stream", "bin")
+            };
+        
+            _logger.LogInformation($"TV data exported successfully to {fileType.ToUpper()} file");
+
+            return File(fileData, contentType, $"TVs-{DateTime.UtcNow:yyyyMMdd}.{fileExtension}");
         }
     }
 }

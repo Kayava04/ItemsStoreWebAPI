@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ItemsStoreWebAPITests", "It
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BenchmarkItemsStore", "BenchmarkItemsStore\BenchmarkItemsStore.csproj", "{270A1479-5C4E-4E83-A3C4-BCCA28D2BEEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileToolKit", "FileToolKit\FileToolKit.csproj", "{7CDE6B9B-808B-4C0A-961D-954069625836}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{270A1479-5C4E-4E83-A3C4-BCCA28D2BEEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{270A1479-5C4E-4E83-A3C4-BCCA28D2BEEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{270A1479-5C4E-4E83-A3C4-BCCA28D2BEEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CDE6B9B-808B-4C0A-961D-954069625836}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CDE6B9B-808B-4C0A-961D-954069625836}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CDE6B9B-808B-4C0A-961D-954069625836}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CDE6B9B-808B-4C0A-961D-954069625836}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

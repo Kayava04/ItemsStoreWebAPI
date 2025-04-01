@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "dgSpecHash": "956fA61WAtY=",
+  "success": true,
+  "projectFilePath": "D:\\Projects\\C#\\ItemsStoreWebAPI\\FileToolKit\\FileToolKit.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\bogda\\.nuget\\packages\\closedxml\\0.105.0-rc\\closedxml.0.105.0-rc.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\closedxml.parser\\2.0.0-preview1\\closedxml.parser.2.0.0-preview1.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\documentformat.openxml\\3.1.1\\documentformat.openxml.3.1.1.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\documentformat.openxml.framework\\3.1.1\\documentformat.openxml.framework.3.1.1.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\excelnumberformat\\1.1.0\\excelnumberformat.1.1.0.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\9.0.3\\microsoft.extensions.dependencyinjection.9.0.3.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.3\\microsoft.extensions.dependencyinjection.abstractions.9.0.3.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\microsoft.extensions.options\\9.0.3\\microsoft.extensions.options.9.0.3.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.3\\microsoft.extensions.primitives.9.0.3.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\rbush.signed\\4.0.0\\rbush.signed.4.0.0.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\sixlabors.fonts\\1.0.0\\sixlabors.fonts.1.0.0.nupkg.sha512",
+    "C:\\Users\\bogda\\.nuget\\packages\\system.io.packaging\\8.0.1\\system.io.packaging.8.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

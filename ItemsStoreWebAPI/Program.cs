@@ -1,3 +1,5 @@
+using FileToolKit.Factories;
+using FileToolKit.Services;
 using ItemsStoreWebAPI.Factories;
 using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Repositories;
@@ -16,6 +18,9 @@ builder.Services.AddSingleton<TVDictionaryStorage>();
 builder.Services.AddScoped<ITVService, TVService>();
 builder.Services.AddScoped<ICsvService<TV>, CsvTVService>();
 builder.Services.AddScoped<ITVRequestValidator, TVRequestValidator>();
+
+builder.Services.AddScoped(typeof(CsvFileService<>));
+builder.Services.AddScoped(typeof(IFileServiceFactory<>), typeof(FileServiceFactory<>));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
