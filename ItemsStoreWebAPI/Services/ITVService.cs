@@ -1,4 +1,5 @@
-﻿using ItemsStoreWebAPI.Models;
+﻿using System.Linq.Expressions;
+using ItemsStoreWebAPI.Models;
 
 
 namespace ItemsStoreWebAPI.Services
@@ -8,7 +9,7 @@ namespace ItemsStoreWebAPI.Services
         TV AddTV(TV tv);
         TV? GetTVById(int id);
         IEnumerable<TV> GetAllTVs();
-        IEnumerable<TV> GetFilteredTVs();
+        IEnumerable<TV> GetFilteredTVs(Expression<Func<TV, bool>> filter);
         TV? UpdateTV(int id, TV updatedTV);
         void DeleteTV(int id);
     }

@@ -1,4 +1,5 @@
-﻿using ItemsStoreWebAPI.Models;
+﻿using System.Linq.Expressions;
+using ItemsStoreWebAPI.Models;
 
 
 namespace ItemsStoreWebAPI.Repositories
@@ -48,9 +49,11 @@ namespace ItemsStoreWebAPI.Repositories
             return _tvCollection;
         }
 
-        public IEnumerable<TV> GetFilteredTVs()
+        public IEnumerable<TV> GetFilteredTVs(Expression<Func<TV, bool>> filter)
         {
-            return _tvCollection;
+            var result = _tvCollection.AsQueryable().Where(filter).ToList();
+            _logger.LogInformation($"Filtered TVs. Total count: {result.Count}");
+            return result;
         }
 
         public TV? UpdateTV(int id, TV updatedTV)

@@ -1,4 +1,5 @@
-﻿using FileToolKit.Factories;
+﻿using System.Linq.Expressions;
+using FileToolKit.Factories;
 using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Services;
 using ItemsStoreWebAPI.Validators;
@@ -67,12 +68,28 @@ namespace ItemsStoreWebAPI.Controllers
         }
 
         [HttpGet("filter")]
-        public IActionResult GetFilteredTVs()
+        public IActionResult GetFilteredTVs(
+            [FromQuery] string? name = null,
+            [FromQuery] int? minSize = null,
+            [FromQuery] int? maxSize = null,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null,
+            [FromQuery] int? releasedYear = null,
+            [FromQuery] int? inStock = null)
         {
-            var tvs = _tvService.GetFilteredTVs();
-            
-            _logger.LogInformation($"Filtered TVs");
-            return Ok(tvs);
+            Expression<Func<TV, bool>> filter = tv => 
+                (string.IsNullOrEmpty(name) || tv.Name.Contains(name)) &&
+                (!minSize.HasValue || tv.Size >= minSize.Value) &&
+                (!maxSize.HasValue || tv.Size <= maxSize.Value) &&
+                (!minPrice.HasValue || tv.Price >= minPrice.Value) &&
+                (!maxPrice.HasValue || tv.Price <= maxPrice.Value) &&
+                (!releasedYear.HasValue || tv.ReleasedYear == releasedYear.Value) &&
+                (!inStock.HasValue || tv.InStock == inStock.Value);
+
+            var filteredTVs = _tvService.GetFilteredTVs(filter);
+
+            _logger.LogInformation($"Filtered TVs. Found {filteredTVs.Count()} items.");
+            return Ok(filteredTVs);
         }
 
         [HttpPut]

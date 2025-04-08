@@ -1,4 +1,5 @@
-﻿using ItemsStoreWebAPI.Factories;
+﻿using System.Linq.Expressions;
+using ItemsStoreWebAPI.Factories;
 using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Repositories;
 
@@ -29,9 +30,9 @@ namespace ItemsStoreWebAPI.Services
             return _tvStorage.GetAllTVs();
         }
 
-        public IEnumerable<TV> GetFilteredTVs()
+        public IEnumerable<TV> GetFilteredTVs(Expression<Func<TV, bool>> filter)
         {
-            return _tvStorage.GetFilteredTVs();
+            return _tvStorage.GetFilteredTVs(filter);
         }
 
         public TV? UpdateTV(int id, TV updatedTV)
