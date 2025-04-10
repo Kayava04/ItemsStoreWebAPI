@@ -1,4 +1,4 @@
-namespace FileToolKit.Custom.IO.File.Interfaces
+namespace FileToolKit.IO.File.Interfaces
 {
     public interface IFileTool<T> where T : class
     {

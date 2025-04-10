@@ -1,3 +1,4 @@
+using FileToolKit.IO.File.Extensions;
 using ItemsStoreWebAPI.Factories;
 using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Repositories;
@@ -15,6 +16,8 @@ builder.Services.AddSingleton<TVDictionaryStorage>();
 builder.Services.AddScoped<ITVService, TVService>();
 builder.Services.AddScoped<ITVRequestValidator, TVRequestValidator>();
 builder.Services.AddScoped<IFileService<TV>, TVFileService>();
+
+builder.Services.AddFileToolKitFor<TV>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

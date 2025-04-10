@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace FileToolKit.Custom.IO.File.Tools
+namespace FileToolKit.IO.File.Tools
 {
     public class CsvFileTool<T> : BaseFileTool<T> where T : class, new()
     {

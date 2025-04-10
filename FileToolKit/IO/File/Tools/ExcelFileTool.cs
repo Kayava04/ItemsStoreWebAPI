@@ -1,6 +1,6 @@
 using ClosedXML.Excel;
 
-namespace FileToolKit.Custom.IO.File.Tools
+namespace FileToolKit.IO.File.Tools
 {
     public class ExcelFileTool<T> : BaseFileTool<T> where T : class, new()
     {

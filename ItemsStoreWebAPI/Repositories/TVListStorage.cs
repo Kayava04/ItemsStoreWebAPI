@@ -43,7 +43,7 @@ namespace ItemsStoreWebAPI.Repositories
             return tv;
         }
 
-        public IEnumerable<TV> GetAllTVs(TvFilterDto? filter = null)
+        public IEnumerable<TV> GetTVs(TvFilterDto? filter = null)
         {
             var expression = filter.ToExpression();
             var query = _tvCollection.AsQueryable();

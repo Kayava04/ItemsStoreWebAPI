@@ -1,6 +1,6 @@
-using FileToolKit.Custom.IO.File.Interfaces;
+using FileToolKit.IO.File.Interfaces;
 
-namespace FileToolKit.Custom.IO.File.Tools
+namespace FileToolKit.IO.File.Tools
 {
     public abstract class BaseFileTool<T> : IFileTool<T> where T : class, new()
     {

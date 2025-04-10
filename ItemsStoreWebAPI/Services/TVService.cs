@@ -24,9 +24,9 @@ namespace ItemsStoreWebAPI.Services
             return _tvStorage.GetTVById(id);
         }
 
-        public IEnumerable<TV> GetAllTVs(TvFilterDto? filter = null)
+        public IEnumerable<TV> GetTVs(TvFilterDto? filter = null)
         {
-            return _tvStorage.GetAllTVs(filter);
+            return _tvStorage.GetTVs(filter);
         }
 
         public TV? UpdateTV(int id, TV updatedTV)

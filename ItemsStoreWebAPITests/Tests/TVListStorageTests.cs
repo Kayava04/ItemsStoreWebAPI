@@ -61,7 +61,7 @@ namespace ItemsStoreWebAPITests.Tests
         }
 
         [Fact]
-        public void GetAllTVs_ShouldReturnAllAddedTVs()
+        public void GetTVs_ShouldReturnAllAddedTVs()
         {
             // Arrange
             var defaultTV = TVFactory.CreateDefaultTV();
@@ -74,7 +74,7 @@ namespace ItemsStoreWebAPITests.Tests
             tvStorage.AddTV(newTV);
 
             // Act
-            var result = tvStorage.GetAllTVs();
+            var result = tvStorage.GetTVs();
 
             // Assert
             Assert.NotNull(result);

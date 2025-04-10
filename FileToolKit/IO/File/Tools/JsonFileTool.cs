@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace FileToolKit.Custom.IO.File.Tools
+namespace FileToolKit.IO.File.Tools
 {
     public class JsonFileTool<T> : BaseFileTool<T> where T : class, new()
     {

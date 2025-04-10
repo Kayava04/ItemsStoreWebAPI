@@ -7,7 +7,7 @@ namespace ItemsStoreWebAPI.Repositories
     {
         TV? AddTV(TV tv);
         TV? GetTVById(int id);
-        IEnumerable<TV> GetAllTVs(TvFilterDto? filter = null);
+        IEnumerable<TV> GetTVs(TvFilterDto? filter = null);
         TV? UpdateTV(int id, TV updatedTV);
         void DeleteTV(int id);
     }

@@ -72,7 +72,7 @@ namespace ItemsStoreWebAPITests.Tests
         }
 
         [Fact]
-        public void GetAllTVs_ShoudReturnListOfTVs()
+        public void GetTVs_ShoudReturnListOfTVs()
         {
             // Arrange
             var defaultTV = TVFactory.CreateDefaultTV();
@@ -89,10 +89,10 @@ namespace ItemsStoreWebAPITests.Tests
             
             var tvService = new TVService(mockTVStorageFactory.Object);
 
-            mockTVStorage.Setup(storage => storage.GetAllTVs(null)).Returns(tvs);
+            mockTVStorage.Setup(storage => storage.GetTVs(null)).Returns(tvs);
 
             // Act
-            var result = tvService.GetAllTVs();
+            var result = tvService.GetTVs();
 
             // Assert
             Assert.Equal(2, result.Count());

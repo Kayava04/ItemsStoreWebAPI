@@ -17,8 +17,4 @@
       <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.3" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Custom\" />
-    </ItemGroup>
-
 </Project>

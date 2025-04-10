@@ -82,7 +82,7 @@ namespace ItemsStoreWebAPITests.Tests
         }
 
         [Fact]
-        public void GetAllTVs_ShouldReturnOk()
+        public void GetTVs_ShouldReturnOk()
         {
             // Arrange
             var defaultTV = TVFactory.CreateDefaultTV();
@@ -98,10 +98,10 @@ namespace ItemsStoreWebAPITests.Tests
             var mockLogger = new Mock<ILogger<TVController>>();
             var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockTVFileService.Object, mockLogger.Object);
 
-            mockTVService.Setup(service => service.GetAllTVs(null)).Returns(tvs);
+            mockTVService.Setup(service => service.GetTVs(null)).Returns(tvs);
 
             // Act
-            var result = tvController.GetAllTVs();
+            var result = tvController.GetTVs();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

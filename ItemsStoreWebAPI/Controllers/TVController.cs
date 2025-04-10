@@ -54,9 +54,9 @@ namespace ItemsStoreWebAPI.Controllers
         }
 
         [HttpGet("filter")]
-        public IActionResult GetAllTVs([FromQuery] TvFilterDto? filter = null)
+        public IActionResult GetTVs([FromQuery] TvFilterDto? filter = null)
         {
-            var tvs = _tvService.GetAllTVs(filter);
+            var tvs = _tvService.GetTVs(filter);
             
             _logger.LogInformation($"Received all TVs. Total count: {tvs.Count()}");
             return Ok(tvs);

@@ -1,4 +1,4 @@
-using FileToolKit.Custom.IO.File.Factories;
+using FileToolKit.IO.File.Factories;
 using ItemsStoreWebAPI.Models;
 
 namespace ItemsStoreWebAPI.Services
@@ -6,11 +6,13 @@ namespace ItemsStoreWebAPI.Services
     public class TVFileService : IFileService<TV>
     {
         private readonly ITVService _tvService;
+        private readonly IFileToolFactory<TV> _fileService;
         private readonly ILogger<TVFileService> _logger;
 
-        public TVFileService(ITVService tvService, ILogger<TVFileService> logger)
+        public TVFileService(ITVService tvService, IFileToolFactory<TV> fileService, ILogger<TVFileService> logger)
         {
             _tvService = tvService;
+            _fileService = fileService;
             _logger = logger;
         }
 
@@ -20,8 +22,7 @@ namespace ItemsStoreWebAPI.Services
                 _logger.LogError("File is empty");
             
             var extension = Path.GetExtension(file.FileName);
-            var service = new FileToolFactory<TV>();
-            var tool = service.GetTool(extension);
+            var tool = _fileService.GetTool(extension);
             
             await using var stream = file.OpenReadStream();
             var importedData = await tool.ImportAsync(stream);
@@ -42,10 +43,9 @@ namespace ItemsStoreWebAPI.Services
             if (string.IsNullOrWhiteSpace(extension))
                 _logger.LogError("File extension not found in FileName");
             
-            var service = new FileToolFactory<TV>();
-            var tool = service.GetTool(extension);
+            var tool = _fileService.GetTool(extension);
 
-            var data = _tvService.GetAllTVs(null);
+            var data = _tvService.GetTVs(null);
             var fileData = await tool.ExportAsync(data);
 
             var contentType = extension.ToLower() switch
