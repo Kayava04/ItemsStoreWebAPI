@@ -1,10 +1,8 @@
-﻿using System.Linq.Expressions;
-using FileToolKit.Factories;
+﻿using ItemsStoreWebAPI.DTOs;
 using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Services;
 using ItemsStoreWebAPI.Validators;
 using Microsoft.AspNetCore.Mvc;
-
 
 namespace ItemsStoreWebAPI.Controllers
 {
@@ -13,18 +11,15 @@ namespace ItemsStoreWebAPI.Controllers
     public class TVController : ControllerBase
     {
         private readonly ITVService _tvService;
-        // private readonly ICsvService<TV> _csvService;
         private readonly ITVRequestValidator _tvRequestValidator;
+        private readonly IFileService<TV> _tvFileService;
         private readonly ILogger<TVController> _logger;
-        
-        private readonly IFileServiceFactory<TV> _fileServiceFactory;
 
-        public TVController(ITVService tvService, IFileServiceFactory<TV> fileServiceFactory, ITVRequestValidator tvRequestValidator, ILogger<TVController> logger)
+        public TVController(ITVService tvService, ITVRequestValidator tvRequestValidator, IFileService<TV> tvFileService, ILogger<TVController> logger)
         {
             _tvService = tvService;
-            // _csvService = csvService;
-            _fileServiceFactory = fileServiceFactory;
             _tvRequestValidator = tvRequestValidator;
+            _tvFileService = tvFileService;
             _logger = logger;
         }
 
@@ -58,38 +53,13 @@ namespace ItemsStoreWebAPI.Controllers
             return Ok(tv);
         }
 
-        [HttpGet]
-        public IActionResult GetAllTVs()
+        [HttpGet("filter")]
+        public IActionResult GetAllTVs([FromQuery] TvFilterDto? filter = null)
         {
-            var tvs = _tvService.GetAllTVs();
+            var tvs = _tvService.GetAllTVs(filter);
             
             _logger.LogInformation($"Received all TVs. Total count: {tvs.Count()}");
             return Ok(tvs);
-        }
-
-        [HttpGet("filter")]
-        public IActionResult GetFilteredTVs(
-            [FromQuery] string? name = null,
-            [FromQuery] int? minSize = null,
-            [FromQuery] int? maxSize = null,
-            [FromQuery] decimal? minPrice = null,
-            [FromQuery] decimal? maxPrice = null,
-            [FromQuery] int? releasedYear = null,
-            [FromQuery] int? inStock = null)
-        {
-            Expression<Func<TV, bool>> filter = tv => 
-                (string.IsNullOrEmpty(name) || tv.Name.Contains(name)) &&
-                (!minSize.HasValue || tv.Size >= minSize.Value) &&
-                (!maxSize.HasValue || tv.Size <= maxSize.Value) &&
-                (!minPrice.HasValue || tv.Price >= minPrice.Value) &&
-                (!maxPrice.HasValue || tv.Price <= maxPrice.Value) &&
-                (!releasedYear.HasValue || tv.ReleasedYear == releasedYear.Value) &&
-                (!inStock.HasValue || tv.InStock == inStock.Value);
-
-            var filteredTVs = _tvService.GetFilteredTVs(filter);
-
-            _logger.LogInformation($"Filtered TVs. Found {filteredTVs.Count()} items.");
-            return Ok(filteredTVs);
         }
 
         [HttpPut]
@@ -117,46 +87,21 @@ namespace ItemsStoreWebAPI.Controllers
         }
 
         [HttpPost("import-file")]
-        public async Task<IActionResult> ImportDataFromFile(IFormFile file, [FromQuery] string fileType)
+        public async Task<IActionResult> ImportDataFromFile(IFormFile file)
         {
-            if (file.Length == 0)
-            {
-                _logger.LogError("File is empty");
-                return BadRequest();
-            }
+            var data = await _tvFileService.ImportFromFileAsync(file);
             
-            var handler = _fileServiceFactory.GetService(fileType);
-            await using var stream = file.OpenReadStream();
-            var importedData = await handler.ReadDataAsync(stream);
-
-            foreach (var tv in importedData)
-            {
-                if (_tvRequestValidator.IsValid(tv, out _))
-                    _tvService.AddTV(tv);
-            }
-            
-            _logger.LogInformation($"TV data imported successfully from {fileType.ToUpper()} file");
-            return Ok(importedData);
+            _logger.LogInformation($"TV data imported successfully from {file.FileName.ToUpper()} file");
+            return Ok(data);
         }
 
         [HttpPost("export-file")]
-        public async Task<IActionResult> ExportDataToFile([FromQuery] string fileType)
+        public async Task<IActionResult> ExportDataToFile([FromQuery] string fileName)
         {
-            var handler = _fileServiceFactory.GetService(fileType);
-            var allTVs = _tvService.GetAllTVs();
-            var fileData = await handler.WriteDataAsync(allTVs);
-
-            var (contentType, fileExtension) = fileType.ToLower() switch
-            {
-                "csv" => ("text/csv", "csv"),
-                "excel" => ("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"),
-                "json" => ("application/json", "json"),
-                _ => ("application/octet-stream", "bin")
-            };
-        
-            _logger.LogInformation($"TV data exported successfully to {fileType.ToUpper()} file");
-
-            return File(fileData, contentType, $"TVs-{DateTime.UtcNow:yyyyMMdd}.{fileExtension}");
+            var (data, contentType, downloadName) = await _tvFileService.ExportToFileAsync(fileName);
+            
+            _logger.LogInformation($"TV data exported successfully to {fileName.ToUpper()} file");
+            return File(data, contentType, downloadName);
         }
     }
 }

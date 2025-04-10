@@ -1,6 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using ItemsStoreWebAPI.DTOs;
 using ItemsStoreWebAPI.Models;
-
 
 namespace ItemsStoreWebAPI.Services
 {
@@ -8,8 +7,7 @@ namespace ItemsStoreWebAPI.Services
     {
         TV AddTV(TV tv);
         TV? GetTVById(int id);
-        IEnumerable<TV> GetAllTVs();
-        IEnumerable<TV> GetFilteredTVs(Expression<Func<TV, bool>> filter);
+        IEnumerable<TV> GetAllTVs(TvFilterDto? filter = null);
         TV? UpdateTV(int id, TV updatedTV);
         void DeleteTV(int id);
     }

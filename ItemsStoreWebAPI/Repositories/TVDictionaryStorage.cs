@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
-using System.Linq.Expressions;
+using ItemsStoreWebAPI.DTOs;
+using ItemsStoreWebAPI.Extensions;
 using ItemsStoreWebAPI.Models;
-
 
 namespace ItemsStoreWebAPI.Repositories
 {
@@ -17,9 +17,6 @@ namespace ItemsStoreWebAPI.Repositories
             _nextId = 0;
             _logger = logger;
         }
-        
-        //TODO: Make dynamic Filter method
-        //      Look up Best Practice for this
         
         public TV? AddTV(TV tv)
         {
@@ -49,17 +46,19 @@ namespace ItemsStoreWebAPI.Repositories
             return null;
         }
 
-        public IEnumerable<TV> GetAllTVs()
+        public IEnumerable<TV> GetAllTVs(TvFilterDto? filter = null)
         {
-            _logger.LogInformation($"Receiving all TVs. Total count: {_tvCollection.Count}");
-            return _tvCollection.Values;
-        }
+            var expression = filter.ToExpression();
+            var query = _tvCollection.Values.AsQueryable();
 
-        public IEnumerable<TV> GetFilteredTVs(Expression<Func<TV, bool>> filter)
-        {
-            var result = _tvCollection.Values.AsQueryable().Where(filter).ToList();
-            _logger.LogInformation($"Filtered TVs. Total count: {result.Count}");
-            return result;
+            if (filter != null)
+            {
+                query = query.Where(expression);
+                _logger.LogInformation($"Filtered TVs. Total count: {query.Count()}");
+            }
+            
+            _logger.LogInformation($"Receiving all TVs. Total count: {_tvCollection.Count}");
+            return query.ToList();
         }
 
         public TV? UpdateTV(int id, TV updatedTV)

@@ -1,7 +1,6 @@
 ﻿using ItemsStoreWebAPI.Validators;
 using ItemsStoreWebAPITests.Factories;
 
-
 namespace ItemsStoreWebAPITests.Tests
 {
     public class TVValidatorTests

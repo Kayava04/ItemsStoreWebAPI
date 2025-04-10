@@ -1,6 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using ItemsStoreWebAPI.DTOs;
+using ItemsStoreWebAPI.Extensions;
 using ItemsStoreWebAPI.Models;
-
 
 namespace ItemsStoreWebAPI.Repositories
 {
@@ -43,17 +43,19 @@ namespace ItemsStoreWebAPI.Repositories
             return tv;
         }
 
-        public IEnumerable<TV> GetAllTVs()
+        public IEnumerable<TV> GetAllTVs(TvFilterDto? filter = null)
         {
-            _logger.LogInformation($"Receiving all TVs. Total count: {_tvCollection.Count}");
-            return _tvCollection;
-        }
+            var expression = filter.ToExpression();
+            var query = _tvCollection.AsQueryable();
 
-        public IEnumerable<TV> GetFilteredTVs(Expression<Func<TV, bool>> filter)
-        {
-            var result = _tvCollection.AsQueryable().Where(filter).ToList();
-            _logger.LogInformation($"Filtered TVs. Total count: {result.Count}");
-            return result;
+            if (filter != null)
+            {
+                query = query.Where(expression);
+                _logger.LogInformation($"Filtered TVs. Total count: {query.Count()}");
+            }
+            
+            _logger.LogInformation($"Receiving all TVs. Total count: {_tvCollection.Count}");
+            return query.ToList();
         }
 
         public TV? UpdateTV(int id, TV updatedTV)

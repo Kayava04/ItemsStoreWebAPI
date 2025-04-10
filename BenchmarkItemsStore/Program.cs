@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 
-
 namespace BenchmarkItemsStore
 {
     public class Program

@@ -1,6 +1,5 @@
 ﻿using ItemsStoreWebAPI.Models;
 
-
 namespace ItemsStoreWebAPI.Validators
 {
     public class TVRequestValidator : ITVRequestValidator

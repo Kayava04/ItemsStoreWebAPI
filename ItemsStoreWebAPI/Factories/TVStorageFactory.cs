@@ -1,7 +1,6 @@
 using ItemsStoreWebAPI.Repositories;
 using Microsoft.Extensions.Options;
 
-
 namespace ItemsStoreWebAPI.Factories
 {
     public class TVStorageFactory : ITVStorageFactory

@@ -5,7 +5,6 @@ using ItemsStoreWebAPI.Models;
 using log4net;
 using log4net.Config;
 
-
 namespace BenchmarkItemsStore
 {
     public class StorePerformance
@@ -50,12 +49,6 @@ namespace BenchmarkItemsStore
             await GetAllItemsAsync();
             getAllItemsTimer.Stop();
             _logger.Info($"{nameof(GetAllItemsAsync)} finished. Total time: {getAllItemsTimer.ElapsedMilliseconds} ms.");
-            
-            // Get items by price filter
-            var filteredTVsTimer = Stopwatch.StartNew();
-            await GetFilteredTVsAsync(count, minPrice, maxPrice);
-            filteredTVsTimer.Stop();
-            _logger.Info($"{nameof(GetFilteredTVsAsync)} finished. Total time: {filteredTVsTimer.ElapsedMilliseconds} ms.");
             
             // Update items timer
             var updateItemsTimer = Stopwatch.StartNew();
@@ -133,17 +126,6 @@ namespace BenchmarkItemsStore
                 _logger.Info($"Successfully received all TVs. Total count: {tvs.Count}");
             else
                 _logger.Error($"Failed to get all TVs. Status Code: {response.StatusCode}");
-        }
-
-        public static async Task GetFilteredTVsAsync(int count, decimal minPrice, decimal maxPrice)
-        {
-            var response = await _httpClient.GetAsync($"filter/price?minPrice={minPrice}&maxPrice={maxPrice}");
-            var tvs = await response.Content.ReadFromJsonAsync<List<TV>>();
-
-            if (response.IsSuccessStatusCode)
-                _logger.Info($"Successfully received TVs in price range: {minPrice}-{maxPrice}. Total count: {tvs.Count}");
-            else
-                _logger.Error($"Failed to get TVs by price filter. Status Code: {response.StatusCode}");
         }
         
         private static async Task UpdateItemsAsync(int count)

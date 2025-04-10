@@ -3,7 +3,6 @@ using ItemsStoreWebAPITests.Factories;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-
 namespace ItemsStoreWebAPITests.Tests
 {
     public class TVListStorageTests
@@ -82,11 +81,6 @@ namespace ItemsStoreWebAPITests.Tests
             Assert.Equal(2, result.Count());
             Assert.Contains(result, tv => tv.ID == defaultTV.ID);
             Assert.Contains(result, tv => tv.ID == newTV.ID);
-        }
-        
-        [Fact]
-        public void GetFilteredTVs_ShouldReturnAllCorrectTVs()
-        {
         }
 
         [Fact]

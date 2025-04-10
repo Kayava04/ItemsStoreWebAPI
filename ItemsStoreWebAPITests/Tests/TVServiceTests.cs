@@ -5,7 +5,6 @@ using ItemsStoreWebAPI.Services;
 using ItemsStoreWebAPITests.Factories;
 using Moq;
 
-
 namespace ItemsStoreWebAPITests.Tests
 {
     public class TVServiceTests
@@ -90,7 +89,7 @@ namespace ItemsStoreWebAPITests.Tests
             
             var tvService = new TVService(mockTVStorageFactory.Object);
 
-            mockTVStorage.Setup(storage => storage.GetAllTVs()).Returns(tvs);
+            mockTVStorage.Setup(storage => storage.GetAllTVs(null)).Returns(tvs);
 
             // Act
             var result = tvService.GetAllTVs();
@@ -99,11 +98,6 @@ namespace ItemsStoreWebAPITests.Tests
             Assert.Equal(2, result.Count());
             Assert.Contains(result, tv => tv.ID == defaultTV.ID);
             Assert.Contains(result, tv => tv.ID == tvs[1].ID);
-        }
-
-        [Fact]
-        public void GetFilteredTVs_ShouldReturnCorrectTVs()
-        {
         }
 
         [Fact]

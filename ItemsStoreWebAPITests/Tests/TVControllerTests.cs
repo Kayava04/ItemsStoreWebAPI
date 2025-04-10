@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-
 namespace ItemsStoreWebAPITests.Tests
 {
     public class TVControllerTests
@@ -20,10 +19,10 @@ namespace ItemsStoreWebAPITests.Tests
             var errorMessage = string.Empty;
             
             var mockTVService = new Mock<ITVService>();
-            var mockCsvService = new Mock<ICsvService<TV>>();
             var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TVController>>();
-            var tvController = new TVController(mockTVService.Object, mockCsvService.Object, mockTVRequestValidator.Object, mockLogger.Object);
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockTVFileService.Object, mockLogger.Object);
 
             mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out errorMessage)).Returns(false);
 
@@ -43,10 +42,10 @@ namespace ItemsStoreWebAPITests.Tests
             var errorMessage = string.Empty;
             
             var mockTVService = new Mock<ITVService>();
-            var mockCsvService = new Mock<ICsvService<TV>>();
             var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TVController>>();
-            var tvController = new TVController(mockTVService.Object, mockCsvService.Object, mockTVRequestValidator.Object, mockLogger.Object);
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockTVFileService.Object, mockLogger.Object);
 
             mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out errorMessage)).Returns(true);
 
@@ -66,10 +65,10 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = TVFactory.CreateDefaultTV();
             
             var mockTVService = new Mock<ITVService>();
-            var mockCsvService = new Mock<ICsvService<TV>>();
             var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TVController>>();
-            var tvController = new TVController(mockTVService.Object, mockCsvService.Object, mockTVRequestValidator.Object, mockLogger.Object);
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockTVFileService.Object, mockLogger.Object);
 
             mockTVService.Setup(service => service.GetTVById(expectedTV.ID)).Returns(expectedTV);
             mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out It.Ref<string>.IsAny)).Returns(true);
@@ -94,12 +93,12 @@ namespace ItemsStoreWebAPITests.Tests
             };
             
             var mockTVService = new Mock<ITVService>();
-            var mockCsvService = new Mock<ICsvService<TV>>();
             var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TVController>>();
-            var tvController = new TVController(mockTVService.Object, mockCsvService.Object, mockTVRequestValidator.Object, mockLogger.Object);
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockTVFileService.Object, mockLogger.Object);
 
-            mockTVService.Setup(service => service.GetAllTVs()).Returns(tvs);
+            mockTVService.Setup(service => service.GetAllTVs(null)).Returns(tvs);
 
             // Act
             var result = tvController.GetAllTVs();
@@ -107,11 +106,6 @@ namespace ItemsStoreWebAPITests.Tests
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal(tvs, okResult.Value);
-        }
-        
-        [Fact]
-        public void GetFilteredTVs_ShouldReturnOk()
-        {
         }
 
         [Fact]
@@ -123,10 +117,10 @@ namespace ItemsStoreWebAPITests.Tests
             var errorMessage = string.Empty;
             
             var mockTVService = new Mock<ITVService>();
-            var mockCsvService = new Mock<ICsvService<TV>>();
             var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TVController>>();
-            var tvController = new TVController(mockTVService.Object, mockCsvService.Object, mockTVRequestValidator.Object, mockLogger.Object);
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockTVFileService.Object, mockLogger.Object);
 
             mockTVRequestValidator.Setup(v => v.IsValid(expectedTV, out errorMessage)).Returns(false);
 
@@ -146,10 +140,10 @@ namespace ItemsStoreWebAPITests.Tests
             var errorMessage = string.Empty;
             
             var mockTVService = new Mock<ITVService>();
-            var mockCsvService = new Mock<ICsvService<TV>>();
             var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TVController>>();
-            var tvController = new TVController(mockTVService.Object, mockCsvService.Object, mockTVRequestValidator.Object, mockLogger.Object);
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockTVFileService.Object, mockLogger.Object);
 
             mockTVRequestValidator.Setup(v => v.IsValid(updatedTV, out errorMessage)).Returns(true);
             mockTVService.Setup(service => service.UpdateTV(updatedTV.ID, updatedTV)).Returns(updatedTV);
@@ -169,10 +163,10 @@ namespace ItemsStoreWebAPITests.Tests
             var existingTV = TVFactory.CreateDefaultTV();
             
             var mockTVService = new Mock<ITVService>();
-            var mockCsvService = new Mock<ICsvService<TV>>();
             var mockTVRequestValidator = new Mock<ITVRequestValidator>();
+            var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TVController>>();
-            var tvController = new TVController(mockTVService.Object, mockCsvService.Object, mockTVRequestValidator.Object, mockLogger.Object);
+            var tvController = new TVController(mockTVService.Object, mockTVRequestValidator.Object, mockTVFileService.Object, mockLogger.Object);
 
             mockTVService.Setup(service => service.DeleteTV(existingTV.ID));
 
@@ -183,7 +177,5 @@ namespace ItemsStoreWebAPITests.Tests
             mockTVService.Verify(service => service.DeleteTV(1), Times.Once);
             Assert.IsType<NoContentResult>(result);
         }
-        
-        //TODO: write import & export test methods
     }
 }
