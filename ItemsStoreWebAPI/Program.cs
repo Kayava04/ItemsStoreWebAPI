@@ -1,22 +1,35 @@
 using FileToolKit.IO.File.Extensions;
+using ItemsStoreWebAPI.Core;
 using ItemsStoreWebAPI.Factories;
 using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Repositories;
 using ItemsStoreWebAPI.Services;
 using ItemsStoreWebAPI.Validators;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+// Db Connection
+builder.Services.AddDbContext<ItemsStoreDbContext>(options =>
+    options.UseNpgsql(configuration.GetConnectionString(nameof(ItemsStoreDbContext))));
+
+// Set Type of Repository
 builder.Services.Configure<StorageSettings>(configuration.GetSection("StorageSettings"));
 
+// Adding Repositories
 builder.Services.AddSingleton<ITVStorageFactory, TVStorageFactory>();
 builder.Services.AddSingleton<TVListStorage>();
 builder.Services.AddSingleton<TVDictionaryStorage>();
+
+// Adding Services
 builder.Services.AddScoped<ITVService, TVService>();
-builder.Services.AddScoped<ITVRequestValidator, TVRequestValidator>();
 builder.Services.AddScoped<IFileService<TV>, TVFileService>();
 
+// Adding Validators
+builder.Services.AddScoped<ITVRequestValidator, TVRequestValidator>();
+
+// Adding Custom File Lib
 builder.Services.AddFileToolKitFor<TV>();
 
 builder.Services.AddControllers();
@@ -25,6 +38,13 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Db Initialization
+using var serviceScope = app.Services.CreateScope();
+var services = serviceScope.ServiceProvider;
+var schoolContext = services.GetRequiredService<ItemsStoreDbContext>();
+DbInitializer.Initialize(schoolContext);
+
+// Adding Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

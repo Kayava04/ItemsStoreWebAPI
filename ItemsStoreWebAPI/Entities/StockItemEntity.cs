@@ -1,8 +1,8 @@
-﻿namespace ItemsStoreWebAPI.Models
+namespace ItemsStoreWebAPI.Entities
 {
-    public class StockItem
+    public class StockItemEntity
     {
-        public int ID { get; set; }
+        public Guid Id { get; set; }
         public decimal Price { get; set; }
         public int InStock { get; set; }
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;

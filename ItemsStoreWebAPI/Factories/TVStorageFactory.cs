@@ -21,6 +21,7 @@ namespace ItemsStoreWebAPI.Factories
             {
                 "ListStorage" => _serviceProvider.GetRequiredService<TVListStorage>(),
                 "DictionaryStorage" => _serviceProvider.GetRequiredService<TVDictionaryStorage>(),
+                "DbStorage" => _serviceProvider.GetRequiredService<TvDbStorage>(),
                 _ => throw new ArgumentException($"Invalid storage type: {type}!")
             };
         }
