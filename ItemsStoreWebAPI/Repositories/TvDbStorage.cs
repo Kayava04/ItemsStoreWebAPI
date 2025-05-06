@@ -1,3 +1,4 @@
+using AutoMapper;
 using ItemsStoreWebAPI.Core;
 using ItemsStoreWebAPI.DTOs;
 using ItemsStoreWebAPI.Entities;
@@ -7,55 +8,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ItemsStoreWebAPI.Repositories
 {
-    public class TvDbStorage(ItemsStoreDbContext context, ILogger<TvDbStorage> logger)
-        : ITVStorage
+    public class TvDbStorage(
+        ItemsStoreDbContext context,
+        IMapper mapper,
+        ILogger<TvDbStorage> logger) : ITVStorage
     {
-        //TODO: Change 'int' ID in models on 'Guid'
-        //      Make all interface methods async
-        //      Modify realization methods in this storage
-        
-        public TV? AddTV(TV tv)
+        public async Task<TV?> AddTV(TV tv)
         {
-            var stockItem = new StockItemEntity
-            {
-                Id = Guid.NewGuid(),
-                Price = tv.Price,
-                InStock = tv.InStock,
-                AddedAt = DateTime.UtcNow,
-                ModifiedAt = DateTime.UtcNow
-            };
-
-            var tvEntity = new TvEntity
-            {
-                Id = Guid.NewGuid(),
-                StockItemId = stockItem.Id,
-                Name = tv.Name,
-                Description = tv.Description,
-                Size = tv.Size,
-                Resolution = tv.Resolution,
-                Frequency = tv.Frequency,
-                ReleasedYear = tv.ReleasedYear,
-                StockItem = stockItem
-            };
+            var tvEntity = mapper.Map<TvEntity>(tv);
             
-            context.TVs.Add(tvEntity);
-            context.SaveChanges();
+            await context.TVs.AddAsync(tvEntity);
+            await context.SaveChangesAsync();
             
             logger.LogInformation($"Added TV with ID: {tv.ID}.");
-            return MapToTv(tvEntity);
+            return mapper.Map<TV>(tvEntity);
         }
 
-        public TV? GetTVById(int id)
+        public async Task<TV?> GetTVById(int id)
         {
-            var tvEntity = context.TVs
+            var tvEntity = await context.TVs
                 .AsNoTracking()
-                .FirstOrDefault(tv => tv.Id == id);
+                .Include(t => t.StockItem)
+                .FirstOrDefaultAsync(t => t.Id == id);
 
+            if (tvEntity == null)
+            {
+                logger.LogWarning($"TV with ID: {id} not found.");
+                return null;
+            }
+            
             logger.LogInformation($"Found TV with ID: {id}.");
-            return MapToTv(tvEntity);
+            return mapper.Map<TV>(tvEntity);
         }
 
-        public IEnumerable<TV> GetTVs(TvFilterDto? filter = null)
+        public async Task<IEnumerable<TV>> GetTVs(TvFilterDto? filter = null)
         {
             var query = context.TVs
                 .Include(tv => tv.StockItem)
@@ -67,16 +53,17 @@ namespace ItemsStoreWebAPI.Repositories
                 logger.LogInformation($"Filtered TVs. Total count: {query.Count()}");
             }
             
-            var result =  query.ToList();
+            var result =  await query.ToListAsync();
             
             logger.LogInformation($"Receiving all TVs. Total count: {result.Count}");
-            return result.Select(MapToTv);
+            return result.Select(mapper.Map<TV>);
         }
 
-        public TV? UpdateTV(int id, TV updatedTV)
+        public async Task<TV?> UpdateTV(int id, TV updatedTV)
         {
-            var tvEntity = context.TVs
-                .FirstOrDefault(tv => tv.Id == id);
+            var tvEntity = await context.TVs
+                .Include(t => t.StockItem)
+                .FirstOrDefaultAsync(tv => tv.Id == id);
 
             if (tvEntity == null)
             {
@@ -84,58 +71,28 @@ namespace ItemsStoreWebAPI.Repositories
                 return null;
             }
             
-            // StockItemEntity
-            tvEntity.StockItem.Price = updatedTV.Price;
-            tvEntity.StockItem.InStock = updatedTV.InStock;
+            mapper.Map(updatedTV, tvEntity);
             tvEntity.StockItem.ModifiedAt = DateTime.UtcNow;
             
-            // TvEntity
-            tvEntity.Name = updatedTV.Name;
-            tvEntity.Description = updatedTV.Description;
-            tvEntity.Size = updatedTV.Size;
-            tvEntity.Resolution = updatedTV.Resolution;
-            tvEntity.Frequency = updatedTV.Frequency;
-            tvEntity.ReleasedYear = updatedTV.ReleasedYear;
-
-            context.SaveChanges();
+            await context.SaveChangesAsync();
             
             logger.LogInformation($"Updated TV with ID: {tvEntity.Id}.");
-            return MapToTv(tvEntity);
+            return mapper.Map<TV>(tvEntity);
         }
 
-        public void DeleteTV(int id)
+        public async Task DeleteTV(int id)
         {
-            var tvEntity = context.TVs
+            var tvEntity = await context.TVs
                 .Include(tv => tv.StockItem)
-                .FirstOrDefault(tv => tv.Id == id);
+                .FirstOrDefaultAsync(tv => tv.Id == id);
 
             if (tvEntity != null)
             {
                 context.TVs.Remove(tvEntity);
-                context.SaveChanges();
-
+                await context.SaveChangesAsync();
+                logger.LogInformation($"Deleted TV with ID: {id}.");
             }
             else logger.LogWarning($"Attempted to delete non-existent TV with ID: {id}");
-        }
-
-        // Test Mapper
-        //TODO: Switch on AutoMapper
-        private TV MapToTv(TvEntity? tvEntity)
-        {
-            return new TV
-            {
-                // ID = tvEntity.Id,
-                Name = tvEntity.Name,
-                Description = tvEntity.Description,
-                Size = tvEntity.Size,
-                Resolution = tvEntity.Resolution,
-                Frequency = tvEntity.Frequency,
-                ReleasedYear = tvEntity.ReleasedYear,
-                Price = tvEntity.StockItem.Price,
-                InStock = tvEntity.StockItem.InStock,
-                AddedAt = tvEntity.StockItem.AddedAt,
-                ModifiedAt = tvEntity.StockItem.ModifiedAt
-            };
         }
     }
 }

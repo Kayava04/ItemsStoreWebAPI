@@ -45,7 +45,7 @@ namespace ItemsStoreWebAPI.Services
             
             var tool = _fileService.GetTool(extension);
 
-            var data = _tvService.GetTVs(null);
+            var data = await _tvService.GetTVs();
             var fileData = await tool.ExportAsync(data);
 
             var contentType = extension.ToLower() switch

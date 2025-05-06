@@ -14,29 +14,29 @@ namespace ItemsStoreWebAPI.Services
             _tvStorage = tvStorageFactory.CreateStorage();
         }
 
-        public TV AddTV(TV tv)
+        public async Task<TV?> AddTV(TV tv)
         {
-            return _tvStorage.AddTV(tv);
+            return await _tvStorage.AddTV(tv);
         }
 
-        public TV? GetTVById(int id)
+        public async Task<TV?> GetTVById(int id)
         {
-            return _tvStorage.GetTVById(id);
+            return await _tvStorage.GetTVById(id);
         }
 
-        public IEnumerable<TV> GetTVs(TvFilterDto? filter = null)
+        public async Task<IEnumerable<TV>> GetTVs(TvFilterDto? filter = null)
         {
-            return _tvStorage.GetTVs(filter);
+            return await _tvStorage.GetTVs(filter);
         }
 
-        public TV? UpdateTV(int id, TV updatedTV)
+        public async Task<TV?> UpdateTV(int id, TV updatedTV)
         {
-            return _tvStorage.UpdateTV(id, updatedTV);
+            return await _tvStorage.UpdateTV(id, updatedTV);
         }
 
-        public void DeleteTV(int id)
+        public async Task DeleteTV(int id)
         {
-            _tvStorage.DeleteTV(id);
+            await _tvStorage.DeleteTV(id);
         }
     }
 }

@@ -5,10 +5,10 @@ namespace ItemsStoreWebAPI.Services
 {
     public interface ITVService
     {
-        TV AddTV(TV tv);
-        TV? GetTVById(int id);
-        IEnumerable<TV> GetTVs(TvFilterDto? filter = null);
-        TV? UpdateTV(int id, TV updatedTV);
-        void DeleteTV(int id);
+        Task<TV?> AddTV(TV tv);
+        Task<TV?> GetTVById(int id);
+        Task<IEnumerable<TV>> GetTVs(TvFilterDto? filter = null);
+        Task<TV?> UpdateTV(int id, TV updatedTV);
+        Task DeleteTV(int id);
     }
 }

@@ -18,7 +18,7 @@ namespace ItemsStoreWebAPI.Repositories
             _logger = logger;
         }
         
-        public TV? AddTV(TV tv)
+        public async Task<TV?> AddTV(TV tv)
         {
             var id = Interlocked.Increment(ref _nextId);
             tv.ID = id;
@@ -27,41 +27,41 @@ namespace ItemsStoreWebAPI.Repositories
             if (_tvCollection.TryAdd(tv.ID, tv))
             {
                 _logger.LogInformation($"Added TV with ID: {tv.ID}. {tv}");
-                return tv;
+                return await Task.FromResult(tv);
             }
             
             _logger.LogWarning($"Failed to add TV with ID: {tv.ID}");
-            return null;
+            return await Task.FromResult<TV?>(null);
         }
 
-        public TV? GetTVById(int id)
+        public async Task<TV?> GetTVById(int id)
         {
             if (_tvCollection.TryGetValue(id, out var tv))
             {
                 _logger.LogInformation($"Found TV with ID: {id}. {tv}");
-                return tv;
+                return await Task.FromResult(tv);
             }
             
             _logger.LogWarning($"TV with ID: {id} not found");
-            return null;
+            return await Task.FromResult<TV?>(null);
         }
 
-        public IEnumerable<TV> GetTVs(TvFilterDto? filter = null)
+        public async Task<IEnumerable<TV>> GetTVs(TvFilterDto? filter = null)
         {
-            var expression = filter.ToExpression();
             var query = _tvCollection.Values.AsQueryable();
 
             if (filter != null)
             {
+                var expression = filter.ToExpression();
                 query = query.Where(expression);
                 _logger.LogInformation($"Filtered TVs. Total count: {query.Count()}");
             }
             
             _logger.LogInformation($"Receiving all TVs. Total count: {_tvCollection.Count}");
-            return query.ToList();
+            return await Task.FromResult(query.ToList());
         }
 
-        public TV? UpdateTV(int id, TV updatedTV)
+        public async Task<TV?> UpdateTV(int id, TV updatedTV)
         {
             if (_tvCollection.TryGetValue(id, out var tv))
             {
@@ -79,26 +79,30 @@ namespace ItemsStoreWebAPI.Repositories
                     InStock = updatedTV.InStock
                 };
             
-                if (_tvCollection.TryUpdate(id, newTV, tv))
+                var success = _tvCollection.TryUpdate(id, newTV, tv);
+
+                if (success)
                 {
-                    _logger.LogInformation($"Updated TV with ID: {newTV.ID}. {newTV}");
-                    return newTV;
+                    _logger.LogInformation($"Updated TV with ID: {id}. {newTV}");
+                    return await Task.FromResult(newTV);
                 }
                 
                 _logger.LogWarning($"Failed to update TV with ID: {id}");
+                return await Task.FromResult<TV?>(null);
             }
-            else
-                _logger.LogWarning($"Attempted to update non-existent TV with ID: {id}");
-
-            return tv;
+            
+            _logger.LogWarning($"Attempted to update non-existent TV with ID: {id}");
+            return await Task.FromResult<TV?>(null);
         }
 
-        public void DeleteTV(int id)
+        public async Task DeleteTV(int id)
         {
             if (_tvCollection.TryRemove(id, out _))
                 _logger.LogInformation($"TV with ID: {id}, deleted successfully");
             else
                 _logger.LogWarning($"Attempted to delete non-existent TV with ID: {id}");
+            
+            await Task.CompletedTask;
         }
     }
 }

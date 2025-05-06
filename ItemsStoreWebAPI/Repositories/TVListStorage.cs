@@ -17,7 +17,7 @@ namespace ItemsStoreWebAPI.Repositories
             _logger = logger;
         }
 
-        public TV? AddTV(TV tv)
+        public async Task<TV?> AddTV(TV tv)
         {
             if (tv.ID == 0)
                 tv.ID = _nextId++;
@@ -28,10 +28,12 @@ namespace ItemsStoreWebAPI.Repositories
             _tvCollection.Add(tv);
             
             _logger.LogInformation($"Added TV with ID: {tv.ID}. {tv}");
-            return _tvCollection.First(x => x.ID == tv.ID);
+
+            // var result = _tvCollection.First(x => x.ID == tv.ID);
+            return await Task.FromResult(tv);
         }
 
-        public TV? GetTVById(int id)
+        public async Task<TV?> GetTVById(int id)
         {
             var tv = _tvCollection.FirstOrDefault(x => x.ID == id);
             
@@ -40,31 +42,31 @@ namespace ItemsStoreWebAPI.Repositories
             else
                 _logger.LogWarning($"TV with ID: {id} not found");
             
-            return tv;
+            return await Task.FromResult(tv);
         }
 
-        public IEnumerable<TV> GetTVs(TvFilterDto? filter = null)
+        public async Task<IEnumerable<TV>> GetTVs(TvFilterDto? filter = null)
         {
-            var expression = filter.ToExpression();
             var query = _tvCollection.AsQueryable();
 
             if (filter != null)
             {
+                var expression = filter.ToExpression();
                 query = query.Where(expression);
                 _logger.LogInformation($"Filtered TVs. Total count: {query.Count()}");
             }
             
             _logger.LogInformation($"Receiving all TVs. Total count: {_tvCollection.Count}");
-            return query.ToList();
+            return await Task.FromResult(query.ToList());
         }
 
-        public TV? UpdateTV(int id, TV updatedTV)
+        public async Task<TV?> UpdateTV(int id, TV updatedTV)
         {
-            var tv = GetTVById(id);
+            var tv = _tvCollection.FirstOrDefault(x => x.ID == id);
 
             if (tv != null)
             {
-                tv.ID = updatedTV.ID;
+                // tv.ID = updatedTV.ID;
                 tv.Name = updatedTV.Name;
                 tv.Description = updatedTV.Description;
                 tv.Size = updatedTV.Size;
@@ -76,16 +78,16 @@ namespace ItemsStoreWebAPI.Repositories
                 tv.InStock = updatedTV.InStock;
                 
                 _logger.LogInformation($"TV with ID: {id}, updated successfully. {tv}");
+                return await Task.FromResult(tv);
             }
-            else
-                _logger.LogWarning($"Attempted to update non-existent TV with ID: {id}");
 
-            return tv;
+            _logger.LogWarning($"Attempted to update non-existent TV with ID: {id}");
+            return await Task.FromResult<TV?>(null);
         }
 
-        public void DeleteTV(int id)
+        public async Task DeleteTV(int id)
         {
-            var tv = GetTVById(id);
+            var tv = _tvCollection.FirstOrDefault(x => x.ID == id);
 
             if (tv != null)
             {
@@ -94,6 +96,8 @@ namespace ItemsStoreWebAPI.Repositories
             }
             else
                 _logger.LogWarning($"Attempted to delete non-existent TV with ID: {id}");
+            
+            await Task.CompletedTask;
         }
     }
 }

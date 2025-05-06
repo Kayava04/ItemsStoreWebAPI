@@ -2,8 +2,8 @@ namespace ItemsStoreWebAPI.Entities
 {
     public class TvEntity
     {
-        public Guid Id { get; set; }
-        public Guid StockItemId { get; set; }
+        public int Id { get; set; }
+        public int StockItemId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public float Size { get; set; }

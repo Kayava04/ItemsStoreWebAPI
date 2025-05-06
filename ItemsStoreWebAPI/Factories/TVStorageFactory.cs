@@ -5,23 +5,27 @@ namespace ItemsStoreWebAPI.Factories
 {
     public class TVStorageFactory : ITVStorageFactory
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly string _storageSettings;
 
-        public TVStorageFactory(IServiceProvider serviceProvider, IOptions<StorageSettings> options)
+        public TVStorageFactory(IServiceScopeFactory scopeFactory, IOptions<StorageSettings> options)
         {
-            _serviceProvider = serviceProvider;
+            _scopeFactory = scopeFactory;
             _storageSettings = options.Value.DefaultStorageType;
         }
         
         public ITVStorage CreateStorage(string? type = null)
         {
             var storageType = type ?? _storageSettings;
+            
+            var scope = _scopeFactory.CreateScope();
+            var provider = scope.ServiceProvider;
+            
             return storageType switch
             {
-                "ListStorage" => _serviceProvider.GetRequiredService<TVListStorage>(),
-                "DictionaryStorage" => _serviceProvider.GetRequiredService<TVDictionaryStorage>(),
-                "DbStorage" => _serviceProvider.GetRequiredService<TvDbStorage>(),
+                "ListStorage" => provider.GetRequiredService<TVListStorage>(),
+                "DictionaryStorage" => provider.GetRequiredService<TVDictionaryStorage>(),
+                "DbStorage" => provider.GetRequiredService<TvDbStorage>(),
                 _ => throw new ArgumentException($"Invalid storage type: {type}!")
             };
         }

@@ -1,6 +1,7 @@
 using FileToolKit.IO.File.Extensions;
 using ItemsStoreWebAPI.Core;
 using ItemsStoreWebAPI.Factories;
+using ItemsStoreWebAPI.Mappings;
 using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Repositories;
 using ItemsStoreWebAPI.Services;
@@ -11,8 +12,19 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 // Db Connection
-builder.Services.AddDbContext<ItemsStoreDbContext>(options =>
-    options.UseNpgsql(configuration.GetConnectionString(nameof(ItemsStoreDbContext))));
+var provider = configuration["DatabaseProvider"];
+
+if (provider == "PostgreSQL")
+{
+    builder.Services.AddDbContext<ItemsStoreDbContext>(options =>
+        options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
+}
+else
+{
+    var connectionString = builder.Configuration.GetConnectionString("MssqlConnection");
+    builder.Services.AddDbContext<ItemsStoreDbContext>(options =>
+        options.UseSqlServer(connectionString));
+}
 
 // Set Type of Repository
 builder.Services.Configure<StorageSettings>(configuration.GetSection("StorageSettings"));
@@ -21,6 +33,7 @@ builder.Services.Configure<StorageSettings>(configuration.GetSection("StorageSet
 builder.Services.AddSingleton<ITVStorageFactory, TVStorageFactory>();
 builder.Services.AddSingleton<TVListStorage>();
 builder.Services.AddSingleton<TVDictionaryStorage>();
+builder.Services.AddScoped<TvDbStorage>();
 
 // Adding Services
 builder.Services.AddScoped<ITVService, TVService>();
@@ -31,6 +44,9 @@ builder.Services.AddScoped<ITVRequestValidator, TVRequestValidator>();
 
 // Adding Custom File Lib
 builder.Services.AddFileToolKitFor<TV>();
+
+// Adding AutoMapper
+builder.Services.AddAutoMapper(typeof(TvProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

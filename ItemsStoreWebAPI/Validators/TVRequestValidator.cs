@@ -1,10 +1,10 @@
-﻿using ItemsStoreWebAPI.Models;
+﻿using ItemsStoreWebAPI.DTOs;
 
 namespace ItemsStoreWebAPI.Validators
 {
     public class TVRequestValidator : ITVRequestValidator
     {
-        public bool IsValid(TV tv, out string errorMessage)
+        public bool IsValid(RequestTvDto tv, out string errorMessage)
         {
             errorMessage = string.Empty;
 

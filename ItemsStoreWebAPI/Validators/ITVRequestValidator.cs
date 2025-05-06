@@ -1,9 +1,9 @@
-﻿using ItemsStoreWebAPI.Models;
+﻿using ItemsStoreWebAPI.DTOs;
 
 namespace ItemsStoreWebAPI.Validators
 {
     public interface ITVRequestValidator
     {
-        bool IsValid(TV tv, out string errorMessage);
+        bool IsValid(RequestTvDto tv, out string errorMessage);
     }
 }
