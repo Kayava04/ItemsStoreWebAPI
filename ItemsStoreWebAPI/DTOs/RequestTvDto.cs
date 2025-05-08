@@ -11,6 +11,5 @@ namespace ItemsStoreWebAPI.DTOs
         public int ReleasedYear { get; set; }
         public decimal Price { get; set; }
         public int InStock { get; set; }
-        
     }
 }
