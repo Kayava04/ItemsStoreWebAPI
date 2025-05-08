@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FileToolKit")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0bf6484c272eacf45ba5667b07318cc1cd600656")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+edd21587b3eb0b66967afe58f06b1bdc04616c33")]
 [assembly: System.Reflection.AssemblyProductAttribute("FileToolKit")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FileToolKit")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
