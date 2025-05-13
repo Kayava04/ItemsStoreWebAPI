@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Reflection;
-using ItemsStoreWebAPI.Models;
+using ItemsStoreWebAPI.DTOs;
 using log4net;
 using log4net.Config;
 
@@ -77,9 +77,9 @@ namespace BenchmarkItemsStore
         {
             var tasks = Enumerable.Range(1, count).Select(async i =>
             {
-                var tv = new TV
+                var tv = new RequestTvDto
                 {
-                    ID = i,
+                    // ID = i,
                     Name = $"LG {i}",
                     Description = $"OLED {i}",
                     Size = 55,
@@ -106,7 +106,7 @@ namespace BenchmarkItemsStore
             var tasks = Enumerable.Range(1, count).Select(async i =>
             {
                 var response = await _httpClient.GetAsync(i.ToString());
-                var tv = await response.Content.ReadFromJsonAsync<TV>();
+                var tv = await response.Content.ReadFromJsonAsync<RequestTvDto>();
             
                 if (response.IsSuccessStatusCode)
                     _logger.Info($"Successfully received TV with ID: {tv.ID}");
@@ -119,8 +119,8 @@ namespace BenchmarkItemsStore
         
         private static async Task GetAllItemsAsync()
         {
-            var response = await _httpClient.GetAsync(string.Empty);
-            var tvs = await response.Content.ReadFromJsonAsync<List<TV>>();
+            var response = await _httpClient.GetAsync("filter");
+            var tvs = await response.Content.ReadFromJsonAsync<List<RequestTvDto>>();
             
             if (response.IsSuccessStatusCode)
                 _logger.Info($"Successfully received all TVs. Total count: {tvs.Count}");
@@ -132,7 +132,7 @@ namespace BenchmarkItemsStore
         {
             var tasks = Enumerable.Range(1, count).Select(async i =>
             {
-                var updatedTV = new TV
+                var updatedTV = new RequestTvDto
                 {
                     ID = i,
                     Name = $"LG {i} updated",
