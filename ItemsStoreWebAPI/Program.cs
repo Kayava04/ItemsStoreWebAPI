@@ -14,16 +14,18 @@ var configuration = builder.Configuration;
 // Db Connection
 var provider = configuration["DatabaseProvider"];
 
-if (provider == "PostgreSQL")
+switch (provider)
 {
-    builder.Services.AddDbContext<ItemsStoreDbContext>(options =>
-        options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
-}
-else
-{
-    var connectionString = builder.Configuration.GetConnectionString("MssqlConnection");
-    builder.Services.AddDbContext<ItemsStoreDbContext>(options =>
-        options.UseSqlServer(connectionString));
+    case "NpgSql":
+        builder.Services.AddDbContext<BaseDbContext, PostgresDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString(nameof(PostgresDbContext))));
+        break;
+    case "SqlServer":
+        builder.Services.AddDbContext<BaseDbContext, SqlServerDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString(nameof(SqlServerDbContext))));
+        break;
+    default:
+        throw new NotSupportedException($"Database provider '{provider}' not supported");
 }
 
 // Set Type of Repository
@@ -57,8 +59,8 @@ var app = builder.Build();
 // Db Initialization
 using var serviceScope = app.Services.CreateScope();
 var services = serviceScope.ServiceProvider;
-var schoolContext = services.GetRequiredService<ItemsStoreDbContext>();
-DbInitializer.Initialize(schoolContext);
+var context = services.GetRequiredService<BaseDbContext>();
+DbInitializer.Initialize(context);
 
 // Adding Swagger
 if (app.Environment.IsDevelopment())

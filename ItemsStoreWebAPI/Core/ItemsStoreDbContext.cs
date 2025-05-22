@@ -10,6 +10,12 @@ namespace ItemsStoreWebAPI.Core
         public DbSet<StockItemEntity> StockItems { get; set; }
         public DbSet<TvEntity> TVs { get; set; }
         
+        //TODO: Change on base context (+)
+        //      Check performance (-)
+        //      Index of DB (-)
+        //      Delete data from StockItem (+)
+        //      Static names (+)
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // modelBuilder.ApplyConfigurationsFromAssembly(typeof(ItemsStoreDbContext).Assembly);

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ItemsStoreWebAPI.Repositories
 {
     public class TvDbStorage(
-        ItemsStoreDbContext context,
+        BaseDbContext context,
         IMapper mapper,
         ILogger<TvDbStorage> logger) : ITVStorage
     {
@@ -89,6 +89,8 @@ namespace ItemsStoreWebAPI.Repositories
             if (tvEntity != null)
             {
                 context.TVs.Remove(tvEntity);
+                context.StockItems.Remove(tvEntity.StockItem);
+                
                 await context.SaveChangesAsync();
                 logger.LogInformation($"Deleted TV with ID: {id}.");
             }
