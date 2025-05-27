@@ -15,6 +15,8 @@ namespace ItemsStoreWebAPI.Core
             modelBuilder.Entity<StockItemEntity>()
                 .Property(si => si.AddedAt)
                 .HasDefaultValueSql("NOW()");
+            
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

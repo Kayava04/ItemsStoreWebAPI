@@ -11,18 +11,29 @@ namespace BenchmarkItemsStore
     {
         private static HttpClient _httpClient = new HttpClient(new SocketsHttpHandler
             {
-                MaxConnectionsPerServer = 100
+                MaxConnectionsPerServer = 50
             })
         {
             BaseAddress = new Uri("http://localhost:5117/v1/stock/electronic/tv/")
         };
 
+        private static int _lastId;
+        private static readonly List<int> _recentlyAddedIds = [];
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
         public StorePerformance()
         {
             var loggerRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(loggerRepository, new FileInfo("log4net.config.xml"));
+        }
+        
+        // Get Last Index of Elements
+        private async Task GetLastIdAsync()
+        {
+            var response = await _httpClient.GetAsync("filter");
+            var tvs = await response.Content.ReadFromJsonAsync<List<RequestTvDto>>();
+            
+            _lastId = tvs?.Any() == true ? tvs.Max(tv => tv.ID) : 0;
         }
         
         // Preload test
@@ -38,6 +49,8 @@ namespace BenchmarkItemsStore
         {
             _logger.Info("Loading store performance tests...");
 
+            await GetLastIdAsync();
+            
             // Add items timer
             var addItemsTimer = Stopwatch.StartNew();
             await AddItemsAsync(count);
@@ -75,13 +88,15 @@ namespace BenchmarkItemsStore
         
         private static async Task AddItemsAsync(int count)
         {
+            _recentlyAddedIds.Clear();
+            
             var tasks = Enumerable.Range(1, count).Select(async i =>
             {
                 var tv = new RequestTvDto
                 {
-                    // ID = i,
-                    Name = $"LG {i}",
-                    Description = $"OLED {i}",
+                    // ID = ++_lastId,
+                    Name = $"LG {_lastId}",
+                    Description = $"OLED {_lastId}",
                     Size = 55,
                     Resolution = "2560x1440",
                     Frequency = 120,
@@ -91,11 +106,18 @@ namespace BenchmarkItemsStore
                 };
                 
                 var response = await _httpClient.PostAsJsonAsync(string.Empty, tv);
-                    
+
                 if (response.IsSuccessStatusCode)
-                    _logger.Info($"Successfully added TV with ID: {tv.ID}.");
+                {
+                    var createdTv = await response.Content.ReadFromJsonAsync<RequestTvDto>();
+                    if (createdTv?.ID > 0)
+                    {
+                        _recentlyAddedIds.Add(createdTv.ID);
+                        _logger.Info($"Successfully added TV with ID: {createdTv.ID}.");
+                    }
+                }
                 else
-                    _logger.Error($"Failed to add TV with ID {tv.ID}. Status Code: {response.StatusCode}");
+                    _logger.Error($"Failed to add TV. Status Code: {response.StatusCode}");
             });
             
             await Task.WhenAll(tasks);
@@ -103,7 +125,18 @@ namespace BenchmarkItemsStore
 
         private static async Task GetItemsByIdAsync(int count)
         {
-            var tasks = Enumerable.Range(1, count).Select(async i =>
+            // var tasks = Enumerable.Range(_lastId - count + 1, count).Select(async i =>
+            // {
+            //     var response = await _httpClient.GetAsync(i.ToString());
+            //     var tv = await response.Content.ReadFromJsonAsync<RequestTvDto>();
+            //
+            //     if (response.IsSuccessStatusCode)
+            //         _logger.Info($"Successfully received TV with ID: {tv.ID}");
+            //     else
+            //         _logger.Error($"Failed to get TV. Status Code: {response.StatusCode}");
+            // });
+            
+            var tasks = _recentlyAddedIds.Select(async i =>
             {
                 var response = await _httpClient.GetAsync(i.ToString());
                 var tv = await response.Content.ReadFromJsonAsync<RequestTvDto>();
@@ -130,7 +163,7 @@ namespace BenchmarkItemsStore
         
         private static async Task UpdateItemsAsync(int count)
         {
-            var tasks = Enumerable.Range(1, count).Select(async i =>
+            var tasks = _recentlyAddedIds.Select(async i =>
             {
                 var updatedTV = new RequestTvDto
                 {
@@ -158,7 +191,7 @@ namespace BenchmarkItemsStore
         
         private static async Task DeleteItemsAsync(int count)
         {
-            var tasks = Enumerable.Range(1, count).Select(async i =>
+            var tasks = _recentlyAddedIds.Select(async i =>
             {
                 var response = await _httpClient.DeleteAsync(i.ToString());
             

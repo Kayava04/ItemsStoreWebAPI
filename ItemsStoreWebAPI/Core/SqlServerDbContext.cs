@@ -12,6 +12,8 @@ namespace ItemsStoreWebAPI.Core
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+            
             modelBuilder.Entity<StockItemEntity>()
                 .Property(si => si.AddedAt)
                 .HasDefaultValueSql("GETDATE()");
