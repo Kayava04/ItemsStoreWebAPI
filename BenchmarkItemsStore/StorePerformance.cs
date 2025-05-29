@@ -18,7 +18,6 @@ namespace BenchmarkItemsStore
         };
 
         private static int _lastId;
-        private static readonly List<int> _recentlyAddedIds = [];
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
         public StorePerformance()
@@ -36,6 +35,10 @@ namespace BenchmarkItemsStore
             _lastId = tvs?.Any() == true ? tvs.Max(tv => tv.ID) : 0;
         }
         
+        // Generating Range
+        private static IEnumerable<int> GenerateRange(int lastId, int count) =>
+            Enumerable.Range(lastId - count + 1, count);
+        
         // Preload test
         public async Task RunPreloadTestAsync()
         {
@@ -48,14 +51,14 @@ namespace BenchmarkItemsStore
         public async Task RunAsync(int count, decimal minPrice, decimal maxPrice)
         {
             _logger.Info("Loading store performance tests...");
-
-            await GetLastIdAsync();
             
             // Add items timer
             var addItemsTimer = Stopwatch.StartNew();
             await AddItemsAsync(count);
             addItemsTimer.Stop();
             _logger.Info($"{nameof(AddItemsAsync)} finished. Total time: {addItemsTimer.ElapsedMilliseconds} ms.");
+            
+            await GetLastIdAsync();
             
             // Get all items timer
             var getAllItemsTimer = Stopwatch.StartNew();
@@ -88,15 +91,12 @@ namespace BenchmarkItemsStore
         
         private static async Task AddItemsAsync(int count)
         {
-            _recentlyAddedIds.Clear();
-            
             var tasks = Enumerable.Range(1, count).Select(async i =>
             {
                 var tv = new RequestTvDto
                 {
-                    // ID = ++_lastId,
-                    Name = $"LG {_lastId}",
-                    Description = $"OLED {_lastId}",
+                    Name = $"LG {i}",
+                    Description = $"OLED {i}",
                     Size = 55,
                     Resolution = "2560x1440",
                     Frequency = 120,
@@ -109,12 +109,8 @@ namespace BenchmarkItemsStore
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var createdTv = await response.Content.ReadFromJsonAsync<RequestTvDto>();
-                    if (createdTv?.ID > 0)
-                    {
-                        _recentlyAddedIds.Add(createdTv.ID);
-                        _logger.Info($"Successfully added TV with ID: {createdTv.ID}.");
-                    }
+                    var created = await response.Content.ReadFromJsonAsync<ResponseTvDto>();
+                    _logger.Info($"Successfully added TV with ID: {created?.ID}.");
                 }
                 else
                     _logger.Error($"Failed to add TV. Status Code: {response.StatusCode}");
@@ -125,18 +121,7 @@ namespace BenchmarkItemsStore
 
         private static async Task GetItemsByIdAsync(int count)
         {
-            // var tasks = Enumerable.Range(_lastId - count + 1, count).Select(async i =>
-            // {
-            //     var response = await _httpClient.GetAsync(i.ToString());
-            //     var tv = await response.Content.ReadFromJsonAsync<RequestTvDto>();
-            //
-            //     if (response.IsSuccessStatusCode)
-            //         _logger.Info($"Successfully received TV with ID: {tv.ID}");
-            //     else
-            //         _logger.Error($"Failed to get TV. Status Code: {response.StatusCode}");
-            // });
-            
-            var tasks = _recentlyAddedIds.Select(async i =>
+            var tasks = GenerateRange(_lastId, count).Select(async i =>
             {
                 var response = await _httpClient.GetAsync(i.ToString());
                 var tv = await response.Content.ReadFromJsonAsync<RequestTvDto>();
@@ -163,7 +148,7 @@ namespace BenchmarkItemsStore
         
         private static async Task UpdateItemsAsync(int count)
         {
-            var tasks = _recentlyAddedIds.Select(async i =>
+            var tasks = GenerateRange(_lastId, count).Select(async i =>
             {
                 var updatedTV = new RequestTvDto
                 {
@@ -191,7 +176,7 @@ namespace BenchmarkItemsStore
         
         private static async Task DeleteItemsAsync(int count)
         {
-            var tasks = _recentlyAddedIds.Select(async i =>
+            var tasks = GenerateRange(_lastId, count).Select(async i =>
             {
                 var response = await _httpClient.DeleteAsync(i.ToString());
             
