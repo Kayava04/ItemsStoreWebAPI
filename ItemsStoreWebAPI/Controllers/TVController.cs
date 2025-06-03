@@ -12,14 +12,16 @@ namespace ItemsStoreWebAPI.Controllers
     public class TVController : ControllerBase
     {
         private readonly ITVService _tvService;
+        private readonly ITvTransactionService _transactionService;
         private readonly ITVRequestValidator _tvRequestValidator;
         private readonly IFileService<TV> _tvFileService;
         private readonly IMapper _mapper;
         private readonly ILogger<TVController> _logger;
 
-        public TVController(ITVService tvService, ITVRequestValidator tvRequestValidator, IFileService<TV> tvFileService, IMapper mapper, ILogger<TVController> logger)
+        public TVController(ITVService tvService, ITvTransactionService transactionService, ITVRequestValidator tvRequestValidator, IFileService<TV> tvFileService, IMapper mapper, ILogger<TVController> logger)
         {
             _tvService = tvService;
+            _transactionService = transactionService;
             _tvRequestValidator = tvRequestValidator;
             _tvFileService = tvFileService;
             _mapper = mapper;
@@ -42,6 +44,25 @@ namespace ItemsStoreWebAPI.Controllers
             
             _logger.LogInformation($"TV with ID: {responseTv.ID}, added successfully");
             return StatusCode(201, responseTv);
+        }
+
+        [HttpPost("batch")]
+        public async Task<IActionResult> AddMultipleTvs([FromBody] List<RequestTvDto> newTVs)
+        {
+            foreach (var tv in newTVs)
+            {
+                if (!_tvRequestValidator.IsValid(tv, out var errorMessage))
+                {
+                    _logger.LogWarning($"Received invalid TV data: {errorMessage}");
+                    return BadRequest(errorMessage);
+                }
+            }
+            
+            var tvs = newTVs.Select(_mapper.Map<TV>);
+            var result = await _transactionService.AddMultipleTVsAsync(tvs);
+
+            var response = result.Select(_mapper.Map<ResponseTvDto>);
+            return Ok(response);
         }
 
         [HttpGet("{id:int}")]

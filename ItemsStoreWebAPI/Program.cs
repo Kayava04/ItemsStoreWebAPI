@@ -36,9 +36,12 @@ builder.Services.AddSingleton<ITVStorageFactory, TVStorageFactory>();
 builder.Services.AddSingleton<TVListStorage>();
 builder.Services.AddSingleton<TVDictionaryStorage>();
 builder.Services.AddScoped<TvDbStorage>();
+builder.Services.AddScoped<ISqlTransactionRepository, SqlTransactionRepository>();
+builder.Services.AddScoped<ITvBatchRepository, TvBatchRepository>();
 
 // Adding Services
 builder.Services.AddScoped<ITVService, TVService>();
+builder.Services.AddScoped<ITvTransactionService, TvTransactionService>();
 builder.Services.AddScoped<IFileService<TV>, TVFileService>();
 
 // Adding Validators
