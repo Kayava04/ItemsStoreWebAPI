@@ -1,5 +1,5 @@
 using AutoMapper;
-using ItemsStoreWebAPI.Core;
+using ItemsStoreWebAPI.DataBase;
 using ItemsStoreWebAPI.Entities;
 using ItemsStoreWebAPI.Models;
 

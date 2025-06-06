@@ -26,4 +26,8 @@
     <ProjectReference Include="..\FileToolKit\FileToolKit.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataBase\Operations\" />
+  </ItemGroup>
+
 </Project>

@@ -1,7 +1,7 @@
 using ItemsStoreWebAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ItemsStoreWebAPI.Core
+namespace ItemsStoreWebAPI.DataBase
 {
     public class PostgresDbContext : BaseDbContext
     {

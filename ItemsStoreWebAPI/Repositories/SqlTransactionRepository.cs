@@ -1,4 +1,4 @@
-using ItemsStoreWebAPI.Core;
+using ItemsStoreWebAPI.DataBase;
 
 namespace ItemsStoreWebAPI.Repositories
 {
