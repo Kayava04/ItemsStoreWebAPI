@@ -9,138 +9,135 @@ namespace ItemsStoreWebAPI.Controllers
 {
     [ApiController]
     [Route("v1/stock/electronic/tv")]
-    public class TVController : ControllerBase
+    public class TVController(
+        ITVService tvService,
+        ITVRequestValidator tvRequestValidator,
+        IFileService<TV> tvFileService,
+        IDbTransactionsService<TV> tvDbTransactionsService,
+        IMapper mapper,
+        ILogger<TVController> logger) : ControllerBase
     {
-        private readonly ITVService _tvService;
-        private readonly ITvTransactionService _transactionService;
-        private readonly ITVRequestValidator _tvRequestValidator;
-        private readonly IFileService<TV> _tvFileService;
-        private readonly IMapper _mapper;
-        private readonly ILogger<TVController> _logger;
-
-        public TVController(ITVService tvService, ITvTransactionService transactionService, ITVRequestValidator tvRequestValidator, IFileService<TV> tvFileService, IMapper mapper, ILogger<TVController> logger)
-        {
-            _tvService = tvService;
-            _transactionService = transactionService;
-            _tvRequestValidator = tvRequestValidator;
-            _tvFileService = tvFileService;
-            _mapper = mapper;
-            _logger = logger;
-        }
-
         [HttpPost]
         public async Task<IActionResult> AddTV([FromBody] RequestTvDto newTV)
         {
-            if (!_tvRequestValidator.IsValid(newTV, out var errorMessage))
+            if (!tvRequestValidator.IsValid(newTV, out var errorMessage))
             {
-                _logger.LogWarning($"Received invalid TV data: {errorMessage}");
+                logger.LogWarning($"Received invalid TV data: {errorMessage}");
                 return BadRequest(errorMessage);
             }
             
-            var tv = _mapper.Map<TV>(newTV);
+            var tv = mapper.Map<TV>(newTV);
             
-            var createdTv = await _tvService.AddTV(tv);
-            var responseTv = _mapper.Map<ResponseTvDto>(createdTv);
+            var createdTv = await tvService.AddTV(tv);
+            var responseTv = mapper.Map<ResponseTvDto>(createdTv);
             
-            _logger.LogInformation($"TV with ID: {responseTv.ID}, added successfully");
+            logger.LogInformation($"TV with ID: {responseTv.ID}, added successfully");
             return StatusCode(201, responseTv);
-        }
-
-        [HttpPost("batch")]
-        public async Task<IActionResult> AddMultipleTvs([FromBody] List<RequestTvDto> newTVs)
-        {
-            foreach (var tv in newTVs)
-            {
-                if (!_tvRequestValidator.IsValid(tv, out var errorMessage))
-                {
-                    _logger.LogWarning($"Received invalid TV data: {errorMessage}");
-                    return BadRequest(errorMessage);
-                }
-            }
-            
-            var tvs = newTVs.Select(_mapper.Map<TV>);
-            var result = await _transactionService.AddMultipleTVsAsync(tvs);
-
-            var response = result.Select(_mapper.Map<ResponseTvDto>);
-            return Ok(response);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetTVById(int id)
         {
-            var tv = await _tvService.GetTVById(id);
+            var tv = await tvService.GetTVById(id);
 
             if (tv == null)
             {
-                _logger.LogWarning($"TV with ID: {id} not found");
+                logger.LogWarning($"TV with ID: {id} not found");
                 return NotFound();
             }
             
-            var responseTv = _mapper.Map<ResponseTvDto>(tv);
+            var responseTv = mapper.Map<ResponseTvDto>(tv);
             
-            _logger.LogInformation($"Received TV with ID: {id}");
+            logger.LogInformation($"Received TV with ID: {id}");
             return Ok(responseTv);
         }
 
         [HttpGet("filter")]
         public async Task<IActionResult> GetTVs([FromQuery] TvFilterDto? filter = null)
         {
-            var tvs = await _tvService.GetTVs(filter);
-            var responseTvs = tvs.Select(tv => _mapper.Map<ResponseTvDto>(tv));
+            var tvs = await tvService.GetTVs(filter);
+            var responseTvs = tvs.Select(tv => mapper.Map<ResponseTvDto>(tv));
             
-            _logger.LogInformation($"Received all TVs. Total count: {responseTvs.Count()}");
+            logger.LogInformation($"Received all TVs. Total count: {responseTvs.Count()}");
             return Ok(responseTvs);
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateTV([FromBody] RequestTvDto updatedTV)
         {
-            if (!_tvRequestValidator.IsValid(updatedTV, out var errorMessage))
+            if (!tvRequestValidator.IsValid(updatedTV, out var errorMessage))
             {
-                _logger.LogWarning($"Received invalid update TV data: {errorMessage}");
+                logger.LogWarning($"Received invalid update TV data: {errorMessage}");
                 return BadRequest(errorMessage);
             }
 
-            var tv = _mapper.Map<TV>(updatedTV);
-            var updated = await _tvService.UpdateTV(tv.ID, tv);
+            var tv = mapper.Map<TV>(updatedTV);
+            var updated = await tvService.UpdateTV(tv.ID, tv);
             
             if (updated == null)
             {
-                _logger.LogWarning($"Attempted to update non-existent TV with ID: {tv.ID}");
+                logger.LogWarning($"Attempted to update non-existent TV with ID: {tv.ID}");
                 return NotFound();
             }
 
-            var responseTv = _mapper.Map<ResponseTvDto>(updated);
+            var responseTv = mapper.Map<ResponseTvDto>(updated);
             
-            _logger.LogInformation($"TV with ID: {responseTv.ID}, updated successfully");
+            logger.LogInformation($"TV with ID: {responseTv.ID}, updated successfully");
             return Ok(responseTv);
         }
 
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteTV(int id)
         {
-            await _tvService.DeleteTV(id);
+            await tvService.DeleteTV(id);
             
-            _logger.LogInformation($"TV with ID: {id}, deleted successfully");
+            logger.LogInformation($"TV with ID: {id}, deleted successfully");
             return NoContent();
         }
 
         [HttpPost("import-file")]
         public async Task<IActionResult> ImportDataFromFile(IFormFile file)
         {
-            var data = await _tvFileService.ImportFromFileAsync(file);
+            var data = await tvFileService.ImportFromFileAsync(file);
             
-            _logger.LogInformation($"TV data imported successfully from {file.FileName.ToUpper()} file");
+            logger.LogInformation($"TV data imported successfully from {file.FileName.ToUpper()} file");
             return Ok(data);
         }
 
         [HttpPost("export-file")]
         public async Task<IActionResult> ExportDataToFile([FromQuery] string fileName)
         {
-            var (data, contentType, downloadName) = await _tvFileService.ExportToFileAsync(fileName);
+            var (data, contentType, downloadName) = await tvFileService.ExportToFileAsync(fileName);
             
-            _logger.LogInformation($"TV data exported successfully to {fileName.ToUpper()} file");
+            logger.LogInformation($"TV data exported successfully to {fileName.ToUpper()} file");
             return File(data, contentType, downloadName);
+        }
+        
+        [HttpPost("add-multiple")]
+        public async Task<IActionResult> AddMultiple([FromBody] IEnumerable<TV> tvs)
+        {
+            var addedTVs = await tvDbTransactionsService.AddMultipleAsync(tvs);
+            
+            logger.LogInformation("Multiple TVs added successfully");
+            return Ok(addedTVs);
+        }
+
+        [HttpPut("update-multiple")]
+        public async Task<IActionResult> UpdateMultiple([FromBody] IEnumerable<TV> tvs)
+        {
+            var updatedTVs = await tvDbTransactionsService.UpdateMultipleAsync(tvs);
+            
+            logger.LogInformation("Multiple TVs updated successfully");
+            return Ok(updatedTVs);
+        }
+
+        [HttpDelete("delete-multiple")]
+        public async Task<IActionResult> DeleteMultiple([FromBody] IEnumerable<TV> tvs)
+        {
+            await tvDbTransactionsService.DeleteMultipleAsync(tvs);
+            
+            logger.LogInformation("Multiple TVs deleted successfully");
+            return NoContent();
         }
     }
 }
