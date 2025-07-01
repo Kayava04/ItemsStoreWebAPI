@@ -1,6 +1,7 @@
 using AutoMapper;
 using ItemsStoreWebAPI.DataBase;
 using ItemsStoreWebAPI.DTOs;
+using ItemsStoreWebAPI.DTOs.TV;
 using ItemsStoreWebAPI.Entities;
 using ItemsStoreWebAPI.Extensions;
 using ItemsStoreWebAPI.Models;
@@ -11,20 +12,20 @@ namespace ItemsStoreWebAPI.Repositories
     public class TvDbStorage(
         BaseDbContext context,
         IMapper mapper,
-        ILogger<TvDbStorage> logger) : ITVStorage
+        ILogger<TvDbStorage> logger) : IStorageBase<TV>
     {
-        public async Task<TV?> AddTV(TV tv)
+        public async Task<TV?> AddAsync(TV tv)
         {
             var tvEntity = mapper.Map<TvEntity>(tv);
             
             await context.TVs.AddAsync(tvEntity);
             await context.SaveChangesAsync();
             
-            logger.LogInformation($"Added TV with ID: {tv.ID}.");
+            logger.LogInformation($"Added TV with ID: {tv.Id}.");
             return mapper.Map<TV>(tvEntity);
         }
 
-        public async Task<TV?> GetTVById(int id)
+        public async Task<TV?> GetByIdAsync(int id)
         {
             var tvEntity = await context.TVs
                 .AsNoTracking()
@@ -41,15 +42,15 @@ namespace ItemsStoreWebAPI.Repositories
             return mapper.Map<TV>(tvEntity);
         }
 
-        public async Task<IEnumerable<TV>> GetTVs(TvFilterDto? filter = null)
+        public async Task<IEnumerable<TV>> GetAllAsync(IFilterDto? filter = null)
         {
             var query = context.TVs
                 .Include(tv => tv.StockItem)
                 .AsNoTracking();
-
-            if (filter != null)
+            
+            if (filter is TvFilterDto tvFilter)
             {
-                query = query.Where(filter.ToEntityExpression());
+                query = query.Where(tvFilter.ToEntityExpression());
                 logger.LogInformation($"Filtered TVs. Total count: {query.Count()}");
             }
             
@@ -59,7 +60,7 @@ namespace ItemsStoreWebAPI.Repositories
             return result.Select(mapper.Map<TV>);
         }
 
-        public async Task<TV?> UpdateTV(int id, TV updatedTV)
+        public async Task<TV?> UpdateAsync(int id, TV updatedTv)
         {
             var tvEntity = await context.TVs
                 .Include(t => t.StockItem)
@@ -71,7 +72,7 @@ namespace ItemsStoreWebAPI.Repositories
                 return null;
             }
             
-            mapper.Map(updatedTV, tvEntity);
+            mapper.Map(updatedTv, tvEntity);
             tvEntity.StockItem.ModifiedAt = DateTime.UtcNow;
             
             await context.SaveChangesAsync();
@@ -80,7 +81,7 @@ namespace ItemsStoreWebAPI.Repositories
             return mapper.Map<TV>(tvEntity);
         }
 
-        public async Task DeleteTV(int id)
+        public async Task DeleteAsync(int id)
         {
             var tvEntity = await context.TVs
                 .Include(tv => tv.StockItem)

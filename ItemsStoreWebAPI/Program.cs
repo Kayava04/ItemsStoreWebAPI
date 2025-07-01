@@ -1,7 +1,7 @@
 using FileToolKit.IO.File.Extensions;
+using FluentValidation.AspNetCore;
 using ItemsStoreWebAPI.DataBase;
 using ItemsStoreWebAPI.DataBase.Transactions;
-using ItemsStoreWebAPI.Factories;
 using ItemsStoreWebAPI.Mappings;
 using ItemsStoreWebAPI.Models;
 using ItemsStoreWebAPI.Repositories;
@@ -12,61 +12,47 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-// Choose Db Connection String
-var provider = configuration["DatabaseProvider"];
+// Db Connection String
+var connectionString = configuration.GetConnectionString(nameof(SqlServerDbContext));
 
-var selectedConnectionString = provider switch
-{
-    "NpgSql" => configuration.GetConnectionString(nameof(PostgresDbContext)),
-    "SqlServer" => configuration.GetConnectionString(nameof(SqlServerDbContext)),
-    _ => throw new NotSupportedException($"Database provider '{provider}' not supported")
-};
-
-// Choose Db Context
-switch (provider)
-{
-    case "NpgSql":
-        builder.Services.AddDbContext<BaseDbContext, PostgresDbContext>(options =>
-            options.UseNpgsql(selectedConnectionString));
-        break;
-    case "SqlServer":
-        builder.Services.AddDbContext<BaseDbContext, SqlServerDbContext>(options =>
-            options.UseSqlServer(selectedConnectionString));
-        break;
-    default:
-        throw new NotSupportedException($"Database provider '{provider}' not supported");
-}
-
-// Set Type of Repository
-builder.Services.Configure<StorageSettings>(configuration.GetSection("StorageSettings"));
+// Adding Db Connection
+builder.Services.AddDbContext<BaseDbContext, SqlServerDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 // Adding Repositories
-builder.Services.AddSingleton<ITVStorageFactory, TVStorageFactory>();
-builder.Services.AddSingleton<TVListStorage>();
-builder.Services.AddSingleton<TVDictionaryStorage>();
-builder.Services.AddScoped<TvDbStorage>();
+builder.Services.AddScoped<IStorageBase<TV>, TvDbStorage>();
+builder.Services.AddScoped<IStorageBase<Mobile>, MobileDbStorage>();
 
 // Adding Services
-builder.Services.AddScoped<ITVService, TVService>();
-builder.Services.AddScoped<IFileService<TV>, TVFileService>();
+builder.Services.AddScoped<IServiceBase<TV>, TvService>();
+builder.Services.AddScoped<IServiceBase<Mobile>, MobileService>();
+builder.Services.AddScoped<IFileService<TV>, TvFileService>();
+builder.Services.AddScoped<IFileService<Mobile>, MobileFileService>();
 builder.Services.AddScoped<IDbTransactionsService<TV>, TvDbTransactionsService>();
 
 // Adding Validators
-builder.Services.AddScoped<ITVRequestValidator, TVRequestValidator>();
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
+        fv.RegisterValidatorsFromAssemblyContaining<TvRequestValidator>());
+
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
+        fv.RegisterValidatorsFromAssemblyContaining<MobileRequestValidator>());
 
 // Adding ADO.NET TV Transactions
 builder.Services.AddScoped<IDbTransactionOperations<TV>>(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<TvDbTransactions>>();
-    
-    return new TvDbTransactions(selectedConnectionString, logger);
+    return new TvDbTransactions(connectionString!, logger);
 });
 
 // Adding Custom File Lib
 builder.Services.AddFileToolKitFor<TV>();
+builder.Services.AddFileToolKitFor<Mobile>();
 
 // Adding AutoMapper
 builder.Services.AddAutoMapper(typeof(TvProfile));
+builder.Services.AddAutoMapper(typeof(MobileProfile));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

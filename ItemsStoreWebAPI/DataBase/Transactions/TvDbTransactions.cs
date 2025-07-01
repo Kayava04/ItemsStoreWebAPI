@@ -34,18 +34,18 @@ namespace ItemsStoreWebAPI.DataBase.Transactions
                 tvCommand.Parameters.AddWithValue("@StockItemId", stockItemId);
                 tvCommand.Parameters.AddWithValue("@Name", item.Name);
                 tvCommand.Parameters.AddWithValue("@Description", item.Description);
-                tvCommand.Parameters.AddWithValue("@Size", item.Size);
+                tvCommand.Parameters.AddWithValue("@Size", item.ScreenSize);
                 tvCommand.Parameters.AddWithValue("@Resolution", item.Resolution);
                 tvCommand.Parameters.AddWithValue("@Frequency", item.Frequency);
                 tvCommand.Parameters.AddWithValue("@ReleasedYear", item.ReleasedYear);
 
                 var tvId = (int)(await tvCommand.ExecuteScalarAsync())!;
 
-                item.ID = tvId;
+                item.Id = tvId;
                 addedTVs.Add(item);
             }
             
-            logger.LogInformation($"Added {addedTVs.Count} TVs with IDs: {string.Join(", ", addedTVs.Select(x => x.ID))}");
+            logger.LogInformation($"Added {addedTVs.Count} TVs with IDs: {string.Join(", ", addedTVs.Select(x => x.Id))}");
             return addedTVs;
         }
 
@@ -55,11 +55,11 @@ namespace ItemsStoreWebAPI.DataBase.Transactions
             foreach (var item in items)
             { 
                 var getStockItemCommand = new SqlCommand("SELECT StockItemId FROM TVs WHERE ID = @Id", connection, transaction);
-                getStockItemCommand.Parameters.AddWithValue("@Id", item.ID);
+                getStockItemCommand.Parameters.AddWithValue("@Id", item.Id);
                 var stockItemIdObj = await getStockItemCommand.ExecuteScalarAsync();
 
                 if (stockItemIdObj == null)
-                    throw new Exception($"TV with ID {item.ID} not found");
+                    throw new Exception($"TV with ID {item.Id} not found");
 
                 var stockItemId = (int)stockItemIdObj;
 
@@ -83,10 +83,10 @@ namespace ItemsStoreWebAPI.DataBase.Transactions
                         Resolution = @Resolution, Frequency = @Frequency, ReleasedYear = @ReleasedYear
                     WHERE ID = @Id", connection, transaction);
 
-                updateTvCommand.Parameters.AddWithValue("@Id", item.ID);
+                updateTvCommand.Parameters.AddWithValue("@Id", item.Id);
                 updateTvCommand.Parameters.AddWithValue("@Name", item.Name);
                 updateTvCommand.Parameters.AddWithValue("@Description", item.Description);
-                updateTvCommand.Parameters.AddWithValue("@Size", item.Size);
+                updateTvCommand.Parameters.AddWithValue("@Size", item.ScreenSize);
                 updateTvCommand.Parameters.AddWithValue("@Resolution", item.Resolution);
                 updateTvCommand.Parameters.AddWithValue("@Frequency", item.Frequency);
                 updateTvCommand.Parameters.AddWithValue("@ReleasedYear", item.ReleasedYear);
@@ -96,7 +96,7 @@ namespace ItemsStoreWebAPI.DataBase.Transactions
                 updatedTVs.Add(item);
             }
 
-            logger.LogInformation($"Updated {updatedTVs.Count} TVs with IDs: {string.Join(", ", updatedTVs.Select(x => x.ID))}");
+            logger.LogInformation($"Updated {updatedTVs.Count} TVs with IDs: {string.Join(", ", updatedTVs.Select(x => x.Id))}");
             return updatedTVs;
         }
 
@@ -108,7 +108,7 @@ namespace ItemsStoreWebAPI.DataBase.Transactions
             {
                 // Get StockItemId
                 var getStockItemCommand = new SqlCommand("SELECT StockItemId FROM TVs WHERE ID = @Id", connection, transaction);
-                getStockItemCommand.Parameters.AddWithValue("@Id", item.ID);
+                getStockItemCommand.Parameters.AddWithValue("@Id", item.Id);
                 var stockItemIdObj = await getStockItemCommand.ExecuteScalarAsync();
 
                 if (stockItemIdObj == null)
@@ -118,7 +118,7 @@ namespace ItemsStoreWebAPI.DataBase.Transactions
 
                 // Delete TV
                 var deleteTvCommand = new SqlCommand("DELETE FROM TVs WHERE ID = @Id", connection, transaction);
-                deleteTvCommand.Parameters.AddWithValue("@Id", item.ID);
+                deleteTvCommand.Parameters.AddWithValue("@Id", item.Id);
                 await deleteTvCommand.ExecuteNonQueryAsync();
 
                 // Delete StockItem
@@ -126,7 +126,7 @@ namespace ItemsStoreWebAPI.DataBase.Transactions
                 deleteStockItemCommand.Parameters.AddWithValue("@StockItemId", stockItemId);
                 await deleteStockItemCommand.ExecuteNonQueryAsync();
                 
-                deletedTvs.Add(item.ID);
+                deletedTvs.Add(item.Id);
             }
             
             logger.LogInformation($"Deleted {deletedTvs.Count} TVs with IDs: {string.Join(", ", deletedTvs)}");

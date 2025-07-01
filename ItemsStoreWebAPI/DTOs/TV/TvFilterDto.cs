@@ -1,6 +1,6 @@
-namespace ItemsStoreWebAPI.DTOs
+namespace ItemsStoreWebAPI.DTOs.TV
 {
-    public class TvFilterDto
+    public class TvFilterDto : IFilterDto
     {
         public string? Name { get; set; }
         public int? MinSize { get; set; }

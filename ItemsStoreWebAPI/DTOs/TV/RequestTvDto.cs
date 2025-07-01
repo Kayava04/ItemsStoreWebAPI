@@ -1,14 +1,15 @@
-﻿namespace ItemsStoreWebAPI.Models
+namespace ItemsStoreWebAPI.DTOs.TV
 {
-    public class StockItem
+    public class RequestTvDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public float ScreenSize { get; set; }
+        public string Resolution { get; set; }
+        public float Frequency { get; set; }
         public int ReleasedYear { get; set; }
         public decimal Price { get; set; }
         public int InStock { get; set; }
-        public DateTime AddedAt { get; set; } = DateTime.UtcNow;
-        public DateTime ModifiedAt { get; set; } = DateTime.UtcNow;
     }
 }

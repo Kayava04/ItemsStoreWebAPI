@@ -9,28 +9,17 @@ namespace ItemsStoreWebAPI.Configurations
         public void Configure(EntityTypeBuilder<TvEntity> builder)
         {
             builder.HasKey(tv => tv.Id);
-            
-            builder.Property(tv => tv.Name)
-                .IsRequired()
-                .HasMaxLength(255);
 
-            builder.Property(tv => tv.Description)
-                .HasColumnType("text")
+            builder.Property(tv => tv.ScreenSize)
                 .IsRequired();
-            
-            builder.Property(tv => tv.Size)
-                .IsRequired();
-            
+
             builder.Property(tv => tv.Resolution)
                 .IsRequired()
                 .HasMaxLength(20);
-            
+
             builder.Property(tv => tv.Frequency)
                 .IsRequired();
-            
-            builder.Property(tv => tv.ReleasedYear)
-                .IsRequired();
-            
+
             builder.HasOne(tv => tv.StockItem)
                 .WithOne()
                 .HasForeignKey<TvEntity>(tv => tv.StockItemId)

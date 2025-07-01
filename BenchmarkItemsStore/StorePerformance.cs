@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Reflection;
-using ItemsStoreWebAPI.DTOs;
+using ItemsStoreWebAPI.DTOs.TV;
 using log4net;
 using log4net.Config;
 
@@ -32,7 +32,7 @@ namespace BenchmarkItemsStore
             var response = await _httpClient.GetAsync("filter");
             var tvs = await response.Content.ReadFromJsonAsync<List<RequestTvDto>>();
             
-            _lastId = tvs?.Any() == true ? tvs.Max(tv => tv.ID) : 0;
+            _lastId = tvs?.Any() == true ? tvs.Max(tv => tv.Id) : 0;
         }
         
         // Generating Range
@@ -97,7 +97,7 @@ namespace BenchmarkItemsStore
                 {
                     Name = $"LG {i}",
                     Description = $"OLED {i}",
-                    Size = 55,
+                    ScreenSize = 55,
                     Resolution = "2560x1440",
                     Frequency = 120,
                     ReleasedYear = 2024,
@@ -110,7 +110,7 @@ namespace BenchmarkItemsStore
                 if (response.IsSuccessStatusCode)
                 {
                     var created = await response.Content.ReadFromJsonAsync<ResponseTvDto>();
-                    _logger.Info($"Successfully added TV with ID: {created?.ID}.");
+                    _logger.Info($"Successfully added TV with ID: {created?.Id}.");
                 }
                 else
                     _logger.Error($"Failed to add TV. Status Code: {response.StatusCode}");
@@ -127,7 +127,7 @@ namespace BenchmarkItemsStore
                 var tv = await response.Content.ReadFromJsonAsync<RequestTvDto>();
             
                 if (response.IsSuccessStatusCode)
-                    _logger.Info($"Successfully received TV with ID: {tv.ID}");
+                    _logger.Info($"Successfully received TV with ID: {tv.Id}");
                 else
                     _logger.Error($"Failed to get TV. Status Code: {response.StatusCode}");
             });
@@ -152,10 +152,10 @@ namespace BenchmarkItemsStore
             {
                 var updatedTV = new RequestTvDto
                 {
-                    ID = i,
+                    Id = i,
                     Name = $"LG {i} updated",
                     Description = $"OLED {i} updated",
-                    Size = 55,
+                    ScreenSize = 55,
                     Resolution = "2560x1440",
                     Frequency = 120,
                     ReleasedYear = 2024,
@@ -166,7 +166,7 @@ namespace BenchmarkItemsStore
                 var response = await _httpClient.PutAsJsonAsync(string.Empty, updatedTV);
             
                 if (response.IsSuccessStatusCode)
-                    _logger.Info($"Successfully updated TV with ID: {updatedTV.ID}");
+                    _logger.Info($"Successfully updated TV with ID: {updatedTV.Id}");
                 else
                     _logger.Error($"Failed to update TV. Status Code: {response.StatusCode}");
             });
