@@ -18,7 +18,7 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = new TV();
             var errorMessage = string.Empty;
             
-            var mockTVService = new Mock<IServiceBase>();
+            var mockTVService = new Mock<IService<>>();
             var mockTVRequestValidator = new Mock<ITvRequestValidator>();
             var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TvController>>();
@@ -41,7 +41,7 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = TVFactory.CreateDefaultTV();
             var errorMessage = string.Empty;
             
-            var mockTVService = new Mock<IServiceBase>();
+            var mockTVService = new Mock<IService<>>();
             var mockTVRequestValidator = new Mock<ITvRequestValidator>();
             var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TvController>>();
@@ -64,7 +64,7 @@ namespace ItemsStoreWebAPITests.Tests
             // Arrange
             var expectedTV = TVFactory.CreateDefaultTV();
             
-            var mockTVService = new Mock<IServiceBase>();
+            var mockTVService = new Mock<IService<>>();
             var mockTVRequestValidator = new Mock<ITvRequestValidator>();
             var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TvController>>();
@@ -92,7 +92,7 @@ namespace ItemsStoreWebAPITests.Tests
                 TVFactory.CreateTV(2, "Samsung", "OLED TV", 50, "1920x1080", 120, 2022, 45000, 5)
             };
             
-            var mockTVService = new Mock<IServiceBase>();
+            var mockTVService = new Mock<IService<>>();
             var mockTVRequestValidator = new Mock<ITvRequestValidator>();
             var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TvController>>();
@@ -116,7 +116,7 @@ namespace ItemsStoreWebAPITests.Tests
             expectedTV.ID = 1;
             var errorMessage = string.Empty;
             
-            var mockTVService = new Mock<IServiceBase>();
+            var mockTVService = new Mock<IService<>>();
             var mockTVRequestValidator = new Mock<ITvRequestValidator>();
             var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TvController>>();
@@ -139,7 +139,7 @@ namespace ItemsStoreWebAPITests.Tests
             var updatedTV = TVFactory.CreateTV(1, "LG", "Bravia", 65, "7680x4320", 120, 2019, 32000, 2);
             var errorMessage = string.Empty;
             
-            var mockTVService = new Mock<IServiceBase>();
+            var mockTVService = new Mock<IService<>>();
             var mockTVRequestValidator = new Mock<ITvRequestValidator>();
             var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TvController>>();
@@ -162,7 +162,7 @@ namespace ItemsStoreWebAPITests.Tests
             // Arrange
             var existingTV = TVFactory.CreateDefaultTV();
             
-            var mockTVService = new Mock<IServiceBase>();
+            var mockTVService = new Mock<IService<>>();
             var mockTVRequestValidator = new Mock<ITvRequestValidator>();
             var mockTVFileService = new Mock<IFileService<TV>>();
             var mockLogger = new Mock<ILogger<TvController>>();

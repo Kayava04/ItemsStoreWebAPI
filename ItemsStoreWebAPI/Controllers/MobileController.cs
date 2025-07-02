@@ -9,8 +9,9 @@ namespace ItemsStoreWebAPI.Controllers
     [ApiController]
     [Route("v1/stock/electronic/mobile")]
     public class MobileController(
-        IServiceBase<Mobile> mobileService,
+        IService<Mobile> mobileService,
         IFileService<Mobile> mobileFileService,
+        IDbTransactionsService<Mobile> mobileDbTransactionsService,
         IMapper mapper,
         ILogger<MobileController> logger) : ControllerBase
     {
@@ -47,7 +48,7 @@ namespace ItemsStoreWebAPI.Controllers
         public async Task<IActionResult> GetMobiles([FromQuery] MobileFilterDto? filter = null)
         {
             var mobiles = await mobileService.GetAllAsync(filter);
-            var responseMobiles = mobiles.Select(m => mapper.Map<ResponseMobileDto>(m));
+            var responseMobiles = mobiles.Select(mapper.Map<ResponseMobileDto>);
             
             logger.LogInformation($"Received all Mobiles. Total count: {responseMobiles.Count()}");
             return Ok(responseMobiles);
@@ -96,6 +97,40 @@ namespace ItemsStoreWebAPI.Controllers
             
             logger.LogInformation($"Mobile data exported successfully to {fileName.ToUpper()} file");
             return File(data, contentType, downloadName);
+        }
+        
+        [HttpPost("add-multiple")]
+        public async Task<IActionResult> AddMultiple([FromBody] IEnumerable<RequestMobileDto> requestMobiles)
+        {
+            var mobiles = requestMobiles.Select(mapper.Map<Mobile>);
+            var addedMobiles = await mobileDbTransactionsService.AddMultipleAsync(mobiles);
+            
+            var responseMobiles = addedMobiles.Select(mapper.Map<ResponseMobileDto>);
+            
+            logger.LogInformation("Multiple Mobiles added successfully");
+            return Ok(responseMobiles);
+        }
+
+        [HttpPut("update-multiple")]
+        public async Task<IActionResult> UpdateMultiple([FromBody] IEnumerable<RequestMobileDto> requestMobiles)
+        {
+            var mobiles = requestMobiles.Select(mapper.Map<Mobile>);
+            var updatedMobiles = await mobileDbTransactionsService.UpdateMultipleAsync(mobiles);
+            
+            var responseMobiles = updatedMobiles.Select(mapper.Map<ResponseMobileDto>);
+            
+            logger.LogInformation("Multiple Mobiles updated successfully");
+            return Ok(responseMobiles);
+        }
+
+        [HttpDelete("delete-multiple")]
+        public async Task<IActionResult> DeleteMultiple([FromBody] IEnumerable<RequestMobileDto> requestMobiles)
+        {
+            var mobiles = requestMobiles.Select(mapper.Map<Mobile>);
+            await mobileDbTransactionsService.DeleteMultipleAsync(mobiles);
+            
+            logger.LogInformation("Multiple Mobiles deleted successfully");
+            return NoContent();
         }
     }
 }

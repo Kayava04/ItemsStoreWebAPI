@@ -4,7 +4,7 @@ using ItemsStoreWebAPI.Repositories;
 
 namespace ItemsStoreWebAPI.Services
 {
-    public class MobileService(IStorageBase<Mobile> mobileStorage) : IServiceBase<Mobile>
+    public class MobileService(IStorage<Mobile> mobileStorage) : IService<Mobile>
     {
         public async Task<Mobile?> AddAsync(Mobile mobile)
         {

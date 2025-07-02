@@ -4,7 +4,7 @@ using ItemsStoreWebAPI.Repositories;
 
 namespace ItemsStoreWebAPI.Services
 {
-    public class TvService(IStorageBase<TV> tvStorage) : IServiceBase<TV>
+    public class TvService(IStorage<TV> tvStorage) : IService<TV>
     {
         public async Task<TV?> AddAsync(TV tv)
         {

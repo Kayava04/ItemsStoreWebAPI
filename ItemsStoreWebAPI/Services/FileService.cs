@@ -1,14 +1,13 @@
 using FileToolKit.IO.File.Factories;
-using ItemsStoreWebAPI.Models;
 
 namespace ItemsStoreWebAPI.Services
 {
-    public class TvFileService(
-        IServiceBase<TV> tvService,
-        IFileToolFactory<TV> fileService,
-        ILogger<TvFileService> logger) : IFileService<TV>
+    public class FileService<T>(
+        IService<T> service,
+        IFileToolFactory<T> fileService,
+        ILogger<FileService<T>> logger): IFileService<T> where T : class
     {
-        public async Task<IEnumerable<TV>> ImportFromFileAsync(IFormFile file)
+        public async Task<IEnumerable<T>> ImportFromFileAsync(IFormFile file)
         {
             if (file.Length == 0)
                 logger.LogError("File is empty");
@@ -20,12 +19,12 @@ namespace ItemsStoreWebAPI.Services
             var importedData = await tool.ImportAsync(stream);
             
             foreach (var tv in importedData)
-                tvService.AddAsync(tv);
+                service.AddAsync(tv);
             
             logger.LogInformation($"Imported {importedData.Count()} TVs from file: {file.FileName}");
             return importedData;
         }
-        
+
         public async Task<(byte[] data, string contentType, string downloadFileName)> ExportToFileAsync(string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
@@ -37,7 +36,7 @@ namespace ItemsStoreWebAPI.Services
             
             var tool = fileService.GetTool(extension);
 
-            var data = await tvService.GetAllAsync();
+            var data = await service.GetAllAsync();
             var fileData = await tool.ExportAsync(data);
 
             var contentType = extension.ToLower() switch

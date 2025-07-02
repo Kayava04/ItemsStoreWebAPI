@@ -1,4 +1,5 @@
 using FileToolKit.IO.File.Extensions;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using ItemsStoreWebAPI.DataBase;
 using ItemsStoreWebAPI.DataBase.Transactions;
@@ -8,42 +9,62 @@ using ItemsStoreWebAPI.Repositories;
 using ItemsStoreWebAPI.Services;
 using ItemsStoreWebAPI.Validators;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-// Db Connection String
-var connectionString = configuration.GetConnectionString(nameof(SqlServerDbContext));
+// Get DB ConnectionString
+builder.Services.Configure<DbConnectionOptions>(
+    configuration.GetSection("ConnectionStrings"));
 
-// Adding Db Connection
-builder.Services.AddDbContext<BaseDbContext, SqlServerDbContext>(options =>
-    options.UseSqlServer(connectionString));
+// Adding DB Connection
+builder.Services.AddDbContext<BaseDbContext, SqlServerDbContext>((provider, options) =>
+{
+    var connectionOptions = provider.GetRequiredService<IOptions<DbConnectionOptions>>();
+    var connectionString = connectionOptions.Value.SqlServerDbContext;
+    options.UseSqlServer(connectionString);
+});
 
 // Adding Repositories
-builder.Services.AddScoped<IStorageBase<TV>, TvDbStorage>();
-builder.Services.AddScoped<IStorageBase<Mobile>, MobileDbStorage>();
+builder.Services.AddScoped<IStorage<TV>, TvDbStorage>();
+builder.Services.AddScoped<IStorage<Mobile>>(provider =>
+{
+    var logger = provider.GetRequiredService<ILogger<MobileDbStorage>>();
+    var options = provider.GetRequiredService<IOptions<DbConnectionOptions>>();
+    return new MobileDbStorage(
+        options.Value.SqlServerDbContext, logger);
+});
 
 // Adding Services
-builder.Services.AddScoped<IServiceBase<TV>, TvService>();
-builder.Services.AddScoped<IServiceBase<Mobile>, MobileService>();
-builder.Services.AddScoped<IFileService<TV>, TvFileService>();
-builder.Services.AddScoped<IFileService<Mobile>, MobileFileService>();
+builder.Services.AddScoped<IService<TV>, TvService>();
+builder.Services.AddScoped<IService<Mobile>, MobileService>();
+builder.Services.AddScoped<IFileService<TV>, FileService<TV>>();
+builder.Services.AddScoped<IFileService<Mobile>, FileService<Mobile>>();
 builder.Services.AddScoped<IDbTransactionsService<TV>, TvDbTransactionsService>();
 
-// Adding Validators
-builder.Services.AddControllers()
-    .AddFluentValidation(fv =>
-        fv.RegisterValidatorsFromAssemblyContaining<TvRequestValidator>());
+// Adding FluentValidation
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
-builder.Services.AddControllers()
-    .AddFluentValidation(fv =>
-        fv.RegisterValidatorsFromAssemblyContaining<MobileRequestValidator>());
+builder.Services.AddValidatorsFromAssemblyContaining<TvRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<MobileRequestValidator>();
 
-// Adding ADO.NET TV Transactions
+// Adding DB Transactions
 builder.Services.AddScoped<IDbTransactionOperations<TV>>(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<TvDbTransactions>>();
-    return new TvDbTransactions(connectionString!, logger);
+    var connectionOptions = provider.GetRequiredService<IOptions<DbConnectionOptions>>();
+    var connectionString = connectionOptions.Value.SqlServerDbContext;
+    return new TvDbTransactions(connectionString, logger);
+});
+
+builder.Services.AddScoped<IDbTransactionOperations<Mobile>>(provider =>
+{
+    var logger = provider.GetRequiredService<ILogger<MobileDbTransactions>>();
+    var connectionOptions = provider.GetRequiredService<IOptions<DbConnectionOptions>>();
+    var connectionString = connectionOptions.Value.SqlServerDbContext;
+    return new MobileDbTransactions(connectionString, logger);
 });
 
 // Adding Custom File Lib

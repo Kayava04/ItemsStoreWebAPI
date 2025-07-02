@@ -12,7 +12,7 @@ namespace ItemsStoreWebAPI.Repositories
     public class TvDbStorage(
         BaseDbContext context,
         IMapper mapper,
-        ILogger<TvDbStorage> logger) : IStorageBase<TV>
+        ILogger<TvDbStorage> logger) : IStorage<TV>
     {
         public async Task<TV?> AddAsync(TV tv)
         {
@@ -21,7 +21,7 @@ namespace ItemsStoreWebAPI.Repositories
             await context.TVs.AddAsync(tvEntity);
             await context.SaveChangesAsync();
             
-            logger.LogInformation($"Added TV with ID: {tv.Id}.");
+            logger.LogInformation($"Added TV with ID: {tv.Id}");
             return mapper.Map<TV>(tvEntity);
         }
 
@@ -34,11 +34,11 @@ namespace ItemsStoreWebAPI.Repositories
 
             if (tvEntity == null)
             {
-                logger.LogWarning($"TV with ID: {id} not found.");
+                logger.LogWarning($"TV with ID: {id} not found");
                 return null;
             }
             
-            logger.LogInformation($"Found TV with ID: {id}.");
+            logger.LogInformation($"Found TV with ID: {id}");
             return mapper.Map<TV>(tvEntity);
         }
 
@@ -77,7 +77,7 @@ namespace ItemsStoreWebAPI.Repositories
             
             await context.SaveChangesAsync();
             
-            logger.LogInformation($"Updated TV with ID: {tvEntity.Id}.");
+            logger.LogInformation($"Updated TV with ID: {tvEntity.Id}");
             return mapper.Map<TV>(tvEntity);
         }
 
@@ -93,7 +93,7 @@ namespace ItemsStoreWebAPI.Repositories
                 context.StockItems.Remove(tvEntity.StockItem);
                 
                 await context.SaveChangesAsync();
-                logger.LogInformation($"Deleted TV with ID: {id}.");
+                logger.LogInformation($"Deleted TV with ID: {id}");
             }
             else logger.LogWarning($"Attempted to delete non-existent TV with ID: {id}");
         }

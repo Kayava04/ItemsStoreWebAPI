@@ -9,7 +9,7 @@ namespace ItemsStoreWebAPI.Controllers
     [ApiController]
     [Route("v1/stock/electronic/tv")]
     public class TvController(
-        IServiceBase<TV> tvService,
+        IService<TV> tvService,
         IFileService<TV> tvFileService,
         IDbTransactionsService<TV> tvDbTransactionsService,
         IMapper mapper,
@@ -100,26 +100,33 @@ namespace ItemsStoreWebAPI.Controllers
         }
         
         [HttpPost("add-multiple")]
-        public async Task<IActionResult> AddMultiple([FromBody] IEnumerable<TV> tvs)
+        public async Task<IActionResult> AddMultiple([FromBody] IEnumerable<RequestTvDto> requestTVs)
         {
+            var tvs = requestTVs.Select(mapper.Map<TV>);
             var addedTVs = await tvDbTransactionsService.AddMultipleAsync(tvs);
             
+            var responseTVs = addedTVs.Select(mapper.Map<RequestTvDto>);
+            
             logger.LogInformation("Multiple TVs added successfully");
-            return Ok(addedTVs);
+            return Ok(responseTVs);
         }
 
         [HttpPut("update-multiple")]
-        public async Task<IActionResult> UpdateMultiple([FromBody] IEnumerable<TV> tvs)
+        public async Task<IActionResult> UpdateMultiple([FromBody] IEnumerable<RequestTvDto> requestTVs)
         {
+            var tvs = requestTVs.Select(mapper.Map<TV>);
             var updatedTVs = await tvDbTransactionsService.UpdateMultipleAsync(tvs);
             
+            var responseTVs = updatedTVs.Select(mapper.Map<RequestTvDto>);
+            
             logger.LogInformation("Multiple TVs updated successfully");
-            return Ok(updatedTVs);
+            return Ok(responseTVs);
         }
 
         [HttpDelete("delete-multiple")]
-        public async Task<IActionResult> DeleteMultiple([FromBody] IEnumerable<TV> tvs)
+        public async Task<IActionResult> DeleteMultiple([FromBody] IEnumerable<RequestTvDto> requestTVs)
         {
+            var tvs = requestTVs.Select(mapper.Map<TV>);
             await tvDbTransactionsService.DeleteMultipleAsync(tvs);
             
             logger.LogInformation("Multiple TVs deleted successfully");

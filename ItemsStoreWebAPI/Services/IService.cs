@@ -2,7 +2,7 @@
 
 namespace ItemsStoreWebAPI.Services
 {
-    public interface IServiceBase<T> where T : class
+    public interface IService<T> where T : class
     {
         Task<T?> AddAsync(T model);
         Task<T?> GetByIdAsync(int id);
