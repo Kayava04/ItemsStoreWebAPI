@@ -19,6 +19,7 @@ namespace ItemsStoreWebAPI.Mappings
                 .ForMember(dest => dest.Frequency, opt => opt.MapFrom(src => src.Frequency))
                 .ForMember(dest => dest.StockItem, opt => opt.MapFrom(src => new StockItemEntity
                 {
+                    Id = src.Id,
                     Name = src.Name,
                     Description = src.Description,
                     ReleasedYear = src.ReleasedYear,
@@ -26,9 +27,11 @@ namespace ItemsStoreWebAPI.Mappings
                     InStock = src.InStock,
                     AddedAt = src.AddedAt,
                     ModifiedAt = src.ModifiedAt
-                }));
+                }))
+                .ForMember(dest => dest.StockItemId, opt => opt.MapFrom(src => src.Id));
             
             CreateMap<TvEntity, TV>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.StockItem.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.StockItem.Name))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.StockItem.Description))
                 .ForMember(dest => dest.ReleasedYear, opt => opt.MapFrom(src => src.StockItem.ReleasedYear))

@@ -26,7 +26,7 @@ namespace ItemsStoreWebAPI.Configurations
             builder.Property(m => m.Storage)
                 .IsRequired();
 
-            builder.HasOne<StockItemEntity>()
+            builder.HasOne(m => m.StockItem)
                 .WithOne()
                 .HasForeignKey<MobileEntity>(m => m.StockItemId)
                 .OnDelete(DeleteBehavior.Restrict);
