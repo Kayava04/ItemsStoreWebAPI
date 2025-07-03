@@ -19,7 +19,10 @@ namespace ItemsStoreWebAPI.Repositories
      * 4. Implement Mobile repo with using Dapper (+)
      * 5. Implement db transactions for mobile with using Dapper (+)
      * 6. Change registration of FluentValidation in DI (+)
-     * 7. Create Migrations (-)
+     * 7. Create Migrations (+)
      * 8. Implement methods for testing api transactions and for mobile in StorePerformance (-)
+     * 9. Check best practise of using db connection string (-)
+     * 10. Read about using await in the open connection (-)
+     * 11. Validate behavior unexpected inputs (-)
      */
 }

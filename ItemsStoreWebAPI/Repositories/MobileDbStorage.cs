@@ -56,7 +56,7 @@ namespace ItemsStoreWebAPI.Repositories
             
             await tx.CommitAsync();
             
-            logger.LogInformation($"Added Mobile with ID: {mobile.Id}");
+            logger.LogInformation($"Added Mobile with ID: {mobileId}");
             return mobile;
         }
 
@@ -169,15 +169,15 @@ namespace ItemsStoreWebAPI.Repositories
             },
             transaction: tx);
             
-            await tx.CommitAsync();
-            
             if (mobileId < 1)
             {
                 logger.LogWarning($"Attempted to update non-existent Mobile with ID: {id}");
                 return null;
             }
             
-            logger.LogInformation($"Updated Mobile with ID: {updatedMobile.Id}");
+            await tx.CommitAsync();
+            
+            logger.LogInformation($"Updated Mobile with ID: {id}");
             return updatedMobile;
         }
 
@@ -192,11 +192,12 @@ namespace ItemsStoreWebAPI.Repositories
 
             var mobileId = await connection.ExecuteAsync(deleteMobileSql, new { Id = id }, transaction: tx);
             await connection.ExecuteAsync(deleteStockItemSql, new { Id = id }, transaction: tx);
-            
-            await tx.CommitAsync();
-            
+
             if (mobileId > 0)
+            {
+                await tx.CommitAsync();
                 logger.LogInformation($"Deleted Mobile with ID: {id}");
+            }
             else
                 logger.LogWarning($"Attempted to delete non-existent Mobile with ID: {id}");
         }
