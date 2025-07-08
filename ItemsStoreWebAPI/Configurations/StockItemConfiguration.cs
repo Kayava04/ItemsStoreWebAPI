@@ -10,6 +10,17 @@ namespace ItemsStoreWebAPI.Configurations
         {
             builder.HasKey(si => si.Id);
             
+            builder.Property(si => si.Name)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            builder.Property(si => si.Description)
+                .IsRequired()
+                .HasColumnType("text");
+            
+            builder.Property(si => si.ReleasedYear)
+                .IsRequired();
+            
             builder.Property(si => si.Price)
                 .HasColumnType("decimal(10,2)")
                 .IsRequired();
@@ -18,7 +29,7 @@ namespace ItemsStoreWebAPI.Configurations
                 .IsRequired();
 
             builder.Property(si => si.AddedAt)
-                .HasDefaultValueSql("NOW()");
+                .HasDefaultValueSql("GETDATE()");
             
             builder.Property(si => si.ModifiedAt)
                 .IsRequired();

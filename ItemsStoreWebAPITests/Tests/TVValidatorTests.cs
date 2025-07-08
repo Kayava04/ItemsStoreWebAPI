@@ -9,7 +9,7 @@ namespace ItemsStoreWebAPITests.Tests
         public void IsValidTV_ShouldReturnFalse_WhenTVIsNull()
         {
             // Arrange
-            var tvRequestValidator = new TVRequestValidator();
+            var tvRequestValidator = new TvRequestValidator();
 
             // Act
             var result = tvRequestValidator.IsValid(null, out string errorMessage);
@@ -26,7 +26,7 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = TVFactory.CreateDefaultTV();
             expectedTV.Name = string.Empty;
             
-            var tvRequestValidator = new TVRequestValidator();
+            var tvRequestValidator = new TvRequestValidator();
 
             // Act
             var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
@@ -43,7 +43,7 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = TVFactory.CreateDefaultTV();
             expectedTV.Size = 0;
             
-            var tvRequestValidator = new TVRequestValidator();
+            var tvRequestValidator = new TvRequestValidator();
 
             // Act
             var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
@@ -60,7 +60,7 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = TVFactory.CreateDefaultTV();
             expectedTV.Resolution = string.Empty;
             
-            var tvRequestValidator = new TVRequestValidator();
+            var tvRequestValidator = new TvRequestValidator();
 
             // Act
             var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
@@ -77,7 +77,7 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = TVFactory.CreateDefaultTV();
             expectedTV.Frequency = 0;
             
-            var tvRequestValidator = new TVRequestValidator();
+            var tvRequestValidator = new TvRequestValidator();
             
             // Act
             var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
@@ -94,7 +94,7 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = TVFactory.CreateDefaultTV();
             expectedTV.ReleasedYear = 1899;
             
-            var tvRequestValidator = new TVRequestValidator();
+            var tvRequestValidator = new TvRequestValidator();
 
             // Act
             var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
@@ -111,7 +111,7 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = TVFactory.CreateDefaultTV();
             expectedTV.Price = -19299;
             
-            var tvRequestValidator = new TVRequestValidator();
+            var tvRequestValidator = new TvRequestValidator();
 
             // Act
             var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);
@@ -128,7 +128,7 @@ namespace ItemsStoreWebAPITests.Tests
             var expectedTV = TVFactory.CreateDefaultTV();
             expectedTV.InStock = -5;
             
-            var tvRequestValidator = new TVRequestValidator();
+            var tvRequestValidator = new TvRequestValidator();
 
             // Act
             var result = tvRequestValidator.IsValid(expectedTV, out string errorMessage);

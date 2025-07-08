@@ -7,7 +7,7 @@ using Moq;
 
 namespace ItemsStoreWebAPITests.Tests
 {
-    public class TVServiceTests
+    public class TvServiceTests
     {
         [Fact]
         public void AddTV_ShouldAddTVToStorage()
@@ -19,7 +19,7 @@ namespace ItemsStoreWebAPITests.Tests
             
             mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            var tvService = new TVService(mockTVStorageFactory.Object);
+            var tvService = new TvService(mockTVStorageFactory.Object);
 
             mockTVStorage.Setup(storage => storage.AddTV(It.IsAny<TV>())).Returns(expectedTV);
 
@@ -51,7 +51,7 @@ namespace ItemsStoreWebAPITests.Tests
             
             mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            var tvService = new TVService(mockTVStorageFactory.Object);
+            var tvService = new TvService(mockTVStorageFactory.Object);
 
             mockTVStorage.Setup(storage => storage.GetTVById(expectedTV.ID)).Returns(expectedTV);
 
@@ -87,7 +87,7 @@ namespace ItemsStoreWebAPITests.Tests
             
             mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            var tvService = new TVService(mockTVStorageFactory.Object);
+            var tvService = new TvService(mockTVStorageFactory.Object);
 
             mockTVStorage.Setup(storage => storage.GetTVs(null)).Returns(tvs);
 
@@ -112,7 +112,7 @@ namespace ItemsStoreWebAPITests.Tests
 
             mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            var tvService = new TVService(mockTVStorageFactory.Object);
+            var tvService = new TvService(mockTVStorageFactory.Object);
 
             mockTVStorage.Setup(storage => storage.UpdateTV(existingTV.ID, updatedTV)).Returns(updatedTV);
 
@@ -144,7 +144,7 @@ namespace ItemsStoreWebAPITests.Tests
             
             mockTVStorageFactory.Setup(factory => factory.CreateStorage(It.IsAny<string?>())).Returns(mockTVStorage.Object);
             
-            var tvService = new TVService(mockTVStorageFactory.Object);
+            var tvService = new TvService(mockTVStorageFactory.Object);
 
             // Act
             tvService.DeleteTV(existingTV.ID);

@@ -1,22 +1,24 @@
 using AutoMapper;
-using ItemsStoreWebAPI.DTOs.TV;
+using ItemsStoreWebAPI.DTOs.Mobile;
 using ItemsStoreWebAPI.Entities;
 using ItemsStoreWebAPI.Models;
 
 namespace ItemsStoreWebAPI.Mappings
 {
-    public class TvProfile : Profile
+    public class MobileProfile : Profile
     {
-        public TvProfile()
+        public MobileProfile()
         {
-            CreateMap<RequestTvDto, TV>();
-            CreateMap<ResponseTvDto, TV>();
-            CreateMap<TV, ResponseTvDto>();
-
-            CreateMap<TV, TvEntity>()
+            CreateMap<RequestMobileDto, Mobile>();
+            CreateMap<ResponseMobileDto, Mobile>();
+            CreateMap<Mobile, ResponseMobileDto>();
+            
+            CreateMap<Mobile, MobileEntity>()
+                .ForMember(dest => dest.OS, opt => opt.MapFrom(src => src.OS))
                 .ForMember(dest => dest.ScreenSize, opt => opt.MapFrom(src => src.ScreenSize))
-                .ForMember(dest => dest.Resolution, opt => opt.MapFrom(src => src.Resolution))
-                .ForMember(dest => dest.Frequency, opt => opt.MapFrom(src => src.Frequency))
+                .ForMember(dest => dest.BatteryCapacity, opt => opt.MapFrom(src => src.BatteryCapacity))
+                .ForMember(dest => dest.RAM, opt => opt.MapFrom(src => src.RAM))
+                .ForMember(dest => dest.Storage, opt => opt.MapFrom(src => src.Storage))
                 .ForMember(dest => dest.StockItem, opt => opt.MapFrom(src => new StockItemEntity
                 {
                     Id = src.Id,
@@ -30,7 +32,7 @@ namespace ItemsStoreWebAPI.Mappings
                 }))
                 .ForMember(dest => dest.StockItemId, opt => opt.MapFrom(src => src.Id));
             
-            CreateMap<TvEntity, TV>()
+            CreateMap<MobileEntity, Mobile>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.StockItem.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.StockItem.Name))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.StockItem.Description))
@@ -39,9 +41,11 @@ namespace ItemsStoreWebAPI.Mappings
                 .ForMember(dest => dest.InStock, opt => opt.MapFrom(src => src.StockItem.InStock))
                 .ForMember(dest => dest.AddedAt, opt => opt.MapFrom(src => src.StockItem.AddedAt))
                 .ForMember(dest => dest.ModifiedAt, opt => opt.MapFrom(src => src.StockItem.ModifiedAt))
+                .ForMember(dest => dest.OS, opt => opt.MapFrom(src => src.OS))
                 .ForMember(dest => dest.ScreenSize, opt => opt.MapFrom(src => src.ScreenSize))
-                .ForMember(dest => dest.Resolution, opt => opt.MapFrom(src => src.Resolution))
-                .ForMember(dest => dest.Frequency, opt => opt.MapFrom(src => src.Frequency));
+                .ForMember(dest => dest.BatteryCapacity, opt => opt.MapFrom(src => src.BatteryCapacity))
+                .ForMember(dest => dest.RAM, opt => opt.MapFrom(src => src.RAM))
+                .ForMember(dest => dest.Storage, opt => opt.MapFrom(src => src.Storage));
         }
     }
 }
