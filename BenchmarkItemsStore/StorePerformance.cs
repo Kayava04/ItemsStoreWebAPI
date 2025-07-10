@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Reflection;
-using ItemsStoreWebAPI.DTOs.TV;
+using ItemsStoreWebAPI.Application.DTOs.TV;
 using log4net;
 using log4net.Config;
 

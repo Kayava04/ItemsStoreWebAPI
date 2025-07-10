@@ -1,13 +1,17 @@
 using FileToolKit.IO.File.Extensions;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using ItemsStoreWebAPI.DataBase;
-using ItemsStoreWebAPI.DataBase.Transactions;
-using ItemsStoreWebAPI.Mappings;
-using ItemsStoreWebAPI.Models;
-using ItemsStoreWebAPI.Repositories;
-using ItemsStoreWebAPI.Services;
-using ItemsStoreWebAPI.Validators;
+using ItemsStoreWebAPI.Application.Mappings;
+using ItemsStoreWebAPI.Application.Models;
+using ItemsStoreWebAPI.Application.Services.Implementations;
+using ItemsStoreWebAPI.Application.Services.Interfaces;
+using ItemsStoreWebAPI.DataAccess.DataBase.DbContexts;
+using ItemsStoreWebAPI.DataAccess.DataBase.Startup;
+using ItemsStoreWebAPI.DataAccess.DataBase.Transactions.Implementations;
+using ItemsStoreWebAPI.DataAccess.DataBase.Transactions.Interfaces;
+using ItemsStoreWebAPI.DataAccess.Repositories.Implementations;
+using ItemsStoreWebAPI.DataAccess.Repositories.Interfaces;
+using ItemsStoreWebAPI.Domain.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -41,7 +45,6 @@ builder.Services.AddScoped<IService<TV>, TvService>();
 builder.Services.AddScoped<IService<Mobile>, MobileService>();
 builder.Services.AddScoped<IFileService<TV>, FileService<TV>>();
 builder.Services.AddScoped<IFileService<Mobile>, FileService<Mobile>>();
-builder.Services.AddScoped<IDbTransactionsService<TV>, TvDbTransactionsService>();
 
 // Adding FluentValidation
 builder.Services.AddFluentValidationAutoValidation();
