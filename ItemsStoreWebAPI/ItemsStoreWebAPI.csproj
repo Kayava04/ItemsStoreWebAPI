@@ -28,4 +28,10 @@
     <ProjectReference Include="..\FileToolKit\FileToolKit.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Application\" />
+    <Folder Include="DataAccess\" />
+    <Folder Include="Domain\" />
+  </ItemGroup>
+
 </Project>
