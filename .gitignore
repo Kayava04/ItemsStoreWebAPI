@@ -11,6 +11,7 @@ ItemsStoreWebAPI.sln.DotSettings.user
 
 /BenchmarkItemsStore/bin
 /BenchmarkItemsStore/obj
+/BenchmarkItemsStore/Logs
 
 /FileToolKit/bin
 /FileToolKit/obj
