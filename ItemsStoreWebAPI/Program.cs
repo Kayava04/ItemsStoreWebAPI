@@ -75,6 +75,7 @@ builder.Services.AddFileToolKitFor<TV>();
 builder.Services.AddFileToolKitFor<Mobile>();
 
 // Adding AutoMapper
+builder.Services.AddAutoMapper(typeof(StockItemProfile));
 builder.Services.AddAutoMapper(typeof(TvProfile));
 builder.Services.AddAutoMapper(typeof(MobileProfile));
 
