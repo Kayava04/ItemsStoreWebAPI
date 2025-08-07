@@ -18,7 +18,6 @@ namespace ItemsStoreWebAPI.Application.Mappings
                 .ForMember(dest => dest.ScreenSize, opt => opt.MapFrom(src => src.ScreenSize))
                 .ForMember(dest => dest.Resolution, opt => opt.MapFrom(src => src.Resolution))
                 .ForMember(dest => dest.Frequency, opt => opt.MapFrom(src => src.Frequency))
-                // .ForMember(dest => dest.StockItemId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.StockItem, opt => opt.MapFrom(src => src));
             
             CreateMap<TvEntity, TV>()
@@ -26,7 +25,6 @@ namespace ItemsStoreWebAPI.Application.Mappings
                 .ForMember(dest => dest.ScreenSize, opt => opt.MapFrom(src => src.ScreenSize))
                 .ForMember(dest => dest.Resolution, opt => opt.MapFrom(src => src.Resolution))
                 .ForMember(dest => dest.Frequency, opt => opt.MapFrom(src => src.Frequency))
-                // .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.StockItem.Id))
                 .IncludeMembers(src => src.StockItem);
         }
     }

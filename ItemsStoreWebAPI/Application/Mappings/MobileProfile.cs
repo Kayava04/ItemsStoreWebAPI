@@ -20,7 +20,6 @@ namespace ItemsStoreWebAPI.Application.Mappings
                 .ForMember(dest => dest.BatteryCapacity, opt => opt.MapFrom(src => src.BatteryCapacity))
                 .ForMember(dest => dest.RAM, opt => opt.MapFrom(src => src.RAM))
                 .ForMember(dest => dest.Storage, opt => opt.MapFrom(src => src.Storage))
-                // .ForMember(dest => dest.StockItemId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.StockItem, opt => opt.MapFrom(src => src));
                 
             
@@ -31,7 +30,6 @@ namespace ItemsStoreWebAPI.Application.Mappings
                 .ForMember(dest => dest.BatteryCapacity, opt => opt.MapFrom(src => src.BatteryCapacity))
                 .ForMember(dest => dest.RAM, opt => opt.MapFrom(src => src.RAM))
                 .ForMember(dest => dest.Storage, opt => opt.MapFrom(src => src.Storage))
-                // .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.StockItem.Id))
                 .IncludeMembers(src => src.StockItem);
         }
     }
