@@ -123,10 +123,9 @@ namespace ItemsStoreWebAPI.Presentation.Controllers
         }
 
         [HttpDelete("delete-multiple")]
-        public async Task<IActionResult> DeleteMultiple([FromBody] IEnumerable<RequestTvDto> requestTVs)
+        public async Task<IActionResult> DeleteMultiple([FromBody] IEnumerable<int> ids)
         {
-            var tvs = requestTVs.Select(mapper.Map<TV>);
-            await tvService.DeleteMultipleAsync(tvs);
+            await tvService.DeleteMultipleAsync(ids);
             
             logger.LogInformation("Multiple TVs deleted successfully");
             return NoContent();

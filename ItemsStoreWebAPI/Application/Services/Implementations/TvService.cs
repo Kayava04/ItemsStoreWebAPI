@@ -45,9 +45,9 @@ namespace ItemsStoreWebAPI.Application.Services.Implementations
             return await transactionOperations.UpdateMultipleAsync(tvs);
         }
 
-        public async Task DeleteMultipleAsync(IEnumerable<TV> tvs)
+        public async Task DeleteMultipleAsync(IEnumerable<int> ids)
         {
-            await transactionOperations.DeleteMultipleAsync(tvs);
+            await transactionOperations.DeleteMultipleAsync(ids);
         }
     }
 }

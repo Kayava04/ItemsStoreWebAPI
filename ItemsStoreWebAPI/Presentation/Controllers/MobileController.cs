@@ -123,10 +123,9 @@ namespace ItemsStoreWebAPI.Presentation.Controllers
         }
 
         [HttpDelete("delete-multiple")]
-        public async Task<IActionResult> DeleteMultiple([FromBody] IEnumerable<RequestMobileDto> requestMobiles)
+        public async Task<IActionResult> DeleteMultiple([FromBody] IEnumerable<int> ids)
         {
-            var mobiles = requestMobiles.Select(mapper.Map<Mobile>);
-            await mobileService.DeleteMultipleAsync(mobiles);
+            await mobileService.DeleteMultipleAsync(ids);
             
             logger.LogInformation("Multiple Mobiles deleted successfully");
             return NoContent();

@@ -121,28 +121,28 @@ namespace ItemsStoreWebAPI.DataAccess.DataBase.Transactions.Implementations
             return updatedMobiles;
         }
 
-        protected override async Task DeleteMultipleOperation(SqlConnection connection, SqlTransaction transaction, IEnumerable<Mobile> items)
+        protected override async Task DeleteMultipleOperation(SqlConnection connection, SqlTransaction transaction, IEnumerable<int> ids)
         {
             var deletedMobileIds = new List<int>();
             
-            foreach (var item in items)
+            foreach (var id in ids)
             {
                 // Get StockItem Id
                 const string getStockItemIdSql = "SELECT StockItemId FROM Mobiles WHERE Id = @Id;";
-                var stockItemId = await connection.ExecuteScalarAsync<int?>(getStockItemIdSql, new { item.Id }, transaction);
+                var stockItemId = await connection.ExecuteScalarAsync<int?>(getStockItemIdSql, new { id }, transaction);
 
                 if (stockItemId == null)
                     continue;
 
                 // Delete Mobile
                 const string deleteMobileSql = "DELETE FROM Mobiles WHERE Id = @Id;";
-                await connection.ExecuteAsync(deleteMobileSql, new { item.Id }, transaction);
+                await connection.ExecuteAsync(deleteMobileSql, new { id }, transaction);
 
                 // Delete StockItem
                 const string deleteStockItemSql = "DELETE FROM StockItems WHERE Id = @Id;";
                 await connection.ExecuteAsync(deleteStockItemSql, new { Id = stockItemId }, transaction);
 
-                deletedMobileIds.Add(item.Id);
+                deletedMobileIds.Add(id);
             }
 
             logger.LogInformation($"Deleted {deletedMobileIds.Count} Mobiles with IDs: {string.Join(", ", deletedMobileIds)}");
