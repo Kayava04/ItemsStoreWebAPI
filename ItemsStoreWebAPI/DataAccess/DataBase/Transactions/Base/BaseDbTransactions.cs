@@ -56,13 +56,13 @@ namespace ItemsStoreWebAPI.DataAccess.DataBase.Transactions.Base
             return ExecuteTransactionAsync((conn, tran) => UpdateMultipleOperation(conn, tran, items));
         }
 
-        public Task DeleteMultipleAsync(IEnumerable<T> items)
+        public Task DeleteMultipleAsync(IEnumerable<int> ids)
         {
-            return ExecuteTransactionAsync((conn, tran) => DeleteMultipleOperation(conn, tran, items));
+            return ExecuteTransactionAsync((conn, tran) => DeleteMultipleOperation(conn, tran, ids));
         }
 
         protected abstract Task<IEnumerable<T>> AddMultipleOperation(SqlConnection connection, SqlTransaction transaction, IEnumerable<T> items);
         protected abstract Task<IEnumerable<T>> UpdateMultipleOperation(SqlConnection connection, SqlTransaction transaction, IEnumerable<T> items);
-        protected abstract Task DeleteMultipleOperation(SqlConnection connection, SqlTransaction transaction, IEnumerable<T> items);
+        protected abstract Task DeleteMultipleOperation(SqlConnection connection, SqlTransaction transaction, IEnumerable<int> ids);
     }
 }

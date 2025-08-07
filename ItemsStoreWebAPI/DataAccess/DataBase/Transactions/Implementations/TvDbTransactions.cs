@@ -32,12 +32,12 @@ namespace ItemsStoreWebAPI.DataAccess.DataBase.Transactions.Implementations
 
                 // Adding TV
                 var tvCommand = new SqlCommand(@"
-                    INSERT INTO TVs (StockItemId, Size, Resolution, Frequency)
+                    INSERT INTO TVs (StockItemId, ScreenSize, Resolution, Frequency)
                     OUTPUT INSERTED.ID
-                    VALUES (@StockItemId, @Size, @Resolution, @Frequency);", connection, transaction);
+                    VALUES (@StockItemId, @ScreenSize, @Resolution, @Frequency);", connection, transaction);
 
                 tvCommand.Parameters.AddWithValue("@StockItemId", stockItemId);
-                tvCommand.Parameters.AddWithValue("@Size", item.ScreenSize);
+                tvCommand.Parameters.AddWithValue("@ScreenSize", item.ScreenSize);
                 tvCommand.Parameters.AddWithValue("@Resolution", item.Resolution);
                 tvCommand.Parameters.AddWithValue("@Frequency", item.Frequency);
 
@@ -86,11 +86,11 @@ namespace ItemsStoreWebAPI.DataAccess.DataBase.Transactions.Implementations
                 // Update TV
                 var updateTvCommand = new SqlCommand(@"
                     UPDATE TVs 
-                    SET Size = @Size, Resolution = @Resolution, Frequency = @Frequency
+                    SET ScreenSize = @ScreenSize, Resolution = @Resolution, Frequency = @Frequency
                     WHERE ID = @Id;", connection, transaction);
 
                 updateTvCommand.Parameters.AddWithValue("@Id", item.Id);
-                updateTvCommand.Parameters.AddWithValue("@Size", item.ScreenSize);
+                updateTvCommand.Parameters.AddWithValue("@ScreenSize", item.ScreenSize);
                 updateTvCommand.Parameters.AddWithValue("@Resolution", item.Resolution);
                 updateTvCommand.Parameters.AddWithValue("@Frequency", item.Frequency);
 
@@ -103,15 +103,15 @@ namespace ItemsStoreWebAPI.DataAccess.DataBase.Transactions.Implementations
             return updatedTVs;
         }
 
-        protected override async Task DeleteMultipleOperation(SqlConnection connection, SqlTransaction transaction, IEnumerable<TV> items)
+        protected override async Task DeleteMultipleOperation(SqlConnection connection, SqlTransaction transaction, IEnumerable<int> ids)
         {
             var deletedTvs = new List<int>();
             
-            foreach (var item in items)
+            foreach (var id in ids)
             {
                 // Get StockItem Id
                 var getStockItemCommand = new SqlCommand("SELECT StockItemId FROM TVs WHERE ID = @Id;", connection, transaction);
-                getStockItemCommand.Parameters.AddWithValue("@Id", item.Id);
+                getStockItemCommand.Parameters.AddWithValue("@Id", id);
                 var stockItemIdObj = await getStockItemCommand.ExecuteScalarAsync();
 
                 if (stockItemIdObj == null)
@@ -121,7 +121,7 @@ namespace ItemsStoreWebAPI.DataAccess.DataBase.Transactions.Implementations
 
                 // Delete TV
                 var deleteTvCommand = new SqlCommand("DELETE FROM TVs WHERE ID = @Id;", connection, transaction);
-                deleteTvCommand.Parameters.AddWithValue("@Id", item.Id);
+                deleteTvCommand.Parameters.AddWithValue("@Id", id);
                 await deleteTvCommand.ExecuteNonQueryAsync();
 
                 // Delete StockItem
@@ -129,7 +129,7 @@ namespace ItemsStoreWebAPI.DataAccess.DataBase.Transactions.Implementations
                 deleteStockItemCommand.Parameters.AddWithValue("@StockItemId", stockItemId);
                 await deleteStockItemCommand.ExecuteNonQueryAsync();
                 
-                deletedTvs.Add(item.Id);
+                deletedTvs.Add(id);
             }
             
             logger.LogInformation($"Deleted {deletedTvs.Count} TVs with IDs: {string.Join(", ", deletedTvs)}");

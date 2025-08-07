@@ -11,6 +11,6 @@ namespace ItemsStoreWebAPI.Application.Services.Interfaces
         Task DeleteAsync(int id);
         Task<IEnumerable<T>> AddMultipleAsync(IEnumerable<T> items);
         Task<IEnumerable<T>> UpdateMultipleAsync(IEnumerable<T> items);
-        Task DeleteMultipleAsync(IEnumerable<T> items);
+        Task DeleteMultipleAsync(IEnumerable<int> ids);
     }
 }

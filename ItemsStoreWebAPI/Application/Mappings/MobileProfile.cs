@@ -11,6 +11,8 @@ namespace ItemsStoreWebAPI.Application.Mappings
         {
             CreateMap<RequestMobileDto, Mobile>();
             CreateMap<ResponseMobileDto, Mobile>();
+            
+            CreateMap<Mobile, RequestMobileDto>();
             CreateMap<Mobile, ResponseMobileDto>();
             
             CreateMap<Mobile, MobileEntity>()
@@ -21,7 +23,6 @@ namespace ItemsStoreWebAPI.Application.Mappings
                 .ForMember(dest => dest.RAM, opt => opt.MapFrom(src => src.RAM))
                 .ForMember(dest => dest.Storage, opt => opt.MapFrom(src => src.Storage))
                 .ForMember(dest => dest.StockItem, opt => opt.MapFrom(src => src));
-                
             
             CreateMap<MobileEntity, Mobile>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

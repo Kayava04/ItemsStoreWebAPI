@@ -11,6 +11,8 @@ namespace ItemsStoreWebAPI.Application.Mappings
         {
             CreateMap<RequestTvDto, TV>();
             CreateMap<ResponseTvDto, TV>();
+            
+            CreateMap<TV, RequestTvDto>();
             CreateMap<TV, ResponseTvDto>();
 
             CreateMap<TV, TvEntity>()
