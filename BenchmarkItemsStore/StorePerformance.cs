@@ -40,8 +40,6 @@ namespace BenchmarkItemsStore
         {
             var start = Math.Max(1, lastId - count + 1);
             return Enumerable.Range(start, count);
-            
-            // Enumerable.Range(lastId - count + 1, count);
         }
         
         // Preload test
@@ -71,9 +69,11 @@ namespace BenchmarkItemsStore
             getAllItemsTimer.Stop();
             _logger.Info($"{nameof(GetAllItemsAsync)} finished. Total time: {getAllItemsTimer.ElapsedMilliseconds} ms.");
             
+            var ids = GenerateRange(_lastId, count).ToList();
+            
             // Update items timer
             var updateItemsTimer = Stopwatch.StartNew();
-            await UpdateItemsAsync(count);
+            await UpdateItemsAsync(ids);
             updateItemsTimer.Stop();
             _logger.Info($"{nameof(UpdateItemsAsync)} finished. Total time: {updateItemsTimer.ElapsedMilliseconds} ms.");
             
@@ -85,13 +85,11 @@ namespace BenchmarkItemsStore
             
             // Delete items timer
             var deleteItemsTimer = Stopwatch.StartNew();
-            await DeleteItemsAsync(count);
+            await DeleteItemsAsync(ids);
             deleteItemsTimer.Stop();
             _logger.Info($"{nameof(DeleteItemsAsync)} finished. Total time: {deleteItemsTimer.ElapsedMilliseconds} ms.");
             
             await GetAllItemsAsync();
-            
-            await GetLastIdAsync();
             
             // Add multiple items timer
             var addMultipleTimer = Stopwatch.StartNew();
@@ -101,15 +99,17 @@ namespace BenchmarkItemsStore
             
             await GetLastIdAsync();
             
+            ids = GenerateRange(_lastId, count).ToList();
+            
             // Update multiple items timer
             var updateMultipleTimer = Stopwatch.StartNew();
-            await UpdateMultipleItemsAsync(count);
+            await UpdateMultipleItemsAsync(ids);
             updateMultipleTimer.Stop();
             _logger.Info($"{nameof(UpdateMultipleItemsAsync)} finished. Total time: {updateMultipleTimer.ElapsedMilliseconds} ms.");
             
             // Delete multiple items timer
             var deleteMultipleTimer = Stopwatch.StartNew();
-            await DeleteMultipleItemsAsync(count);
+            await DeleteMultipleItemsAsync(ids);
             deleteMultipleTimer.Stop();
             _logger.Info($"{nameof(DeleteMultipleItemsAsync)} finished. Total time: {deleteMultipleTimer.ElapsedMilliseconds} ms.");
             
@@ -177,9 +177,9 @@ namespace BenchmarkItemsStore
                 _logger.Error($"Failed to get all TVs. Status Code: {response.StatusCode}");
         }
         
-        private static async Task UpdateItemsAsync(int count)
+        private static async Task UpdateItemsAsync(IEnumerable<int> ids)
         {
-            var tasks = GenerateRange(_lastId, count).Select(async i =>
+            var tasks = ids.Select(async i =>
             {
                 var updatedTV = new RequestTvDto
                 {
@@ -205,9 +205,9 @@ namespace BenchmarkItemsStore
             await Task.WhenAll(tasks);
         }
         
-        private static async Task DeleteItemsAsync(int count)
+        private static async Task DeleteItemsAsync(IEnumerable<int> ids)
         {
-            var tasks = GenerateRange(_lastId, count).Select(async i =>
+            var tasks = ids.Select(async i =>
             {
                 var response = await _httpClient.DeleteAsync(i.ToString());
             
@@ -246,10 +246,8 @@ namespace BenchmarkItemsStore
                 _logger.Error($"Failed to add multiple TVs. Status Code: {response.StatusCode}");
         }
         
-        private static async Task UpdateMultipleItemsAsync(int count)
+        private static async Task UpdateMultipleItemsAsync(IEnumerable<int> ids)
         {
-            var ids = GenerateRange(_lastId, count).ToList();
-
             var updatedTVs = ids.Select(i => new RequestTvDto
             {
                 Id = i,
@@ -266,15 +264,13 @@ namespace BenchmarkItemsStore
             var response = await _httpClient.PutAsJsonAsync("update-multiple", updatedTVs);
 
             if (response.IsSuccessStatusCode)
-                _logger.Info($"Successfully updated multiple TVs. Count: {count}");
+                _logger.Info($"Successfully updated multiple TVs. Count: {updatedTVs.Count}");
             else
                 _logger.Error($"Failed to update multiple TVs. Status Code: {response.StatusCode}");
         }
 
-        private static async Task DeleteMultipleItemsAsync(int count)
+        private static async Task DeleteMultipleItemsAsync(IEnumerable<int> ids)
         {
-            var ids = GenerateRange(_lastId, count).ToList();
-
             var request = new HttpRequestMessage(HttpMethod.Delete, "delete-multiple")
             {
                 Content = JsonContent.Create(ids)
@@ -283,7 +279,7 @@ namespace BenchmarkItemsStore
             var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
-                _logger.Info($"Successfully deleted multiple TVs. Count: {count}");
+                _logger.Info($"Successfully deleted multiple TVs. Count: {ids.ToList().Count}");
             else
                 _logger.Error($"Failed to delete multiple TVs. Status Code: {response.StatusCode}");
         }
