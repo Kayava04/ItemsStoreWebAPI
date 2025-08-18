@@ -26,7 +26,7 @@ namespace BenchmarkItemsStore
             XmlConfigurator.Configure(loggerRepository, new FileInfo("log4net.config.xml"));
         }
         
-        // Get Last Index of Elements
+        // Get last index of elements
         private async Task GetLastIdAsync()
         {
             var response = await _httpClient.GetAsync("filter");
@@ -35,11 +35,20 @@ namespace BenchmarkItemsStore
             _lastId = tvs?.Any() == true ? tvs.Max(tv => tv.Id) : 0;
         }
         
-        // Generating Range
+        // Generating range
         private static IEnumerable<int> GenerateRange(int lastId, int count)
         {
             var start = Math.Max(1, lastId - count + 1);
             return Enumerable.Range(start, count);
+        }
+
+        // Measuring execution time
+        private async Task MeasureAsync(Func<Task> action, string name)
+        {
+            var timer = Stopwatch.StartNew();
+            await action();
+            timer.Stop();
+            _logger.Info($"{name} finished. Total time: {timer.ElapsedMilliseconds} ms.");
         }
         
         // Preload test
@@ -56,62 +65,38 @@ namespace BenchmarkItemsStore
             _logger.Info("Loading store performance tests...");
             
             // Add items timer
-            var addItemsTimer = Stopwatch.StartNew();
-            await AddItemsAsync(count);
-            addItemsTimer.Stop();
-            _logger.Info($"{nameof(AddItemsAsync)} finished. Total time: {addItemsTimer.ElapsedMilliseconds} ms.");
+            await MeasureAsync(() => AddItemsAsync(count), nameof(AddItemsAsync));
             
             await GetLastIdAsync();
             
             // Get all items timer
-            var getAllItemsTimer = Stopwatch.StartNew();
-            await GetAllItemsAsync();
-            getAllItemsTimer.Stop();
-            _logger.Info($"{nameof(GetAllItemsAsync)} finished. Total time: {getAllItemsTimer.ElapsedMilliseconds} ms.");
+            await MeasureAsync(GetAllItemsAsync, nameof(GetAllItemsAsync));
             
             var ids = GenerateRange(_lastId, count).ToList();
             
             // Update items timer
-            var updateItemsTimer = Stopwatch.StartNew();
-            await UpdateItemsAsync(ids);
-            updateItemsTimer.Stop();
-            _logger.Info($"{nameof(UpdateItemsAsync)} finished. Total time: {updateItemsTimer.ElapsedMilliseconds} ms.");
+            await MeasureAsync(() => UpdateItemsAsync(ids), nameof(UpdateItemsAsync));
             
             // Get items by ID timer
-            var getItemsByIdTimer = Stopwatch.StartNew();
-            await GetItemsByIdAsync(count);
-            getItemsByIdTimer.Stop();
-            _logger.Info($"{nameof(GetItemsByIdAsync)} finished. Total time: {getItemsByIdTimer.ElapsedMilliseconds} ms.");
+            await MeasureAsync(() => GetItemsByIdAsync(count), nameof(GetItemsByIdAsync));
             
             // Delete items timer
-            var deleteItemsTimer = Stopwatch.StartNew();
-            await DeleteItemsAsync(ids);
-            deleteItemsTimer.Stop();
-            _logger.Info($"{nameof(DeleteItemsAsync)} finished. Total time: {deleteItemsTimer.ElapsedMilliseconds} ms.");
+            await MeasureAsync(() => DeleteItemsAsync(ids), nameof(DeleteItemsAsync));
             
             await GetAllItemsAsync();
             
             // Add multiple items timer
-            var addMultipleTimer = Stopwatch.StartNew();
-            await AddMultipleItemsAsync(count);
-            addMultipleTimer.Stop();
-            _logger.Info($"{nameof(AddMultipleItemsAsync)} finished. Total time: {addMultipleTimer.ElapsedMilliseconds} ms.");
+            await MeasureAsync(() => AddMultipleItemsAsync(count), nameof(AddMultipleItemsAsync));
             
             await GetLastIdAsync();
             
             ids = GenerateRange(_lastId, count).ToList();
             
             // Update multiple items timer
-            var updateMultipleTimer = Stopwatch.StartNew();
-            await UpdateMultipleItemsAsync(ids);
-            updateMultipleTimer.Stop();
-            _logger.Info($"{nameof(UpdateMultipleItemsAsync)} finished. Total time: {updateMultipleTimer.ElapsedMilliseconds} ms.");
+            await MeasureAsync(() => UpdateMultipleItemsAsync(ids), nameof(UpdateMultipleItemsAsync));
             
             // Delete multiple items timer
-            var deleteMultipleTimer = Stopwatch.StartNew();
-            await DeleteMultipleItemsAsync(ids);
-            deleteMultipleTimer.Stop();
-            _logger.Info($"{nameof(DeleteMultipleItemsAsync)} finished. Total time: {deleteMultipleTimer.ElapsedMilliseconds} ms.");
+            await MeasureAsync(() => DeleteMultipleItemsAsync(ids), nameof(DeleteMultipleItemsAsync));
             
             await GetAllItemsAsync();
             
