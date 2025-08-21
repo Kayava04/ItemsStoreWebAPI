@@ -1,27 +1,26 @@
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Reflection;
-using ItemsStoreWebAPI.Application.DTOs.TV;
+using BenchmarkItemsStore.Services.Interfaces;
+using ItemsStoreWebAPI.Application.DTOs.Mobile;
 using log4net;
 using log4net.Config;
 
-namespace BenchmarkItemsStore
+namespace BenchmarkItemsStore.Services.Implementations
 {
-    public class StorePerformance
+    public class MobileStorePerformance : IStorePerformance
     {
-        private static HttpClient _httpClient = new HttpClient(new SocketsHttpHandler
-            {
-                MaxConnectionsPerServer = 50
-            })
-        {
-            BaseAddress = new Uri("http://localhost:5117/v1/stock/electronic/tv/")
-        };
-
+        private readonly HttpClient _httpClient;
         private static int _lastId;
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
-        public StorePerformance()
+        public MobileStorePerformance(string baseUrl)
         {
+            _httpClient = new HttpClient(new SocketsHttpHandler { MaxConnectionsPerServer = 100 })
+            {
+                BaseAddress = new Uri(baseUrl)
+            };
+            
             var loggerRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
             XmlConfigurator.Configure(loggerRepository, new FileInfo("log4net.config.xml"));
         }
@@ -30,9 +29,9 @@ namespace BenchmarkItemsStore
         private async Task GetLastIdAsync()
         {
             var response = await _httpClient.GetAsync("filter");
-            var tvs = await response.Content.ReadFromJsonAsync<List<RequestTvDto>>();
+            var mobiles = await response.Content.ReadFromJsonAsync<List<RequestMobileDto>>();
             
-            _lastId = tvs?.Any() == true ? tvs.Max(tv => tv.Id) : 0;
+            _lastId = mobiles?.Any() == true ? mobiles.Max(m => m.Id) : 0;
         }
         
         // Generating range
@@ -105,101 +104,105 @@ namespace BenchmarkItemsStore
         
         #region Single Methods
         
-        private static async Task AddItemsAsync(int count)
+        private async Task AddItemsAsync(int count)
         {
             var tasks = Enumerable.Range(1, count).Select(async i =>
             {
-                var tv = new RequestTvDto
+                var mobile = new RequestMobileDto
                 {
-                    Name = $"LG {i}",
-                    Description = $"OLED {i}",
-                    ScreenSize = 55,
-                    Resolution = "2560x1440",
-                    Frequency = 120,
+                    Name = $"IPhone {i}",
+                    Description = $"16 Pro Max {i}",
+                    OS = "IOS",
+                    ScreenSize = 62,
+                    BatteryCapacity = 100,
+                    RAM = 16,
+                    Storage = 256,
                     ReleasedYear = 2024,
-                    Price = 23700,
+                    Price = 54000,
                     InStock = 7
                 };
                 
-                var response = await _httpClient.PostAsJsonAsync(string.Empty, tv);
+                var response = await _httpClient.PostAsJsonAsync(string.Empty, mobile);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var created = await response.Content.ReadFromJsonAsync<ResponseTvDto>();
-                    _logger.Info($"Successfully added TV with ID: {created?.Id}.");
+                    var created = await response.Content.ReadFromJsonAsync<ResponseMobileDto>();
+                    _logger.Info($"Successfully added Mobile with ID: {created?.Id}.");
                 }
                 else
-                    _logger.Error($"Failed to add TV. Status Code: {response.StatusCode}");
+                    _logger.Error($"Failed to add Mobile. Status Code: {response.StatusCode}");
             });
             
             await Task.WhenAll(tasks);
         }
 
-        private static async Task GetItemsByIdAsync(int count)
+        private async Task GetItemsByIdAsync(int count)
         {
             var tasks = GenerateRange(_lastId, count).Select(async i =>
             {
                 var response = await _httpClient.GetAsync(i.ToString());
-                var tv = await response.Content.ReadFromJsonAsync<RequestTvDto>();
+                var mobile = await response.Content.ReadFromJsonAsync<RequestMobileDto>();
             
                 if (response.IsSuccessStatusCode)
-                    _logger.Info($"Successfully received TV with ID: {tv.Id}");
+                    _logger.Info($"Successfully received Mobile with ID: {mobile?.Id}");
                 else
-                    _logger.Error($"Failed to get TV. Status Code: {response.StatusCode}");
+                    _logger.Error($"Failed to get Mobile. Status Code: {response.StatusCode}");
             });
             
             await Task.WhenAll(tasks);
         }
         
-        private static async Task GetAllItemsAsync()
+        private async Task GetAllItemsAsync()
         {
             var response = await _httpClient.GetAsync("filter");
-            var tvs = await response.Content.ReadFromJsonAsync<List<RequestTvDto>>();
+            var mobiles = await response.Content.ReadFromJsonAsync<List<RequestMobileDto>>();
             
             if (response.IsSuccessStatusCode)
-                _logger.Info($"Successfully received all TVs. Total count: {tvs.Count}");
+                _logger.Info($"Successfully received all Mobiles. Total count: {mobiles?.Count}");
             else
-                _logger.Error($"Failed to get all TVs. Status Code: {response.StatusCode}");
+                _logger.Error($"Failed to get all Mobiles. Status Code: {response.StatusCode}");
         }
         
-        private static async Task UpdateItemsAsync(IEnumerable<int> ids)
+        private async Task UpdateItemsAsync(IEnumerable<int> ids)
         {
             var tasks = ids.Select(async i =>
             {
-                var updatedTV = new RequestTvDto
+                var updatedMobile = new RequestMobileDto
                 {
                     Id = i,
-                    Name = $"LG {i} updated",
-                    Description = $"OLED {i} updated",
-                    ScreenSize = 55,
-                    Resolution = "2560x1440",
-                    Frequency = 120,
+                    Name = $"IPhone {i}",
+                    Description = $"16 Pro Max {i}",
+                    OS = "IOS",
+                    ScreenSize = 62,
+                    BatteryCapacity = 100,
+                    RAM = 16,
+                    Storage = 256,
                     ReleasedYear = 2024,
-                    Price = 23700,
+                    Price = 54000,
                     InStock = 7
                 };
                 
-                var response = await _httpClient.PutAsJsonAsync(string.Empty, updatedTV);
+                var response = await _httpClient.PutAsJsonAsync(string.Empty, updatedMobile);
             
                 if (response.IsSuccessStatusCode)
-                    _logger.Info($"Successfully updated TV with ID: {updatedTV.Id}");
+                    _logger.Info($"Successfully updated Mobile with ID: {updatedMobile.Id}");
                 else
-                    _logger.Error($"Failed to update TV. Status Code: {response.StatusCode}");
+                    _logger.Error($"Failed to update Mobile. Status Code: {response.StatusCode}");
             });
             
             await Task.WhenAll(tasks);
         }
         
-        private static async Task DeleteItemsAsync(IEnumerable<int> ids)
+        private async Task DeleteItemsAsync(IEnumerable<int> ids)
         {
             var tasks = ids.Select(async i =>
             {
                 var response = await _httpClient.DeleteAsync(i.ToString());
             
                 if (response.IsSuccessStatusCode)
-                    _logger.Info($"Successfully deleted TV with ID: {i}");
+                    _logger.Info($"Successfully deleted Mobile with ID: {i}");
                 else
-                    _logger.Error($"Failed to delete TV. Status Code: {response.StatusCode}");
+                    _logger.Error($"Failed to delete Mobile. Status Code: {response.StatusCode}");
             });
             
             await Task.WhenAll(tasks);
@@ -209,52 +212,56 @@ namespace BenchmarkItemsStore
 
         #region Multiple Methods
         
-        private static async Task AddMultipleItemsAsync(int count)
+        private async Task AddMultipleItemsAsync(int count)
         {
-            var tvs = Enumerable.Range(1, count).Select(i => new RequestTvDto
+            var mobiles = Enumerable.Range(1, count).Select(i => new RequestMobileDto
             {
-                Name = $"LG Multiple {i}",
-                Description = $"OLED Multiple {i}",
-                ScreenSize = 55,
-                Resolution = "3840x2160",
-                Frequency = 120,
+                Name = $"IPhone Multiple {i}",
+                Description = $"16 Pro Max Multiple {i}",
+                OS = "IOS",
+                ScreenSize = 62,
+                BatteryCapacity = 100,
+                RAM = 16,
+                Storage = 256,
                 ReleasedYear = 2024,
-                Price = 25000,
-                InStock = 5
+                Price = 54000,
+                InStock = 7
             }).ToList();
 
-            var response = await _httpClient.PostAsJsonAsync("add-multiple", tvs);
+            var response = await _httpClient.PostAsJsonAsync("add-multiple", mobiles);
 
             if (response.IsSuccessStatusCode)
-                _logger.Info($"Successfully added multiple TVs. Count: {count}");
+                _logger.Info($"Successfully added multiple Mobiles. Count: {count}");
             else
-                _logger.Error($"Failed to add multiple TVs. Status Code: {response.StatusCode}");
+                _logger.Error($"Failed to add multiple Mobiles. Status Code: {response.StatusCode}");
         }
         
-        private static async Task UpdateMultipleItemsAsync(IEnumerable<int> ids)
+        private async Task UpdateMultipleItemsAsync(IEnumerable<int> ids)
         {
-            var updatedTVs = ids.Select(i => new RequestTvDto
+            var updatedMobiles = ids.Select(i => new RequestMobileDto
             {
                 Id = i,
-                Name = $"LG Multiple Updated {i}",
-                Description = $"OLED Multiple Updated {i}",
-                ScreenSize = 65,
-                Resolution = "7680x4320",
-                Frequency = 144,
-                ReleasedYear = 2025,
-                Price = 33000,
-                InStock = 3
+                Name = $"IPhone Updated Multiple {i}",
+                Description = $"16 Pro Max Updated Multiple {i}",
+                OS = "IOS",
+                ScreenSize = 62,
+                BatteryCapacity = 100,
+                RAM = 16,
+                Storage = 256,
+                ReleasedYear = 2024,
+                Price = 54000,
+                InStock = 7
             }).ToList();
 
-            var response = await _httpClient.PutAsJsonAsync("update-multiple", updatedTVs);
+            var response = await _httpClient.PutAsJsonAsync("update-multiple", updatedMobiles);
 
             if (response.IsSuccessStatusCode)
-                _logger.Info($"Successfully updated multiple TVs. Count: {updatedTVs.Count}");
+                _logger.Info($"Successfully updated multiple Mobiles. Count: {updatedMobiles.Count}");
             else
-                _logger.Error($"Failed to update multiple TVs. Status Code: {response.StatusCode}");
+                _logger.Error($"Failed to update multiple Mobiles. Status Code: {response.StatusCode}");
         }
 
-        private static async Task DeleteMultipleItemsAsync(IEnumerable<int> ids)
+        private async Task DeleteMultipleItemsAsync(IEnumerable<int> ids)
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, "delete-multiple")
             {
@@ -264,9 +271,9 @@ namespace BenchmarkItemsStore
             var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
-                _logger.Info($"Successfully deleted multiple TVs. Count: {ids.ToList().Count}");
+                _logger.Info($"Successfully deleted multiple Mobiles. Count: {ids.ToList().Count}");
             else
-                _logger.Error($"Failed to delete multiple TVs. Status Code: {response.StatusCode}");
+                _logger.Error($"Failed to delete multiple Mobiles. Status Code: {response.StatusCode}");
         }
 
         #endregion
