@@ -4,14 +4,16 @@ namespace BenchmarkItemsStore.Configurations
     {
         public string Category { get; set; }
         public int Count { get; set; }
-        public decimal MinPrice { get; set; }
-        public decimal MaxPrice { get; set; }
-        public BaseUrlsOptions BaseUrls { get; set; }
+        public int MinPrice { get; set; }
+        public int MaxPrice { get; set; }
+        public StockApiOptions StockApi { get; set; } = new();
     }
 
-    public class BaseUrlsOptions
+    public class StockApiOptions
     {
-        public string TV { get; set; }
-        public string Mobile { get; set; }
+        public string Protocol { get; set; }
+        public string Host { get; set; }
+        public int Port { get; set; }
+        public string BasePath { get; set; }
     }
 }
