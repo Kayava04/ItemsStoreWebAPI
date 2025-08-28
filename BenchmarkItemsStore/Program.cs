@@ -63,7 +63,7 @@ namespace BenchmarkItemsStore
                 throw new ArgumentException("PerformanceTest:StockApi:Protocol must be provided!");
             if (string.IsNullOrWhiteSpace(o.StockApi.Host))
                 throw new ArgumentException("PerformanceTest:StockApi:Host must be provided!");
-            if (o.StockApi.Port <= 0)
+            if (o.StockApi.Port <= 0 || o.StockApi.Port > 65535)
                 throw new ArgumentException("PerformanceTest:StockApi:Port must be a positive number!");
             if (string.IsNullOrWhiteSpace(o.StockApi.BasePath))
                 throw new ArgumentException("PerformanceTest:StockApi:BasePath must be provided!");
