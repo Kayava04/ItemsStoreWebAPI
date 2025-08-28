@@ -181,26 +181,54 @@ namespace ItemsStoreWebAPI.DataAccess.Repositories.Implementations
             logger.LogInformation($"Updated Mobile with ID: {id}");
             return updatedMobile;
         }
-
+        
         public async Task DeleteAsync(int id)
         {
-            const string deleteMobileSql = "DELETE FROM Mobiles WHERE Id = @Id;";
-            const string deleteStockItemSql = "DELETE FROM StockItems WHERE Id = @Id;";
-            
+            const string selectStockIdSql   = "SELECT StockItemId FROM Mobiles WHERE Id = @Id;";
+            const string deleteMobileSql    = "DELETE FROM Mobiles WHERE Id = @Id;";
+            const string deleteStockItemSql = @"DELETE FROM StockItems
+                                                    WHERE Id = @Id
+                                                        AND NOT EXISTS (SELECT 1 FROM Mobiles WHERE StockItemId = @Id);";
+
             await using var connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
-            await using var tx = connection.BeginTransaction();
 
-            var mobileId = await connection.ExecuteAsync(deleteMobileSql, new { Id = id }, transaction: tx);
-            await connection.ExecuteAsync(deleteStockItemSql, new { Id = id }, transaction: tx);
-
-            if (mobileId > 0)
+            int? stockItemId;
+            
+            await using (var tx = await connection.BeginTransactionAsync())
             {
-                await tx.CommitAsync();
-                logger.LogInformation($"Deleted Mobile with ID: {id}");
+                stockItemId = await connection.ExecuteScalarAsync<int?>(
+                    selectStockIdSql, new { Id = id }, transaction: tx);
+
+                var affected = await connection.ExecuteAsync(
+                    deleteMobileSql, new { Id = id }, transaction: tx);
+
+                if (affected > 0)
+                {
+                    await tx.CommitAsync();
+                    logger.LogInformation($"Deleted Mobile with ID: {id}");
+                }
+                else
+                {
+                    await tx.RollbackAsync();
+                    logger.LogInformation($"Mobile with ID: {id} not found");
+                    
+                    return;
+                }
             }
-            else
-                logger.LogWarning($"Attempted to delete non-existent Mobile with ID: {id}");
+            
+            if (stockItemId.HasValue)
+            {
+                try
+                {
+                    await connection.ExecuteAsync(
+                        deleteStockItemSql, new { Id = stockItemId.Value });
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, $"Failed to delete StockItem with ID: {stockItemId.Value}");
+                }
+            }
         }
     }
 }
